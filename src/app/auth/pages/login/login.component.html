@@ -1,0 +1,40 @@
+
+
+<div class="log-in-card">
+  <ng-template  #key>
+  </ng-template>
+  <form [formGroup]="myForm" (submit)="login()">
+    <div class="log-in">
+      <h1 class="log-in__decoration log-in__text">
+        <img src="../../.././../assets/LMDR brand/logo-manija-red.png" alt="logo-manija">
+        <strong>LMDR ADMIN</strong>
+      </h1>
+          <div class="log-in__file">
+            <h3 class="log-in__text">E-mail</h3>
+            <input formControlName="email" class="log-in__input" type="text" matInput
+            placeholder="example@example.com">
+            <span class="log-in__error-menssage"
+                  *ngIf="isValidField('email')">{{showError('email', emailPatternMenssage)}}</span>
+          </div>
+
+          <div class="log-in__file">
+            <h3 class="log-in__text">Password</h3>
+            <div class="log-in__password-container">
+              <input formControlName="password" class="log-in__input log-in__input__pass" [type]="typeOfInput"
+              placeholder="Password">
+              <i class="fa-solid fa-eye log-in__text log-in__eye-icon" (click)="togglePassword()"></i>
+            </div>
+            <span class="log-in__error-menssage"
+                  *ngIf="isValidField('password')">{{ showError('password', passwordPatternMenssage) }}</span>
+          </div>
+
+        <button mat-raised-button
+                type="submit"
+                class="log-in__btn"
+                [disabled]="myForm.invalid"
+                ><strong>Ingresar</strong></button>
+
+      </div>
+    </form>
+
+
