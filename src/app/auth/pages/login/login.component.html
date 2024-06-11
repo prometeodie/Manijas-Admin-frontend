@@ -14,7 +14,7 @@
             <input formControlName="email" class="log-in__input" type="text" matInput
             placeholder="example@example.com">
             <span class="log-in__error-menssage"
-                  *ngIf="isValidField('email')">{{showError('email', emailPatternMenssage)}}</span>
+                  *ngIf="isValidField('email')">{{showError('email')}}</span>
           </div>
 
           <div class="log-in__file">
@@ -25,7 +25,7 @@
               <i class="fa-solid fa-eye log-in__text log-in__eye-icon" (click)="togglePassword()"></i>
             </div>
             <span class="log-in__error-menssage"
-                  *ngIf="isValidField('password')">{{ showError('password', passwordPatternMenssage) }}</span>
+                  *ngIf="isValidField('password')">{{ showError('password') }}</span>
           </div>
 
         <button mat-raised-button
@@ -33,7 +33,6 @@
                 class="log-in__btn"
                 [disabled]="myForm.invalid"
                 ><strong>Ingresar</strong></button>
-
       </div>
     </form>
 

@@ -105,6 +105,11 @@
           justify-content:space-between ;
         }
 
+        &__error-menssage{
+          font-size: 0.6rem;
+          color:$form-error-color;
+        }
+
     }
   }
 
