@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-boardgames',
@@ -6,5 +7,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./boardgames.component.scss']
 })
 export class BoardgamesComponent {
-
+  public authService = inject(AuthService)
+  public user = this.authService.currentUser()
+  salir(){
+    this.authService.logOutUser()
+  }
 }

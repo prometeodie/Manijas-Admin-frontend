@@ -10,7 +10,7 @@
         <strong>LMDR ADMIN</strong>
       </h1>
           <div class="log-in__file">
-            <h3 class="log-in__text">E-mail</h3>
+            <h3 class="log-in__text" [ngClass]="{'login-error': existLoginError}">E-mail</h3>
             <input formControlName="email" class="log-in__input" type="text" matInput
             placeholder="example@example.com">
             <span class="log-in__error-menssage"
@@ -18,7 +18,7 @@
           </div>
 
           <div class="log-in__file">
-            <h3 class="log-in__text">Password</h3>
+            <h3 class="log-in__text" [ngClass]="{'login-error': existLoginError}">Password</h3>
             <div class="log-in__password-container">
               <input formControlName="password" class="log-in__input log-in__input__pass" [type]="typeOfInput"
               placeholder="Password">

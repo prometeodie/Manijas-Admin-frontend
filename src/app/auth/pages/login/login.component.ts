@@ -2,6 +2,8 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FormService } from 'src/app/services/form-validator.service';
+import { AuthService } from '../../services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -12,16 +14,17 @@ export class LoginComponent {
 
   public  emailPattern: string = "^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$";
   public passwordPattern: string ="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,20}$";
+  public existLoginError: boolean = false;
 
-  public isCredentialClosed:boolean = true;
   public typeOfInput = 'password';
+  private authService = inject(AuthService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private fvService = inject(FormService);
 
   public myForm = this.fb.group({
-    email:['admin@admin.com',[Validators.required, Validators.pattern(this.emailPattern)]],
-    password:['Manija$12',[Validators.required,Validators.minLength(8),Validators.maxLength(20), Validators.pattern(this.passwordPattern)]]
+    email:['franco.d.r1992@gmail.com',[Validators.required, Validators.pattern(this.emailPattern)]],
+    password:['Wishmaster7$',[Validators.required,Validators.minLength(8),Validators.maxLength(20), Validators.pattern(this.passwordPattern)]]
   })
 
   isValidField(field: string):boolean | null{
@@ -37,8 +40,25 @@ export class LoginComponent {
   }
 
   login(){
-
-    this.router.navigateByUrl('/dashboard/boardgames')
+    const { email, password } = this.myForm.value;
+    this.authService.login(email!, password!).subscribe({
+      next: () => {
+        this.existLoginError = false;
+        this.router.navigateByUrl('/dashboard/boardgames')
+      },
+      error: (message)=>{
+        this.existLoginError= true;
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: `Credenciales no validas`,
+          showConfirmButton: false,
+          timer: 1000
+        });
+      }
+    }
+    )
   }
+
 }
 

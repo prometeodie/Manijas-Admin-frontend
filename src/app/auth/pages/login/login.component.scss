@@ -113,6 +113,10 @@
     }
   }
 
+  .login-error{
+    color: $form-error-color;
+  }
+
 // MEDIA QUERIES
 
 @media (min-width:320px) {
