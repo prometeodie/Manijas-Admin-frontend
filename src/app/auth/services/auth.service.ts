@@ -4,8 +4,6 @@ import { AuthStatus, CheckTokenResponse, LoginResponse, User } from '../interfac
 import {  Observable, catchError, map, of, throwError } from 'rxjs';
 import { environment } from 'src/assets/environments/environment';
 
-
-
 @Injectable({
   providedIn: 'root'
 })
@@ -21,7 +19,6 @@ export class AuthService {
 
    private setUserAuthentication(user: User, accessToken: string): boolean{
           this._currentUser.set(user);
-          console.log(`usuario: ${user._id}`)
           this._authStatus.set( AuthStatus.authenticated );
           localStorage.setItem('token', accessToken);
           localStorage.setItem('id', user._id);
@@ -50,7 +47,6 @@ export class AuthService {
       this._authStatus.set( AuthStatus.noAuthenticated );
       return of(false)
       };
-      console.log(token);
       const headers = new HttpHeaders()
       .set('Authorization',`Bearer ${token}`);
       return this.http.get<CheckTokenResponse>(url, { headers })
@@ -74,29 +70,3 @@ export class AuthService {
 
 }
 
-
-// checkAuthStatus():Observable<boolean> {
-
-//   const url   = `${ this.baseUrl }/auth/check-token`;
-//   const token = localStorage.getItem('token');
-
-//   if ( !token ) {
-//     this.logout();
-//     return of(false);
-//   }
-
-//   const headers = new HttpHeaders()
-//     .set('Authorization', `Bearer ${ token }`);
-
-
-//     return this.http.get<CheckTokenResponse>(url, { headers })
-//       .pipe(
-//         map( ({ user, token }) => this.setAuthentication( user, token )),
-//         catchError(() => {
-//           this._authStatus.set( AuthStatus.notAuthenticated );
-//           return of(false);
-//         })
-//       );
-
-
-// }

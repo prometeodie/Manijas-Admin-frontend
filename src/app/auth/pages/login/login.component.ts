@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 })
 export class LoginComponent {
 
-  public  emailPattern: string = "^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$";
+  public emailPattern: string = "^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$";
   public passwordPattern: string ="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,20}$";
   public existLoginError: boolean = false;
 
@@ -35,10 +35,6 @@ export class LoginComponent {
     return `${this.fvService.showError(this.myForm,field)}`
   }
 
-  togglePassword(){
-    (this.typeOfInput === 'password')? this.typeOfInput = 'text' : this.typeOfInput = 'password';
-  }
-
   login(){
     const { email, password } = this.myForm.value;
     this.authService.login(email!, password!).subscribe({
@@ -56,8 +52,11 @@ export class LoginComponent {
           timer: 1000
         });
       }
-    }
-    )
+    })
+  }
+
+  togglePassword(){
+    (this.typeOfInput === 'password')? this.typeOfInput = 'text' : this.typeOfInput = 'password';
   }
 
 }

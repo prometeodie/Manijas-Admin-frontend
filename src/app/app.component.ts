@@ -8,7 +8,7 @@ import { AuthStatus } from './auth/interfaces';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent{
   private authService = inject(AuthService);
   public router = inject(Router);
 
@@ -24,18 +24,24 @@ export class AppComponent {
   }
 )
   public authStatusChangeEfect = effect(()=>{
-    console.log(this.authService.authStatus())
     const authStatusActions = {
       [AuthStatus.checking]: () => {},
-      [AuthStatus.authenticated]: () => this.router.navigateByUrl('/lmdr'),
+      [AuthStatus.authenticated]: () => {},
       [AuthStatus.noAuthenticated]: () => {this.router.navigateByUrl('/auth/login')}
     };
 
     const currentStatus = this.authService.authStatus();
     const action = authStatusActions[currentStatus];
-    console.log(action)
+    console.log(this.getUserRoute())
     if (action) {
       action();
     }
   })
+
+  getUserRoute(): string{
+    const url = localStorage.getItem('url');
+    if(!url) return 'lmdr'
+
+    return url;
+  }
 }
