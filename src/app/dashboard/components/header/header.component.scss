@@ -1,0 +1,65 @@
+
+@import '../../../scss/variables.scss';
+
+.header,
+.header__text-brand,
+.header__btn-user-info-container,
+.header__btn-user-info-container__icons
+{
+  display: flex;
+}
+.header__btn-user-info-container__icons,
+.header__btn-user-info-container__info,
+.header__btn-user-info-container__icons__letter{
+  margin-right: 0.7rem;
+}
+
+.header{
+  justify-content: space-between;
+  padding: 7px;
+  width: 100%;
+  color: $main-text-color;
+  height: 4rem;
+  background-color: $main-element-color;
+
+
+  &__btn-user-info-container{
+    flex-direction: column;
+
+      &__icons{
+        font-size: 1.3rem;
+        justify-content: flex-end;
+
+        &__letter,
+        &__logout{
+          cursor: pointer;
+
+          &:hover{
+            opacity: 50%;
+          }
+        }
+      }
+  }
+
+  &__text-brand{
+    align-items: center;
+
+    &__img-brand{
+      width: 2rem;
+      margin-right: 0.5rem;
+    }
+
+    &__text{
+      font-size: 2rem;
+      font-weight: bolder;
+    }
+  }
+
+}
+
+// MEDIA QUERIES
+@media (min-width:600px) {
+  .header__btn-user-info-container__icons{
+    font-size: 1.5rem;
+  }
+}

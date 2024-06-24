@@ -8,6 +8,8 @@ import { MessagesComponent } from './pages/messages/messages.component';
 import { MessageComponent } from './pages/message/message.component';
 import { EventsComponent } from './pages/events/events.component';
 import { CreateEditComponent } from './pages/create-edit/create-edit.component';
+import { AboutComponent } from './pages/about/about.component';
+import { ControlPanelComponent } from './pages/control-panel/control-panel.component';
 
 const routes: Routes = [
   {
@@ -16,7 +18,9 @@ const routes: Routes = [
     children:[
       {path:'boardgames', component:BoardgamesComponent},
       {path:'blogs', component:BlogsComponent},
+      {path:'us', component:AboutComponent},
       {path:'manijometro', component:ManijometroComponent},
+      {path:'control-panel', component:ControlPanelComponent},
       {path:'messages', component:MessagesComponent},
       {path:'message', component:MessageComponent},
       {path:'events', component:EventsComponent},

@@ -11,7 +11,9 @@ import { MessagesComponent } from './pages/messages/messages.component';
 import { ManijometroComponent } from './pages/manijometro/manijometro.component';
 import { CreateEditComponent } from './pages/create-edit/create-edit.component';
 import { MessageComponent } from './pages/message/message.component';
-
+import { HeaderComponent } from './components/header/header.component';
+import { NavBarComponent } from './components/nav-bar/nav-bar.component';
+import { ControlPanelComponent } from './pages/control-panel/control-panel.component';
 
 
 @NgModule({
@@ -25,10 +27,13 @@ import { MessageComponent } from './pages/message/message.component';
     ManijometroComponent,
     CreateEditComponent,
     MessageComponent,
+    HeaderComponent,
+    ControlPanelComponent,
   ],
   imports: [
     CommonModule,
-    DashboardRoutingModule
+    DashboardRoutingModule,
+    NavBarComponent
   ]
 })
 export class DashboardModule { }

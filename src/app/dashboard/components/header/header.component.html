@@ -1,0 +1,15 @@
+<header class="header">
+  <div class="header__text-brand">
+    <img class="header__text-brand__img-brand" src="../../../../assets/LMDR brand/logo-manija-green.png" alt="manija-brand">
+    <span class="header__text-brand__text">LMDR </span>
+  </div>
+  <div class="header__btn-user-info-container">
+    <span class="header__btn-user-info-container__info">{{userEmail | titlecase}} | {{userRole}}</span>
+    <div class="header__btn-user-info-container__icons">
+      <i class="fa-solid fa-envelope header__btn-user-info-container__icons__letter" (click)="alertTodo('abrir menu mensajes')"></i>
+      <i class="fa-solid fa-right-from-bracket header__btn-user-info-container__icons__logout" (click)="logOut()"></i>
+    </div>
+  </div>
+</header>
+
+
