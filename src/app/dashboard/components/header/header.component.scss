@@ -4,13 +4,18 @@
 .header,
 .header__text-brand,
 .header__btn-user-info-container,
-.header__btn-user-info-container__icons
-{
+.header__btn-user-info-container__icons,
+.header__btn-user-info-container__icons__messages__unread-messages{
   display: flex;
 }
+
+.header__text-brand,
+.header__btn-user-info-container__icons__messages__unread-messages{
+  align-items: center;
+}
+
 .header__btn-user-info-container__icons,
-.header__btn-user-info-container__info,
-.header__btn-user-info-container__icons__letter{
+.header__btn-user-info-container__info{
   margin-right: 0.7rem;
 }
 
@@ -30,7 +35,7 @@
         font-size: 1.3rem;
         justify-content: flex-end;
 
-        &__letter,
+        &__messages__letter,
         &__logout{
           cursor: pointer;
 
@@ -38,11 +43,32 @@
             opacity: 50%;
           }
         }
+
+        &__messages{
+          margin-right: 0.5rem;
+          padding-right: 0.5rem;
+          position: relative;
+
+          &__unread-messages{
+            position:absolute;
+            justify-content: center;
+            right: 0;
+            top: -0.3rem;
+            color: azure;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            text-align: center;
+            position: absolute;
+            text-align: center;
+            background-color: #d12f32
+          }
+        }
       }
   }
 
   &__text-brand{
-    align-items: center;
 
     &__img-brand{
       width: 2rem;

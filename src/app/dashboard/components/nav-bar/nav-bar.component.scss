@@ -5,29 +5,65 @@
 .menu__btn{
   display: flex;
 }
+
+.active,
+.menu__btn__icon:hover{
+  opacity: 50%;
+}
+
 .menu{
-  width: 100%;
-    background-color: $secondary-element-color;
+    width: 100%;
     font-size: 2rem;
     color: $main-text-color;
     justify-content: space-around;
+    background-color: $secondary-element-color;
     padding: 0.5rem 0;
     border-radius: 0 0 10px 10px;
+    position: sticky;
+    top: 0;
 
     &__btn{
       flex-direction: column;
       align-items: center;
-        cursor: pointer;
-        &:hover{
-          opacity: 50%;
-        }
+      transition: all 0.3s ease;
+      cursor: pointer;
 
       &__name{
         font-size: 0.7rem;
       }
+
+      &__icon:active{
+        transform: scale(0.9);
+      }
     }
   }
 
-  .active{
-    color: red;
+  // MEDIA QUERIES
+
+  @media (min-width:600px) {
+    .menu{
+      flex-direction: column;
+      position: fixed;
+      width: 4rem;
+      border-radius: 0 10px 10px 0;
+      height: calc(100vh - 4rem);
+      justify-content: center;
+      background-color: transparent;
+
+      &__btn{
+        padding: 1rem;
+        background-color: $secondary-element-color;
+        &__name{
+          display: none;
+      }
+
+      & div:first-child {
+        border-radius: 0 10px 0 0;
+      }
+
+      & div:last-child {
+        border-radius: 0 0 10px 0;
+      }
+    }
+  }
 }

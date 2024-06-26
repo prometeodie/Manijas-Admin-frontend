@@ -6,10 +6,11 @@
   <div class="header__btn-user-info-container">
     <span class="header__btn-user-info-container__info">{{userEmail | titlecase}} | {{userRole}}</span>
     <div class="header__btn-user-info-container__icons">
-      <i class="fa-solid fa-envelope header__btn-user-info-container__icons__letter" (click)="alertTodo('abrir menu mensajes')"></i>
+      <div class="header__btn-user-info-container__icons__messages" (click)="alertTodo('abrir menu mensajes')">
+        <i class="fa-solid fa-envelope header__btn-user-info-container__icons__messages__letter"></i>
+        <span class="header__btn-user-info-container__icons__messages__unread-messages" *ngIf="unreadMessages >= 1">{{unreadMessages}}</span>
+      </div>
       <i class="fa-solid fa-right-from-bracket header__btn-user-info-container__icons__logout" (click)="logOut()"></i>
     </div>
   </div>
 </header>
-
-

@@ -32,7 +32,6 @@ export class AppComponent{
 
     const currentStatus = this.authService.authStatus();
     const action = authStatusActions[currentStatus];
-    console.log(this.getUserRoute())
     if (action) {
       action();
     }

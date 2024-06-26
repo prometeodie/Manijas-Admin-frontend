@@ -1,3 +1,6 @@
+
+@import './app/scss/variables.scss';
+
 *{
   margin: 0;
   padding: auto;
@@ -8,4 +11,34 @@
 
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: $main-background-color;
+  color: $main-text-color;
+}
+
+body::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+
+body::-webkit-scrollbar:vertical {
+  width:5px;
+}
+
+body::-webkit-scrollbar-button:increment,.contenedor::-webkit-scrollbar-button {
+  display: none;
+}
+
+body::-webkit-scrollbar:horizontal {
+  height: 5px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: $secondary-element-color;
+  border-radius: 0 0 10px 10px;
+}
+
+body::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
