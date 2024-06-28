@@ -22,7 +22,7 @@ const routes: Routes = [
       {path:'manijometro', component:ManijometroComponent},
       {path:'control-panel', component:ControlPanelComponent},
       {path:'messages', component:MessagesComponent},
-      {path:'message', component:MessageComponent},
+      {path:'message/:id', component:MessageComponent},
       {path:'events', component:EventsComponent},
       {path:'create-edit', component:CreateEditComponent},
       {path:'**', redirectTo:'boardgames'}

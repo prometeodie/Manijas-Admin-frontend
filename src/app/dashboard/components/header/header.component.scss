@@ -19,13 +19,24 @@
   margin-right: 0.7rem;
 }
 
+.header,
+.header__messages{
+  background-color: $main-element-color;
+}
+
+.header__btn-user-info-container__icons__messages__letter,
+.header__btn-user-info-container__icons__logout,
+.header__messages__close-mark,
+.header__messages__all-messages_ul{
+    cursor: pointer;
+}
+
 .header{
   justify-content: space-between;
   padding: 7px;
   width: 100%;
   color: $main-text-color;
   height: 4rem;
-  background-color: $main-element-color;
 
 
   &__btn-user-info-container{
@@ -37,8 +48,6 @@
 
         &__messages__letter,
         &__logout{
-          cursor: pointer;
-
           &:hover{
             opacity: 50%;
           }
@@ -81,11 +90,75 @@
     }
   }
 
+  &__messages{
+    position: fixed;
+    padding: 1rem;
+    transform: translateX(25rem);
+    width: 100%;
+    left: 0;
+    height: 100vh;
+    top: 0;
+    z-index: 1;
+    transition: transform 1s ease;
+
+    &__slice{
+      transform: translateX(0);
+    }
+
+    &__all-messages_ul{
+      position: relative;
+      list-style: none;
+      border-radius: 5px;
+      padding: 0.5rem 1rem 1rem;
+      margin-bottom: 0.5rem;
+      background-color: $secondary-element-color;
+      transition: all 0.5s ease;
+
+      &:hover{
+        background-color: rgba(255, 228, 196, 0.11);
+      }
+
+      &__li__new-messsage{
+        color: antiquewhite;
+        position: fixed;
+        right: 1.5rem;
+      }
+
+      &__li__date{
+        position: absolute;
+        font-size: x-small;
+        bottom: 0;
+        right: 0.5rem;
+        margin-top: 0.5rem;
+      }
+
+      & span{
+        font-weight: bolder;
+      }
+
+    }
+
+        &__close-mark{
+          position: absolute;
+          right: 0;
+          top: 0;
+          padding: 0.5rem;
+        }
+    }
 }
 
 // MEDIA QUERIES
 @media (min-width:600px) {
   .header__btn-user-info-container__icons{
     font-size: 1.5rem;
+  }
+}
+
+@media (min-width:500px) {
+  .header__messages{
+    width: 25rem;
+    top: 0;
+    right: 0;
+    left: auto;
   }
 }

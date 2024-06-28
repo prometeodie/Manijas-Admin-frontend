@@ -6,11 +6,28 @@
   <div class="header__btn-user-info-container">
     <span class="header__btn-user-info-container__info">{{userEmail | titlecase}} | {{userRole}}</span>
     <div class="header__btn-user-info-container__icons">
-      <div class="header__btn-user-info-container__icons__messages" (click)="alertTodo('abrir menu mensajes')">
+      <div class="header__btn-user-info-container__icons__messages" (click)="getAllMessages()">
         <i class="fa-solid fa-envelope header__btn-user-info-container__icons__messages__letter"></i>
         <span class="header__btn-user-info-container__icons__messages__unread-messages" *ngIf="unreadMessages >= 1">{{unreadMessages}}</span>
       </div>
       <i class="fa-solid fa-right-from-bracket header__btn-user-info-container__icons__logout" (click)="logOut()"></i>
     </div>
   </div>
+  <div class="header__messages" [ngClass]="{'header__messages__slice':isMessagesWindowOpen}">
+    <h3 class="header__messages__title">Bandeja de mensajes</h3>
+    <i class="fa-solid fa-xmark header__messages__close-mark"
+    (click)="openCloseMessages()"
+    ></i>
+    <div class="header__messages__all-messages" *ngFor="let message of messages" routerLink="/lmdr/message/{{message._id}}">
+      <ul class="header__messages__all-messages_ul" >
+        <li class="header__messages__all-messages_ul__li__new-messsage" *ngIf="!message.hasBeenReaded">New</li>
+        <li class="header__messages__all-messages_ul__li__date">{{message.creationDate | date}}</li>
+        <li class="header__messages__all-messages_ul__li"><span>De:</span> {{message.fullName}}</li>
+        <li class="header__messages__all-messages_ul__li"><span>Email:</span> {{message.email}}</li>
+        <li class="header__messages__all-messages_ul__li"><span>Asunto:</span> {{reduceSubjectCharacters(message.subject)}}</li>
+      </ul>
+    </div>
+  </div>
 </header>
+<!-- TODO:poner una senal para cuando activar o no la bandeja de entrada, y poner en el body q cuadno se haga click y la senal este en tru la ponga en fasle, asi se cierra apretando fuera -->
+

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Icons } from '../../interfaces/icons.interface';
-import { RouterLink, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'nav-bar',
@@ -20,6 +20,5 @@ export class NavBarComponent {
     {name:'nosotros', icon:'fa-solid fa-people-group', route:`${this.standarRoute}/us`},
     {name:'panel de control', icon:'fa-solid fa-gears', route:`${this.standarRoute}/control-panel`}
   ];
-
 
 }
