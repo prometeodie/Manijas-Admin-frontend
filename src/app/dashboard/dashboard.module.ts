@@ -15,6 +15,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { ControlPanelComponent } from './pages/control-panel/control-panel.component';
 import { HttpClientModule } from '@angular/common/http';
+import { LoadingAnimationComponent } from './components/loading-animation/loading-animation.component';
 
 
 @NgModule({
@@ -29,13 +30,14 @@ import { HttpClientModule } from '@angular/common/http';
     CreateEditComponent,
     MessageComponent,
     HeaderComponent,
-    ControlPanelComponent,
+    ControlPanelComponent
   ],
   imports: [
     CommonModule,
     DashboardRoutingModule,
     NavBarComponent,
-    HttpClientModule
+    HttpClientModule,
+    LoadingAnimationComponent
   ]
 })
 export class DashboardModule { }

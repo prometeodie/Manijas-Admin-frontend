@@ -117,6 +117,14 @@
     color: $form-error-color;
   }
 
+  .loading-animation{
+    width: 100%;
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    z-index: 999;
+  }
+
 // MEDIA QUERIES
 
 @media (min-width:320px) {

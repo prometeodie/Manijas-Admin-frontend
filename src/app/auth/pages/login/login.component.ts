@@ -15,6 +15,7 @@ export class LoginComponent {
   public emailPattern: string = "^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$";
   public passwordPattern: string ="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,20}$";
   public existLoginError: boolean = false;
+  public chekingCredentials: boolean = false;
 
   public typeOfInput = 'password';
   private authService = inject(AuthService);
@@ -37,22 +38,24 @@ export class LoginComponent {
 
   login(){
     const { email, password } = this.myForm.value;
-    this.authService.login(email!, password!).subscribe({
-      next: () => {
-        this.existLoginError = false;
-        this.router.navigateByUrl('/dashboard/boardgames')
-      },
-      error: (message)=>{
-        this.existLoginError= true;
-        Swal.fire({
-          position: "center",
-          icon: "error",
-          title: `Credenciales no validas`,
-          showConfirmButton: false,
-          timer: 1000
-        });
-      }
-    })
+    this.chekingCredentials = true;
+      this.authService.login(email!, password!).subscribe({
+        next: () => {
+          this.existLoginError = false;
+          this.router.navigateByUrl('/dashboard/boardgames')
+        },
+        error: (message)=>{
+          this.existLoginError= true;
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: `Credenciales no validas`,
+            showConfirmButton: false,
+            timer: 1000
+          });
+        },
+        complete: () => this.chekingCredentials = false,
+      })
   }
 
   togglePassword(){

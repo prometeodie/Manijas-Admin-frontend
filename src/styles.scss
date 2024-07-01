@@ -42,3 +42,9 @@ body::-webkit-scrollbar-thumb {
 body::-webkit-scrollbar-track {
   border-radius: 10px;
 }
+
+
+// this class avoid sweetAlert padding-right
+body.swal2-shown {
+  padding-right: 0 !important;
+}

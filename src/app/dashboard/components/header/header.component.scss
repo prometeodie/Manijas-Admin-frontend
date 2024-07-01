@@ -53,10 +53,14 @@
           }
         }
 
-        &__messages{
+  &__messages{
           margin-right: 0.5rem;
           padding-right: 0.5rem;
           position: relative;
+
+          &__loading-messages{
+            z-index: 10;
+          }
 
           &__unread-messages{
             position:absolute;
@@ -143,6 +147,11 @@
           right: 0;
           top: 0;
           padding: 0.5rem;
+          z-index: 3;
+        }
+
+        &__all-messages__no-messages{
+          font-size: x-large;
         }
     }
 }

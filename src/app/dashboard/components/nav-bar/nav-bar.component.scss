@@ -71,11 +71,11 @@
           width: 5rem;
       }
 
-      & div:first-child {
+      &:first-child {
         border-radius: 0 10px 0 0;
       }
 
-      & div:last-child {
+      &:last-child {
         border-radius: 0 0 10px 0;
       }
     }

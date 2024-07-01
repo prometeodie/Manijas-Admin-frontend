@@ -4,6 +4,7 @@ import { catchError, of } from 'rxjs';
 import { environment } from 'src/assets/environments/environment';
 import { UnreadMessages } from '../interfaces/unread-messages.interface';
 import { Message } from '../interfaces/message.interface';
+import { MessageStatus } from '../interfaces/message-status.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +28,14 @@ export class DashboardService {
     const headers = this.getHeaders();
 
     return this.http.get<Message[]>(`${this.url}/all`, { headers }).pipe(
+      catchError((err)=>{return of(undefined)})
+    )
+  }
+
+  messageHasBeenReaded(id: string){
+    const headers = this.getHeaders();
+    const messageSatus: MessageStatus = {hasBeenReaded: true};
+    return this.http.patch<MessageStatus>(`${this.url}/edit/${id}`,messageSatus, { headers }).pipe(
       catchError((err)=>{return of(undefined)})
     )
   }
