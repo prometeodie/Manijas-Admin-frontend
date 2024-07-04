@@ -1,0 +1,83 @@
+
+@import '../../../scss/variables.scss';
+
+.card,
+.card__section__menu{
+  display: flex;
+}
+
+.card,
+.card__header{
+  overflow: hidden;
+}
+
+.card{
+  flex-direction: column;
+  background-color: #f0ffff;
+  width: 90%;
+  border-radius: 11px;
+  color: #000;
+  min-width: 310px;
+  max-width: 19.3rem;
+
+  &__header{
+    position: relative;
+    max-height: 9rem;
+    background-image: url('../../../../assets/images.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    // TODO:arreglar q se ven 2 imagenes si booro la etqueta img se va no anda url
+
+    &__manijometro{
+      position: absolute;
+      right: 0.5rem;
+      bottom: 0.5rem;
+      font-weight: 900;
+      font-size: xx-large;
+      color: #fff;
+    }
+  }
+
+  &__section{
+    padding: 1rem;
+    font-weight: 300;
+    font-size: small;
+
+    &__title{
+      font-size: medium;
+      margin: 0;
+    }
+    &__menu{
+      padding: 0;
+      list-style: none;
+      color: #fff;
+
+      &__btn{
+        width: 2.3rem;
+        padding: 0.3em 0;
+        margin: 0 0.4rem;
+        border-radius: 4px;
+        text-align: center;
+        transition: all 0.5s ease;
+        cursor: pointer;
+
+        &:hover{
+          opacity: 0.7;
+        }
+
+        &--edit{
+          background-color: $main-card-edit-button-color;
+        }
+
+        &--delete{
+          background-color: $main-card-delete-button-color;
+        }
+
+        &--manijometro{
+          background-color: $main-card-manijoimetro-button-color;
+        }
+      }
+    }
+  }
+}

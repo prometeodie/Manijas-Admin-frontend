@@ -22,8 +22,11 @@
     <ng-template #showMessages>
       <div class="header__messages__all-messages" *ngFor="let message of messages" routerLink="/lmdr/message/{{message._id}}" (click)="changeMessageStatus(message._id)" >
         <ul class="header__messages__all-messages_ul" >
-          <li class="header__messages__all-messages_ul__li__new-messsage" *ngIf="!message.hasBeenReaded">New</li>
-          <li class="header__messages__all-messages_ul__li__date">{{message.creationDate | date}}</li>
+          <li class="header__messages__all-messages_ul__li__message-control-container">
+            <span *ngIf="!message.hasBeenReaded; else deleteOption">New</span>
+            <ng-template #deleteOption ><i class="fa-solid fa-trash header__messages__all-messages_ul__li__message-control-container__delete" (click)="deleteMessage(message._id, $event)"></i></ng-template>
+          </li>
+          <li class="header__messages__all-messages_ul__li__date">{{message.creationDate | date}} </li>
           <li class="header__messages__all-messages_ul__li"><span>De:</span> {{message.fullName}}</li>
           <li class="header__messages__all-messages_ul__li"><span>Email:</span> {{message.email}}</li>
           <li class="header__messages__all-messages_ul__li"><span>Asunto:</span> {{reduceSubjectCharacters(message.subject)}}</li>

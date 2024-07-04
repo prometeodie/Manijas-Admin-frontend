@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { LayoutComponent } from './pages/layout/layout.component';
@@ -14,8 +15,8 @@ import { MessageComponent } from './pages/message/message.component';
 import { HeaderComponent } from './components/header/header.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { ControlPanelComponent } from './pages/control-panel/control-panel.component';
-import { HttpClientModule } from '@angular/common/http';
 import { LoadingAnimationComponent } from './components/loading-animation/loading-animation.component';
+import { CardsComponent } from './components/cards/cards.component';
 
 
 @NgModule({
@@ -33,11 +34,12 @@ import { LoadingAnimationComponent } from './components/loading-animation/loadin
     ControlPanelComponent
   ],
   imports: [
+    HttpClientModule,
     CommonModule,
     DashboardRoutingModule,
-    NavBarComponent,
-    HttpClientModule,
-    LoadingAnimationComponent
+    CardsComponent,
+    LoadingAnimationComponent,
+    NavBarComponent
   ]
 })
 export class DashboardModule { }
