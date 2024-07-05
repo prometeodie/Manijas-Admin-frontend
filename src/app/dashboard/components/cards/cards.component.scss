@@ -10,6 +10,30 @@
 .card__header{
   overflow: hidden;
 }
+.card__header,
+.card__section{
+  position: relative;
+}
+
+.card__header,
+.card__header__img{
+  width: 100%;
+}
+
+.card__header__manijometro,
+.card__section__menu__btn,
+.card__header__edition-label,
+.card__section__warning{
+  text-align: center;
+  color: #fff;
+}
+
+.card__section__warning__header__manijometro,
+.card__section__edition-label,
+.card__section__warning,
+.card__header__edition-label{
+  position: absolute;
+}
 
 .card{
   flex-direction: column;
@@ -21,21 +45,29 @@
   max-width: 19.3rem;
 
   &__header{
-    position: relative;
     max-height: 9rem;
-    background-image: url('../../../../assets/images.jpeg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    // TODO:arreglar q se ven 2 imagenes si booro la etqueta img se va no anda url
+
+    &__img{
+      height: 13rem;
+      object-fit: cover;
+    }
 
     &__manijometro{
-      position: absolute;
+      text-shadow: 1px 3px 5px #000;
       right: 0.5rem;
       bottom: 0.5rem;
       font-weight: 900;
       font-size: xx-large;
+    }
+
+    &__edition-label{
+      rotate: -45deg;
+      width: 11rem;
+      bottom: 1rem;
+      right: -3.85rem;
       color: #fff;
+      background-color: #FF8800;
+      font-weight: 100;
     }
   }
 
@@ -48,10 +80,11 @@
       font-size: medium;
       margin: 0;
     }
+
     &__menu{
       padding: 0;
       list-style: none;
-      color: #fff;
+
 
       &__btn{
         width: 2.3rem;
@@ -77,7 +110,23 @@
         &--manijometro{
           background-color: $main-card-manijoimetro-button-color;
         }
+
+        &--voted{
+          background-color: #808080;
+        }
       }
+
+    }
+
+    &__warning{
+      bottom: 2.2rem;
+      background: #000000de;
+      font-size: xx-small;
+      z-index: 2;
+      padding: 0.2rem;
+      text-align: center;
+      border-radius: 3px;
+      right: 0.3rem;
     }
   }
 }

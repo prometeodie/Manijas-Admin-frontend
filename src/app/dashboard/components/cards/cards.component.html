@@ -1,20 +1,29 @@
 <main class="card">
   <div class="card__header">
-    <img class="card__header__img" src="../../../../assets/images.jpeg" alt="">
-    <span class="card__header__manijometro">#12</span>
+    <img class="card__header__img" [src]="objectTemplate.imgPath" [alt]="objectTemplate.title">
+    <span class="card__header__manijometro">{{objectTemplate.manijometro}}</span>
+    <span class="card__header__edition-label">En edición</span>
   </div>
   <section class="card__section">
-    <h3 class="card__section__title"> Pepito</h3>
-    <ul class="card__section__ul-info" *ngIf="false; else paragraph">
-      <li>asdasdasd</li>
-    </ul>
+    <h3 class="card__section__title"> {{objectTemplate.title}}</h3>
+    <div >
+      <ul class="card__section__ul-info" *ngIf="objectTemplate.category === 'EVENT'; else paragraph" >
+        <li>asdasdasd</li>
+      </ul>
+    </div>
     <ng-template #paragraph>
-      <p class="card__section__p-info">the board game, has taken the world by storm with over two million copies sold...</p>
+      <p class="card__section__p-info">{{limitTextLength(objectTemplate.info[0],81)}}</p>
     </ng-template>
-      <ul class="card__section__menu">
+    <ul class="card__section__menu">
       <li class="card__section__menu__btn card__section__menu__btn--edit"><i class="fa-solid fa-pen"></i></li>
       <li class="card__section__menu__btn card__section__menu__btn--delete"><i class="fa-solid fa-trash"></i></li>
-      <li class="card__section__menu__btn card__section__menu__btn--manijometro"><i class="fa-solid fa-trophy"></i></li>
+      <li class="card__section__menu__btn card__section__menu__btn--manijometro"
+          [ngClass]=" {'card__section__menu__btn--voted':true}"
+          (mouseenter)="isBoardVoted()"
+          (mouseleave)="isBoardVoted()"><i class="fa-solid fa-trophy"></i></li>
     </ul>
+    <p class="card__section__warning" *ngIf="isTheBoardVoted">Ya has votado este juego, click para cambiar tu voto</p>
   </section>
 </main>
+
+<!-- TODO: armar los estilos para las cards cuando son event-card -->
