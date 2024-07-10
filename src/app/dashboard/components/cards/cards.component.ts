@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardTemplate } from '../../interfaces/cards.interface';
 
@@ -9,20 +9,14 @@ import { CardTemplate } from '../../interfaces/cards.interface';
   templateUrl: './cards.component.html',
   styleUrls: ['./cards.component.scss']
 })
-export class CardsComponent {
- public isTheBoardVoted:boolean = false;
+export class CardsComponent implements OnInit {
 
- public objectTemplate: CardTemplate = {
-  id:'asdasdd',
-  title:' Luna Capital',
-  imgPath:'../../../../assets/images.jpeg',
-  isInfoAList:false,
-  info:['lalalalalalaljasdnjhabs asuhdbaiusdh aiuyd aiusdygiaud giusd'],
-  category:'BOARDGAME',
-  publish: false,
-  manijometro:99,
-  hasVoted:true,
+  @Input() objectTemplate!: CardTemplate;
+ public isTheBoardVoted: boolean = false;
+ public isEventCategory: boolean = false
 
+ ngOnInit(){
+  (this.objectTemplate.category === 'EVENT')? this.isEventCategory = true : this.isEventCategory = false;
  }
 
 limitTextLength(text:string, maxLength:number) {
@@ -32,7 +26,17 @@ limitTextLength(text:string, maxLength:number) {
   return text;
 }
 
-isBoardVoted(){
-  this.isTheBoardVoted = !this.isTheBoardVoted;
+isBoardVoted(hasVoted: boolean){
+  if(hasVoted){
+    this.isTheBoardVoted = !this.isTheBoardVoted;
+  }
+  return;
+}
+
+limitPlaceText(place:string){
+  if(place.length >= 38){
+    return place.slice(0, 37) + '...';
+  }
+  return place;
 }
 }

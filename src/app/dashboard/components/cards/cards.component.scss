@@ -28,7 +28,7 @@
   color: #fff;
 }
 
-.card__section__warning__header__manijometro,
+.card__header__manijometro,
 .card__section__edition-label,
 .card__section__warning,
 .card__header__edition-label{
@@ -54,8 +54,8 @@
 
     &__manijometro{
       text-shadow: 1px 3px 5px #000;
-      right: 0.5rem;
-      bottom: 0.5rem;
+      right: 0.2rem;
+      top: 0.5rem;
       font-weight: 900;
       font-size: xx-large;
     }
@@ -63,6 +63,7 @@
     &__edition-label{
       rotate: -45deg;
       width: 11rem;
+      font-size: smaller;
       bottom: 1rem;
       right: -3.85rem;
       color: #fff;
@@ -129,4 +130,43 @@
       right: 0.3rem;
     }
   }
+
+
+  &--event{
+    flex-direction: row-reverse;
+
+    .card__header__manijometro{
+      font-size: x-large;
+    }
+
+    .card__header__img{
+      height: 100%;
+      border-radius: 10px;
+    }
+    .card__section,
+    .card__section__ul-info{
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card__section{
+      padding: 0.5rem;
+      justify-content: space-between;
+      width: 19rem;
+
+      &__ul-info{
+        padding-left: 1rem;
+        font-weight: 300;
+        font-size: smaller;
+        margin-bottom: 0.5rem;
+
+        & li{
+          font-size: small;
+          line-height: 14.5px;
+        }
+      }
+    }
+
+  }
+
 }

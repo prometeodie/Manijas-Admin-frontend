@@ -1,2 +1,2 @@
 <p>events works!</p>
-<app-cards/>
+<app-cards *ngFor="let evento of eventos"[objectTemplate]="evento"/>
