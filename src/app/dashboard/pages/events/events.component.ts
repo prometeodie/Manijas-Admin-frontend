@@ -7,6 +7,9 @@ import { CardTemplate } from '../../interfaces/cards.interface';
   styleUrls: ['./events.component.scss']
 })
 export class EventsComponent {
+
+  readonly eventPath = '/lmdr/create-edit/EVENT';
+
   public eventos : CardTemplate[] = [
     {
       id:'asdasdd',
@@ -21,7 +24,7 @@ export class EventsComponent {
      },{
       id:'asdgggggggggggggggggasdd',
       title:' Lafgafdgagfagfl',
-      imgPath:'../../../../assets/images.jpeg',
+      imgPath:'',
       isInfoAList:false,
       info:['Dia/s: lalalalalala', 'Horario: 18:40hs', 'Lugar: arte y parte (yrigoyen 882 Tandil)'],
       category:'EVENT',
@@ -33,7 +36,7 @@ export class EventsComponent {
       title:' Luna Capital',
       imgPath:'../../../../assets/images.jpeg',
       isInfoAList:false,
-      info:['Dia/s: lalalalalala', 'Horario: 18:40hs', 'Lugar: arte y parte (yrigoyen 882 Mar Del Plata)'],
+      info:['Dia/s: lalalalalala', 'Horario: 18:40hs', 'Lugar: arte y parte (yrigoyen 882 Mar Del Plata) (yrigoyen 882 Mar Del Plata (yrigoyen 882 Mar Del Plata (yrigoyen 882 Mar Del Plata'],
       category:'EVENT',
       publish: false,
       manijometro:99,

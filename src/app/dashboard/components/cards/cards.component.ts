@@ -1,11 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardTemplate } from '../../interfaces/cards.interface';
+import { ImgPipePipe } from '../../pipes/img-pipe.pipe';
 
 @Component({
   selector: 'app-cards',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ImgPipePipe],
   templateUrl: './cards.component.html',
   styleUrls: ['./cards.component.scss']
 })

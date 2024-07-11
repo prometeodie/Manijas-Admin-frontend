@@ -1,2 +1,10 @@
-<p>events works!</p>
-<app-cards *ngFor="let evento of eventos"[objectTemplate]="evento"/>
+
+<main class="events">
+  <h1>Eventos</h1>
+  <h3>Eventos Activos</h3>
+  <section class="events__active-events__cards">
+    <app-cards class="events__active-events__cards__card" *ngFor="let evento of eventos"[objectTemplate]="evento"/>
+  </section>
+  <new-btn [path]="eventPath" class="events__new-btn"/>
+
+</main>

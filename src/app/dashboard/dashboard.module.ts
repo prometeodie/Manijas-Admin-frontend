@@ -17,6 +17,8 @@ import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { ControlPanelComponent } from './pages/control-panel/control-panel.component';
 import { LoadingAnimationComponent } from './components/loading-animation/loading-animation.component';
 import { CardsComponent } from './components/cards/cards.component';
+import { NewBtnComponent } from './components/new-btn/new-btn.component';
+import { ImgPipePipe } from './pipes/img-pipe.pipe';
 
 
 @NgModule({
@@ -39,7 +41,8 @@ import { CardsComponent } from './components/cards/cards.component';
     DashboardRoutingModule,
     CardsComponent,
     LoadingAnimationComponent,
-    NavBarComponent
+    NavBarComponent,
+    NewBtnComponent
   ]
 })
 export class DashboardModule { }

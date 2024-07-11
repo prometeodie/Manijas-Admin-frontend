@@ -24,7 +24,8 @@ const routes: Routes = [
       {path:'messages', component:MessagesComponent},
       {path:'message/:id', component:MessageComponent},
       {path:'events', component:EventsComponent},
-      {path:'create-edit', component:CreateEditComponent},
+      {path:'create-edit/:section/:id', component:CreateEditComponent},
+      {path:'create-edit/:section', component:CreateEditComponent},
       {path:'**', redirectTo:'boardgames'}
     ]
   }

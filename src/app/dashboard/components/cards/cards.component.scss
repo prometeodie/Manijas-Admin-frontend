@@ -38,7 +38,6 @@
 .card{
   flex-direction: column;
   background-color: #f0ffff;
-  width: 90%;
   border-radius: 11px;
   color: #000;
   min-width: 310px;
@@ -50,6 +49,8 @@
     &__img{
       height: 13rem;
       object-fit: cover;
+      position: relative;
+      z-index: 3;
     }
 
     &__manijometro{
@@ -155,10 +156,28 @@
       width: 19rem;
 
       &__ul-info{
-        padding-left: 1rem;
-        font-weight: 300;
         font-size: smaller;
+        font-weight: 300;
         margin-bottom: 0.5rem;
+        padding-left: 1rem;
+
+        &__li-popup{
+          background-color: aliceblue;
+          border-radius: 4px;
+          bottom: 2.93rem;
+          box-shadow: 1px 1px 4px;
+          list-style-type: none;
+          opacity: 0;
+          padding: 0.5rem;
+          position: absolute;
+          width: 17rem;
+          transition: opacity 0.3s ease;
+
+          &:hover{
+            opacity: 100%;
+            z-index: 3;
+          }
+        }
 
         & li{
           font-size: small;
