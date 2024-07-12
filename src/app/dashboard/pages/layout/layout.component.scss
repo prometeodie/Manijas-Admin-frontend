@@ -3,3 +3,11 @@
   position: relative;
 }
 
+
+// MEDIA QUERIES
+
+@media (min-width:600px) {
+  .main-page__content{
+    padding: 0 5.5rem;
+  }
+}

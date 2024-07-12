@@ -1,10 +1,30 @@
 
 <main class="events">
   <h1>Eventos</h1>
-  <h3>Eventos Activos</h3>
-  <section class="events__active-events__cards">
-    <app-cards class="events__active-events__cards__card" *ngFor="let evento of eventos"[objectTemplate]="evento"/>
+
+  <section class="events__section">
+    <div class="events__section__cards-container">
+      <h3>Eventos Activos</h3>
+      <app-cards class="events__section__cards-container__cards" *ngFor="let evento of eventos"[objectTemplate]="evento"/>
+    </div>
+    <div class="events__section__new">
+      <h3>Agregar Nuevo Evento</h3>
+      <form class="events__section__new__form">
+        <input class="events__section__new__form__input" placeholder="Titulo" type="text">
+        <input class="events__section__new__form__input" placeholder="Dia" type="date">
+        <input class="events__section__new__form__input" placeholder="Horario" type="time">
+        <input class="events__section__new__form__input" placeholder="Lugar" type="text">
+        <input class="events__section__new__form__input" placeholder="Select Image" type="file">
+        <div>
+          <input class="events__section__form__input" placeholder="Select Color" type="color">
+          <div class="events__section__form__input__color-sample"></div>
+        </div>
+        <span>Publicar <input type="checkbox"></span>
+        <div class="events__section__new__form__btn">click</div>
+        <!-- TODO:poner  se cambie entre guardar y publicar segun si esta publish tildado o no  -->
+      </form>
+    </div>
   </section>
   <new-btn [path]="eventPath" class="events__new-btn"/>
-
 </main>
+
