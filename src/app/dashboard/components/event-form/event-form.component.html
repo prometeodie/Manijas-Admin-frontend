@@ -1,0 +1,29 @@
+<div class="events">
+  <h3>Agregar Nuevo Evento</h3>
+  <form class="events__form">
+    <input class="events__form__input" placeholder="Titulo" type="text">
+    <input class="events__form__input" placeholder="Dia" type="date">
+    <input class="events__form__input" placeholder="Horario" type="time">
+    <input class="events__form__input" placeholder="Lugar" type="text">
+    <input class="events__form__input" placeholder="Url de algo relacionado al evento" type="text">
+    <input class="events__form__input" placeholder="Select Image" type="file" accept="image/*" >
+    <div class="events__form__img-container">
+      <img src="../../../../assets/570805.jpg" alt="sdasd" class="events__form__img-container__img">
+      <!-- TODO:agregar el pipe para q se vea  o no imagen -->
+      <i class="fa-solid fa-circle-xmark events__form__img-container__mark"></i>
+    </div>
+    <div>
+      <label for="opciones">Selecciona un color </label>
+      <select id="opciones" name="opciones" class="events__form__input events__form__input--selector"
+                                            (change)="updateSelectedColor($event)"
+                                            [ngStyle]="{'background-color': selectedColor}">
+        <option class="events__form__input events__form__input--option" *ngFor="let color of colors" [value]="color" [ngStyle]="{'background-color': color}"></option>
+      </select>
+    </div>
+    <span class="events__form__input__check-box-cont">Borrar automaticamente <input type="checkbox" class="events__form__input events__form__input--margin-l"></span>
+    <span class="events__form__input__check-box-cont ">Publicar <input type="checkbox" class="events__form__input events__form__input--margin-l"></span>
+    <div class="events__form__btn">click</div>
+    <!-- TODO:poner  se cambie entre guardar y publicar segun si esta publish tildado o no  -->
+     <!-- TODO:acomodar el backend de los eventos las fechas para q se pueda agregar todo los domigos o algun dia especifico y q no se puedan iongresar fechas menores a la actual -->
+  </form>
+</div>

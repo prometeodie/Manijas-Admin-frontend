@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CardTemplate } from '../../interfaces/cards.interface';
+import { EventsService } from '../../services/events.service';
 
 @Component({
   selector: 'app-events',
@@ -9,6 +10,8 @@ import { CardTemplate } from '../../interfaces/cards.interface';
 export class EventsComponent {
 
   readonly eventPath = '/lmdr/create-edit/EVENT';
+  private eventsService = inject(EventsService);
+// TODO: hacer la peticion para traer todos los eventos,, borrar eventos,, cargar nuevos eventos, borrar img de eventos, editar eventos
 
   public eventos : CardTemplate[] = [
     {

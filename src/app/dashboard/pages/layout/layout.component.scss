@@ -8,6 +8,12 @@
 
 @media (min-width:600px) {
   .main-page__content{
+    padding-left: 5.5rem;
+  }
+}
+
+@media (min-width:900px) {
+  .main-page__content{
     padding: 0 5.5rem;
   }
 }

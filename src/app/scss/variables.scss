@@ -6,6 +6,7 @@ $secondary-element-color:#1A535C;
 $main-text-color:#B2DBBF;
 $add-new-element-icon-color:#000;
 $main-letter-unread-messages-background-color:#d12f32;
+$scroll-bar-color:#1c6c7c;
 
 // cards colors
 $main-card-background-color:#E1E5EA;
@@ -22,7 +23,6 @@ $log-in-btn-text-color:#fff;
 $login-bc:linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(65,9,121,1) 35%, rgba(26, 83, 92) 100%);
 $choose-file-btn-bc:rgba($color: #7709bb, $alpha: 0.2);
 $form-error-color: rgb(223, 45, 45);
-$inputs-bc:rgba($color: #999, $alpha: 0.2);
 
 
 // new-btn color
@@ -30,4 +30,5 @@ $btn-main-bg-color: #b2dbbf;
 $btn-hover-bg-color: #b2dbbfb0;
 
 // Forms
+$inputs-bc:rgba($color: #999, $alpha: 0.2);
 $text-color-inputs: #ebe2e2;
