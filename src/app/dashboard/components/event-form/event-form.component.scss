@@ -16,9 +16,43 @@
   align-items: center;
 }
 
+.events__form__img-container,
+.events__form__input__check-box-cont{
+  position: relative;
+}
+
 .events__form__btn,
 .events__form__img-container__mark{
   cursor: pointer;
+}
+
+.events__form__img-container__mark,
+.events__form__input__check-box-cont__pop-up__mark{
+  position: absolute;
+  font-size: x-large;
+  top: -0.8rem;
+  right: -0.8rem;
+
+  &:active{
+    transform: scale(0.9);
+  }
+}
+
+.events__form__input,
+.events__form__btn{
+  background-color:$inputs-bc;
+  font-weight: 200;
+}
+
+.events__form__input__check-box-cont__pop-up,
+.events__form__btn{
+  color: #fff;
+}
+
+.events__form__input--selector,
+.events__form__input__check-box-cont__pop-up,
+.events__form__input__error-menssage{
+  border-radius: 3px;
 }
 
 h3{
@@ -30,23 +64,22 @@ h3{
 }
 
 .events{
-  padding: 1.5rem;
-  background-color: $secondary-element-color;
   border-radius: 5px;
   margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: $secondary-element-color;
 
   &__form{
     width: 29vw;
 
     &__input{
-      background-color:$inputs-bc;
       color: $text-color-inputs;
       font-size: larger;
-      font-weight: 200;
       padding: 1rem 0.5rem 0.5rem 0.5rem;
       border: none;
       outline: none;
       margin: 1rem 0;
+      width: 100%;
 
       &::placeholder{
         color: $text-color-inputs;
@@ -60,17 +93,31 @@ h3{
           width: 3rem;
           padding: 0;
           margin-left: 0.8rem;
-          border-radius: 3px;
         }
 
-        &--option:hover{
-          background-color: #99999941 !important;
-        }
 
         &--margin-l{
           margin-left: 0.5rem;
         }
+        &__check-box-cont{
 
+          &__pop-up{
+            background-color: rgba(0, 0, 0, 0.904);
+            border: 1px solid rgb(228, 228, 228);
+            bottom: 2.5rem;
+            font-size: smaller;
+            padding: 0.3rem;
+            position: absolute;
+            z-index: 99;
+          }
+        }
+
+        &__error-menssage{
+          font-size: 0.7rem;
+          color:$form-error-color;
+          padding: 0.1rem 0.3rem;
+          font-weight: 700;
+        }
       }
 
       &__btn{
@@ -80,9 +127,12 @@ h3{
         padding: 1rem;
         text-align: center;
         transition: background-color 0.5s ease;
+        border: none;
+
+
 
         &:hover{
-          background-color:#7e75754d ;
+          background-color:#bbacac7c ;
         }
 
         &:active{
@@ -91,7 +141,6 @@ h3{
       }
 
       &__img-container{
-        position: relative;
         width: 100%;
         background-color:$inputs-bc;
         padding: 1rem;
@@ -99,17 +148,6 @@ h3{
         &__img{
           object-fit: scale-down;
           width: 100%;
-        }
-
-        &__mark{
-          position: absolute;
-          font-size: x-large;
-          top: -0.8rem;
-          right: -0.8rem;
-
-          &:active{
-            transform: scale(0.9);
-          }
         }
       }
     }

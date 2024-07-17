@@ -1,28 +1,44 @@
 <div class="events">
   <h3>Agregar Nuevo Evento</h3>
-  <form class="events__form">
-    <input class="events__form__input" placeholder="Titulo" type="text">
-    <input class="events__form__input" placeholder="Dia" type="date">
-    <input class="events__form__input" placeholder="Horario" type="time">
-    <input class="events__form__input" placeholder="Lugar" type="text">
-    <input class="events__form__input" placeholder="Url de algo relacionado al evento" type="text">
-    <input class="events__form__input" placeholder="Select Image" type="file" accept="image/*" >
+  <form class="events__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
+    <div *ngFor="let eventInput of eventInputs">
+      <input
+           class="events__form__input"
+           [placeholder]="eventInput.placeHolder"
+           [formControlName]="eventInput.name"
+           [type]="eventInput.type"
+           accept="image/*">
+      <span class="events__form__input__error-menssage"
+                    *ngIf="isValidField(eventInput.name)">{{showError(eventInput.name)}}</span>
+                    <!-- TODO:continuar con el form, faltan validadores,, conectar el de ej con los valores en tiempo real, ultimar detalles de los TODO -->
+    </div>
+    <!-- image-->
     <div class="events__form__img-container">
       <img src="../../../../assets/570805.jpg" alt="sdasd" class="events__form__img-container__img">
       <!-- TODO:agregar el pipe para q se vea  o no imagen -->
       <i class="fa-solid fa-circle-xmark events__form__img-container__mark"></i>
     </div>
+    <!-- select color-->
     <div>
       <label for="opciones">Selecciona un color </label>
       <select id="opciones" name="opciones" class="events__form__input events__form__input--selector"
+                                            formControlName="color"
                                             (change)="updateSelectedColor($event)"
                                             [ngStyle]="{'background-color': selectedColor}">
         <option class="events__form__input events__form__input--option" *ngFor="let color of colors" [value]="color" [ngStyle]="{'background-color': color}"></option>
       </select>
     </div>
-    <span class="events__form__input__check-box-cont">Borrar automaticamente <input type="checkbox" class="events__form__input events__form__input--margin-l"></span>
-    <span class="events__form__input__check-box-cont ">Publicar <input type="checkbox" class="events__form__input events__form__input--margin-l"></span>
-    <div class="events__form__btn">click</div>
+    <!-- check-box autoDelete -->
+    <span class="events__form__input__check-box-cont">Borrar automaticamente
+      <input type="checkbox" formControlName="autoDelete" class="events__form__input events__form__input--margin-l events__form__input__check-box-cont__cb">
+      <p class="events__form__input__check-box-cont__pop-up" *ngIf="false">
+        Debes poner un texto alternativo en fecha (Ej:Todos los Domingos) ya que este evento no se borrar de forma automatica
+        <i class="fa-solid fa-circle-xmark events__form__input__check-box-cont__pop-up__mark"></i></p>
+        <!-- TODO:cuadno deseleccione el chack box debe aparecer elpop-up -->
+      </span>
+      <!-- check-box publish -->
+    <span class="events__form__input__check-box-cont">Publicar <input type="checkbox" formControlName="publish" class="events__form__input events__form__input--margin-l"></span>
+    <button type="submit" class="events__form__btn" [disabled]="myForm.invalid">click</button>
     <!-- TODO:poner  se cambie entre guardar y publicar segun si esta publish tildado o no  -->
      <!-- TODO:acomodar el backend de los eventos las fechas para q se pueda agregar todo los domigos o algun dia especifico y q no se puedan iongresar fechas menores a la actual -->
   </form>
