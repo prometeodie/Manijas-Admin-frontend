@@ -5,6 +5,7 @@ import { EventManija } from '../../interfaces/event.interface';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormService } from 'src/app/services/form-validator.service';
 import { EventInput } from './interface/input.interface';
+import { EventsService } from '../../services/events.service';
 
 @Component({
   selector: 'event-form',
@@ -17,25 +18,32 @@ export class EventFormComponent {
 
   private fb = inject(FormBuilder);
   private fvService = inject(FormService);
+  private eventsService = inject(EventsService);
+  public autoDeleteChecked: boolean = true;
+  public showPopUpAutoDelete: boolean = false;
+  private TIME_REGEX = /^([01][0-9]|2[0-3]):([0-5][0-9])$/;
   public eventInputs: EventInput[] = [
-    { name: 'title', placeHolder: 'Titulo', type: 'text' },
-    { name: 'date', placeHolder: 'Fecha', type: 'date' },
-    { name: 'schedule', placeHolder: 'Horario', type: 'time' },
-    { name: 'place', placeHolder: 'Lugar', type: 'text' },
-    { name: 'url', placeHolder: 'Url relacionado al evento', type: 'text' },
-    { name: 'eventImg', placeHolder: '', type: 'file' }
+    { name: 'title', placeHolder: 'Titulo', label: '', type: 'text', showIfAutoDelete: null },
+    { name: 'date', placeHolder: 'Fecha', label: 'Selecciona una fecha', type: 'date', showIfAutoDelete: true },
+    { name: 'alternativeTxtEventDate', placeHolder: 'Fecha alternativa Ej(Todos los Domingos)', label: '', type: 'text', showIfAutoDelete: false },
+    { name: 'startTime', placeHolder: 'hh:mm a.m./p.m.', label: 'Horario de inicio', type: 'time', showIfAutoDelete: null },
+    { name: 'finishTime', placeHolder: 'hh:mm a.m./p.m.', label: 'Horario de finalización', type: 'time', showIfAutoDelete: null },
+    { name: 'place', placeHolder: 'Lugar', label: '', type: 'text', showIfAutoDelete: null },
+    { name: 'url', placeHolder: 'Url relacionado al evento', label: '', type: 'text', showIfAutoDelete: null },
+    { name: 'eventImg', placeHolder: '', label: 'Seleccionar una imagen', type: 'file', showIfAutoDelete: null }
   ];
-
   public myForm = this.fb.group({
-    title:      ['',[Validators.required]],
-    date:       ['',[Validators.required]],
-    schedule:   ['',[Validators.required]],
-    place:      ['',[]],
-    color:      ['',[]],
-    url:        ['',[]],
-    publish:    [false ,[Validators.required]],
-    autoDelete: [true,[Validators.required]],
-    eventImg:   ['',[]],
+    title:                     ['',[Validators.required]],
+    date:                      ['',[Validators.required, this.eventsService.isValidDate()]],
+    startTime:                 ['',[Validators.required, Validators.pattern(this.TIME_REGEX)]],
+    finishTime:                ['',[Validators.required, Validators.pattern(this.TIME_REGEX)]],
+    alternativeTxtEventDate:   ['',[Validators.required]],
+    place:                     ['',[]],
+    color:                     ['',[Validators.required]],
+    url:                       ['',[]],
+    publish:                   [false ,[Validators.required]],
+    autoDelete:                [true ,[Validators.required]],
+    eventImg:                  ['',[]],
   })
 
 
@@ -43,19 +51,7 @@ export class EventFormComponent {
   public eventExample = computed(( )=> this._eventExample());
 
   public colors: string[] = [
-    'rgb(255, 50, 150)',    // Rosa claro
-    'rgb(255, 75, 75)',     // Rojo claro
-    'rgb(135, 46, 110)',    // Púrpura oscuro
-    'rgb(0, 255, 100)',     // Verde claro
-    'rgb(0, 100, 255)',     // Azul intenso
-    'rgb(0, 150, 255)',     // Azul
-    'rgb(24, 220, 255)',    // Azul claro
-    'rgb(0, 255, 200)',     // Verde azul claro
-    'rgb(0, 213, 156)',     // Verde azulado
-    'rgb(50, 255, 150)',    // Verde azulado claro
-    'rgb(200, 50, 255)',    // Violeta
-    'rgb(255, 100, 200)',   // Rosa claro
-    'rgb(255, 220, 0)'      // Amarillo dorado
+    '#ff3296', '#ff4b4b', '#872e6e', '#00ff64', '#0064ff', '#0096ff', '#18dcff', '#00ffc8', '#00d59c', '#32ff96', '#c832ff', '#ff64c8', '#ffdc00'
   ]
 public selectedColor: string = this.colors[0];
 
@@ -63,6 +59,22 @@ public selectedColor: string = this.colors[0];
     const selectElement = event.target as HTMLSelectElement;
     this.selectedColor = selectElement.value;
   }
+
+  onAutoDeleteChange(event: any) {
+    this.autoDeleteChecked = event.target.checked;
+    this.showPopUpAutoDelete = !event.target.checked;
+  }
+
+  shouldShowInput(eventInput: EventInput): boolean {
+    if (eventInput.showIfAutoDelete === null) {
+      return true;
+    }
+    return this.autoDeleteChecked === eventInput.showIfAutoDelete;
+}
+
+closePopUp(){
+  this.showPopUpAutoDelete = false
+}
 
   isValidField(field: string):boolean | null{
     return this.fvService.isValidField(this.myForm,field);

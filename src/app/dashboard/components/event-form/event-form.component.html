@@ -2,15 +2,18 @@
   <h3>Agregar Nuevo Evento</h3>
   <form class="events__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
     <div *ngFor="let eventInput of eventInputs">
-      <input
-           class="events__form__input"
-           [placeholder]="eventInput.placeHolder"
-           [formControlName]="eventInput.name"
-           [type]="eventInput.type"
-           accept="image/*">
-      <span class="events__form__input__error-menssage"
-                    *ngIf="isValidField(eventInput.name)">{{showError(eventInput.name)}}</span>
-                    <!-- TODO:continuar con el form, faltan validadores,, conectar el de ej con los valores en tiempo real, ultimar detalles de los TODO -->
+      <ng-container *ngIf="shouldShowInput(eventInput)">
+        <label *ngIf="eventInput.label.length > 0">{{eventInput.label}}</label>
+        <input
+          class="events__form__input"
+          [placeholder]="eventInput.placeHolder"
+          [formControlName]="eventInput.name"
+          [type]="eventInput.type"
+          accept="image/*">
+        <span class="events__form__input__error-menssage"
+              *ngIf="isValidField(eventInput.name)">{{showError(eventInput.name)}}</span>
+      </ng-container>
+                    <!-- TODO:faltan validadores, conectar el de ej con los valores en tiempo real, ultimar detalles de los TODO -->
     </div>
     <!-- image-->
     <div class="events__form__img-container">
@@ -30,16 +33,14 @@
     </div>
     <!-- check-box autoDelete -->
     <span class="events__form__input__check-box-cont">Borrar automaticamente
-      <input type="checkbox" formControlName="autoDelete" class="events__form__input events__form__input--margin-l events__form__input__check-box-cont__cb">
-      <p class="events__form__input__check-box-cont__pop-up" *ngIf="false">
+      <input type="checkbox" formControlName="autoDelete" class="events__form__input events__form__input--margin-l events__form__input__check-box-cont__cb" (change)="onAutoDeleteChange($event)">
+      <p class="events__form__input__check-box-cont__pop-up" *ngIf="showPopUpAutoDelete">
         Debes poner un texto alternativo en fecha (Ej:Todos los Domingos) ya que este evento no se borrar de forma automatica
-        <i class="fa-solid fa-circle-xmark events__form__input__check-box-cont__pop-up__mark"></i></p>
-        <!-- TODO:cuadno deseleccione el chack box debe aparecer elpop-up -->
+        <i class="fa-solid fa-circle-xmark events__form__input__check-box-cont__pop-up__mark" (click)="closePopUp()"></i></p>
       </span>
       <!-- check-box publish -->
     <span class="events__form__input__check-box-cont">Publicar <input type="checkbox" formControlName="publish" class="events__form__input events__form__input--margin-l"></span>
     <button type="submit" class="events__form__btn" [disabled]="myForm.invalid">click</button>
     <!-- TODO:poner  se cambie entre guardar y publicar segun si esta publish tildado o no  -->
-     <!-- TODO:acomodar el backend de los eventos las fechas para q se pueda agregar todo los domigos o algun dia especifico y q no se puedan iongresar fechas menores a la actual -->
   </form>
 </div>

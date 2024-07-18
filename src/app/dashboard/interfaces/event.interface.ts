@@ -1,8 +1,10 @@
 export interface EventManija {
-  id:                        string;
+  id:                         string;
   title:                      string;
   eventDate:                  Date;
-  schedule:                   string;
+  alternativeTxtEventDate:    string;
+  startTime:                  string;
+  finishTime:                 string;
   eventPlace:                 string;
   eventColor:                 string;
   url:                        string;
