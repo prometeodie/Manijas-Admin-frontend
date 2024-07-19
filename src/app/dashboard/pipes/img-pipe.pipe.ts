@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { CardTemplate } from '../interfaces/cards.interface';
+import { EventCardSample } from '../interfaces';
 
 @Pipe({
   name: 'image',

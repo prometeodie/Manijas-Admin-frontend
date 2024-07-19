@@ -5,4 +5,5 @@ export interface EventInput{
     type: string;
     label: string;
     showIfAutoDelete:boolean | null;
+    maxLenght:number | null;
 }

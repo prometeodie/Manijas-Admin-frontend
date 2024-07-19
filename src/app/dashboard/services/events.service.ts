@@ -1,12 +1,25 @@
-import {  Injectable } from '@angular/core';
+import {  computed, Injectable, signal } from '@angular/core';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { EventCardSample } from '../interfaces/event-card-sample.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EventsService {
 
-  constructor() { }
+  private _eventCardSample = signal<EventCardSample | null>({
+    title: 'Example Title',
+    date:  '--/--/----',
+    alternativeTxtEventDate: 'Ej: Todos los Domingos',
+    startTime: '--:--',
+    finishTime: '--:--',
+    place:'no where',
+    color:'#ff3296',
+    autoDelete: false,
+    url: '',
+  });
+  public  eventCardSample = computed(()=>this._eventCardSample())
+
 
 
   isValidDate(): ValidatorFn{
@@ -22,4 +35,7 @@ export class EventsService {
     };
   }
 
+  updateEventData(newData: Partial<EventCardSample>) {
+    this._eventCardSample.update(data => ({ ...data!, ...newData! }));
+  }
 }

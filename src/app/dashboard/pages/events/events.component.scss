@@ -81,6 +81,10 @@ h3{
           object-fit: cover;
           border-radius: 9px;
           height: 5rem;
+
+          &--meeple-with{
+            width: auto;
+          }
         }
 
         &__info-ul{

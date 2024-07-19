@@ -9,16 +9,19 @@
           [placeholder]="eventInput.placeHolder"
           [formControlName]="eventInput.name"
           [type]="eventInput.type"
-          accept="image/*">
+          accept="image/*"
+          [maxlength]="eventInput.maxLenght"
+          (input)="!(eventInput.type === 'file')? onFieldChange(eventInput.name, $event): null"
+          (change)="eventInput.type === 'file' ? onFileSelected($event) : null">
         <span class="events__form__input__error-menssage"
-              *ngIf="isValidField(eventInput.name)">{{showError(eventInput.name)}}</span>
+              *ngIf="isValidField(eventInput.name)">{{showError(eventInput.name)}}
+              <!-- TODO:aacomodar todo con text-overflow: ellipsis; te pone los 3 ... de manera automatica -->
+        </span>
       </ng-container>
-                    <!-- TODO:faltan validadores, conectar el de ej con los valores en tiempo real, ultimar detalles de los TODO -->
     </div>
     <!-- image-->
-    <div class="events__form__img-container">
-      <img src="../../../../assets/570805.jpg" alt="sdasd" class="events__form__img-container__img">
-      <!-- TODO:agregar el pipe para q se vea  o no imagen -->
+    <div class="events__form__img-container" *ngIf="imgSrc">
+      <img  [src]="imgSrc" alt="event-Img" class="events__form__img-container__img">
       <i class="fa-solid fa-circle-xmark events__form__img-container__mark"></i>
     </div>
     <!-- select color-->
@@ -26,21 +29,22 @@
       <label for="opciones">Selecciona un color </label>
       <select id="opciones" name="opciones" class="events__form__input events__form__input--selector"
                                             formControlName="color"
-                                            (change)="updateSelectedColor($event)"
+                                            (change)="updateSelectedColor($event); onFieldChange('color', $event)"
                                             [ngStyle]="{'background-color': selectedColor}">
         <option class="events__form__input events__form__input--option" *ngFor="let color of colors" [value]="color" [ngStyle]="{'background-color': color}"></option>
       </select>
     </div>
     <!-- check-box autoDelete -->
     <span class="events__form__input__check-box-cont">Borrar automaticamente
-      <input type="checkbox" formControlName="autoDelete" class="events__form__input events__form__input--margin-l events__form__input__check-box-cont__cb" (change)="onAutoDeleteChange($event)">
+      <input type="checkbox" formControlName="autoDelete" class="events__form__input events__form__input--margin-l events__form__input__check-box-cont__cb"
+                                                          (change)="onAutoDeleteChange($event)">
       <p class="events__form__input__check-box-cont__pop-up" *ngIf="showPopUpAutoDelete">
         Debes poner un texto alternativo en fecha (Ej:Todos los Domingos) ya que este evento no se borrar de forma automatica
         <i class="fa-solid fa-circle-xmark events__form__input__check-box-cont__pop-up__mark" (click)="closePopUp()"></i></p>
       </span>
       <!-- check-box publish -->
-    <span class="events__form__input__check-box-cont">Publicar <input type="checkbox" formControlName="publish" class="events__form__input events__form__input--margin-l"></span>
-    <button type="submit" class="events__form__btn" [disabled]="myForm.invalid">click</button>
+    <span class="events__form__input__check-box-cont">Publicar <input type="checkbox" formControlName="publish" (change)="onPublicCheckChange($event)" class="events__form__input events__form__input--margin-l"></span>
+    <button type="submit" class="events__form__btn" [disabled]="myForm.invalid">{{saveOrPublish}}</button>
     <!-- TODO:poner  se cambie entre guardar y publicar segun si esta publish tildado o no  -->
   </form>
 </div>
