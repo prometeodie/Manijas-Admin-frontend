@@ -42,12 +42,12 @@ export class EventFormComponent {
 
   public myForm = this.fb.group({
       title:                     ['',[Validators.required, Validators.maxLength(24)]],
-      date:                      ['',[Validators.required, this.eventsService.isValidDate()]],
+      date:                      ['',{validators:[Validators.required, this.eventsService.isValidDate()]}],
+      alternativeTxtEventDate:   ['',[]],
       startTime:                 ['',[Validators.required, Validators.pattern(this.TIME_REGEX)]],
       finishTime:                ['',[Validators.required, Validators.pattern(this.TIME_REGEX)]],
-      alternativeTxtEventDate:   ['',[Validators.required]],
       place:                     ['',[Validators.maxLength(50)]],
-      color:                     ['',[Validators.required]],
+      color:                     ['#ff3296',[]],
       url:                       ['',[]],
       publish:                   [false ,[Validators.required]],
       autoDelete:                [true ,[Validators.required]],
@@ -65,6 +65,14 @@ export class EventFormComponent {
       this.autoDeleteChecked = event.target.checked;
       this.showPopUpAutoDelete = !event.target.checked;
       this.eventsService.updateEventData({ autoDelete: !input.checked });
+      this.updateValidators();
+      if(event.target.checked){
+        this.myForm.get('alternativeTxtEventDate')?.reset()
+        this.eventsService.resetpropertie(event.target.checked)
+      }else{
+        this.myForm.get('date')?.reset();
+        this.eventsService.resetpropertie(event.target.checked)
+      }
     }
 
     onPublicCheckChange(event:Event){
@@ -93,6 +101,21 @@ export class EventFormComponent {
       this.eventsService.updateEventData({ [field as keyof EventCardSample]: input.value });
     }
 
+   updateValidators() {
+      const date = this.myForm.get('date');
+      const alternativeTxtEventDate = this.myForm.get('alternativeTxtEventDate');
+        if (this.myForm.get('autoDelete')?.value){
+          date?.setValidators([Validators.required])
+          alternativeTxtEventDate?.clearValidators();
+        }else{
+          date?.clearValidators();
+          alternativeTxtEventDate?.setValidators([Validators.required])
+        }
+        date?.updateValueAndValidity();
+        alternativeTxtEventDate?.updateValueAndValidity();
+      }
+
+
     isValidField(field: string):boolean | null{
         return this.fvService.isValidField(this.myForm,field);
     }
@@ -101,8 +124,13 @@ export class EventFormComponent {
       return `${this.fvService.showError(this.myForm,field)}`
     }
 
+
     onSubmit(){
+      this.myForm.markAllAsTouched();
+      if(this.myForm.invalid) return;
       alert('cargando evento');
+      this.myForm.reset()
+      this.eventsService.resetAllProperties()
     }
 }
 

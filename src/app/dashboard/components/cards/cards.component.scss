@@ -150,6 +150,14 @@
       flex-direction: column;
     }
 
+    .card__section__ul-info__li-info,
+    .card__section__p-info{
+      overflow: hidden;
+      width: 7.5rem;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
     .card__section{
       padding: 0.5rem;
       justify-content: space-between;
@@ -182,6 +190,7 @@
         & li{
           font-size: small;
           line-height: 14.5px;
+
         }
       }
     }

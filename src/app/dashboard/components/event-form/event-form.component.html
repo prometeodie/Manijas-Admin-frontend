@@ -15,7 +15,6 @@
           (change)="eventInput.type === 'file' ? onFileSelected($event) : null">
         <span class="events__form__input__error-menssage"
               *ngIf="isValidField(eventInput.name)">{{showError(eventInput.name)}}
-              <!-- TODO:aacomodar todo con text-overflow: ellipsis; te pone los 3 ... de manera automatica -->
         </span>
       </ng-container>
     </div>
@@ -44,7 +43,6 @@
       </span>
       <!-- check-box publish -->
     <span class="events__form__input__check-box-cont">Publicar <input type="checkbox" formControlName="publish" (change)="onPublicCheckChange($event)" class="events__form__input events__form__input--margin-l"></span>
-    <button type="submit" class="events__form__btn" [disabled]="myForm.invalid">{{saveOrPublish}}</button>
-    <!-- TODO:poner  se cambie entre guardar y publicar segun si esta publish tildado o no  -->
+    <button type="submit" class="events__form__btn">{{saveOrPublish}}</button>
   </form>
 </div>

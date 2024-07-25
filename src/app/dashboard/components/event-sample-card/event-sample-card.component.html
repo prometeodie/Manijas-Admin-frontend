@@ -1,0 +1,22 @@
+<main class="events__card">
+  <h4 class="events__card__section__title" >Ejemplo visual del Evento</h4>
+  <div class="events__card" style.background="linear-gradient(180deg, rgba(0, 213, 156, 0.00) 5.26%, {{eventSample()!.color}} 97.89%)">
+    <h4 class="events__card__title">{{eventSample()!.title}}</h4>
+    <div class="events__card__content">
+      <img class="events__card__content__img" *ngIf="imgSrc();else noImg" [src]="imgSrc()" alt="Event-img">
+      <ng-template #noImg>
+        <img class="events__card__content__img events__card__content__img--meeple-with" src="../../././../../assets/no-img/meeple.svg" alt="Event-img">
+      </ng-template>
+
+      <ul class="events__card__content__info-ul">
+        <li class="events__card__content__info-ul__item" *ngIf="!eventSample()!.autoDelete; else alternativetxt">Dia/s: {{eventSample()!.date}}</li>
+        <ng-template #alternativetxt>
+          <li class="events__card__content__info-ul__item">Dia/s: {{eventSample()!.alternativeTxtEventDate}}</li>
+        </ng-template>
+        <li class="events__card__content__info-ul__item">Horario: {{eventSample()!.startTime}} a {{eventSample()!.finishTime}} hs </li>
+        <li class="events__card__content__info-ul__item">Lugar: {{eventSample()!.place}}</li>
+      </ul>
+    </div>
+    <a [href]="eventSample()!.url" class="events__card__more-info" target="_blank">Saber más...</a>
+  </div>
+</main>

@@ -53,6 +53,7 @@ export class LoginComponent {
             showConfirmButton: false,
             timer: 1000
           });
+          this.chekingCredentials = false;
         },
         complete: () => this.chekingCredentials = false,
       })

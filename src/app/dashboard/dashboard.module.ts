@@ -19,6 +19,7 @@ import { LoadingAnimationComponent } from './components/loading-animation/loadin
 import { CardsComponent } from './components/cards/cards.component';
 import { NewBtnComponent } from './components/new-btn/new-btn.component';
 import { EventFormComponent } from './components/event-form/event-form.component';
+import { EventSampleCardComponent } from './components/event-sample-card/event-sample-card.component';
 
 
 @NgModule({
@@ -43,7 +44,8 @@ import { EventFormComponent } from './components/event-form/event-form.component
     LoadingAnimationComponent,
     NavBarComponent,
     NewBtnComponent,
-    EventFormComponent
+    EventFormComponent,
+    EventSampleCardComponent
   ]
 })
 export class DashboardModule { }

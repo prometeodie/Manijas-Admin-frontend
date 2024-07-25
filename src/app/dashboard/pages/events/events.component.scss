@@ -32,9 +32,9 @@ h3{
   font-weight: 900;
 }
 
-.events__card,
-.events__card__more-info{
-  color: #fff;
+.events__section__form,
+.events__section__sample-card{
+  display: none;
 }
 
 .events{
@@ -44,14 +44,11 @@ h3{
     &__cards__container{
       align-items: center;
       flex-direction: column;
+      margin-bottom: 4rem;
 
       &__cards{
         margin-bottom: 1rem;
       }
-    }
-    &__form{
-      display: none;
-
     }
   }
 
@@ -61,73 +58,13 @@ h3{
     bottom: 0.8rem;
     z-index: 999;
   }
+}
 
-      &__card{
-      border-radius: 8px;
-      margin-bottom: 0.8rem;
-      padding: 0.3rem;
-      max-width: 900px;
-      background: linear-gradient(rgba(0, 213, 156, 0) 5.26%, rgb(24, 220, 255) 97.89%);
-
-      &__title{
-        margin-bottom: 0.3rem;
-      }
-
-      &__content{
-        display: flex;
-
-        &__img{
-          width: 120px;
-          object-fit: cover;
-          border-radius: 9px;
-          height: 5rem;
-
-          &--meeple-with{
-            width: auto;
-          }
-        }
-
-        &__info-ul{
-          list-style-type: none;
-          padding-left: 1rem;
-
-          &__item{
-            font-size: smaller;
-            font-weight: 900;
-            margin-bottom: 0.2rem;
-          }
-        }
-      }
-
-      &__more-info{
-        border-radius: 10px;
-        bottom: 0;
-        font-size: smaller;
-        margin-bottom: 0.1rem;
-        padding: 0.1rem 0.3rem;
-        position: absolute;
-        right: 0.3rem;
-        text-decoration: none;
-        transition: background-color 0.3s ease;
-        cursor: pointer;
-
-        &:hover{
-          background-color: rgba(13, 14, 14, 0.192);
-        }
-      }
-    }
-
-    &__card__section{
-      background-color: #111827;
-      margin-top: 3rem;
-      display: none;
-    }
-  }
-
+// MEDIA QUERIES
 
 @media (min-width:800px) {
   .events__section__form,
-  .events__card__section{
+  .events__section__sample-card{
     display: block;
   }
 
@@ -159,7 +96,7 @@ h3{
 
 }
 
-
+// Scroll-Bar Styles
 .events__section__cards__container::-webkit-scrollbar {
   -webkit-appearance: none;
 }

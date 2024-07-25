@@ -7,7 +7,7 @@ import { EventCardSample } from '../interfaces/event-card-sample.interface';
 })
 export class EventsService {
 
-  private _eventCardSample = signal<EventCardSample | null>({
+  private eventPlaceHolder = {
     title: 'Example Title',
     date:  '--/--/----',
     alternativeTxtEventDate: 'Ej: Todos los Domingos',
@@ -17,7 +17,9 @@ export class EventsService {
     color:'#ff3296',
     autoDelete: false,
     url: '',
-  });
+  }
+
+  private _eventCardSample = signal<EventCardSample | null>(this.eventPlaceHolder);
   public  eventCardSample = computed(()=>this._eventCardSample())
 
 
@@ -37,5 +39,18 @@ export class EventsService {
 
   updateEventData(newData: Partial<EventCardSample>) {
     this._eventCardSample.update(data => ({ ...data!, ...newData! }));
+  }
+
+  resetpropertie(autoDelete:boolean){
+    this._eventCardSample.update((eventCardSample) => {
+      if (eventCardSample) {
+        return (autoDelete)? { ...eventCardSample, date: '--/--/----' }:{ ...eventCardSample, alternativeTxtEventDate: 'Ej: Todos los Domingos' };
+      }
+      return eventCardSample;
+    });
+  }
+
+  resetAllProperties(){
+    this.updateEventData(this.eventPlaceHolder)
   }
 }

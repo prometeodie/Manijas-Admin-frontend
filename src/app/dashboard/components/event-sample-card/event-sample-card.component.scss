@@ -1,0 +1,60 @@
+
+.events__card,
+.events__card__more-info{
+  color: #fff;
+}
+
+.events__card{
+  background-color: #111827;
+  padding: 1rem;
+  position: relative;
+  border-radius: 8px;
+  max-width: 900px;
+
+  &__title{
+    margin-bottom: 0.3rem;
+  }
+
+  &__content{
+    display: flex;
+
+    &__img{
+      width: 120px;
+      object-fit: cover;
+      border-radius: 9px;
+      height: 5rem;
+
+      &--meeple-with{
+        width: auto;
+      }
+    }
+
+    &__info-ul{
+      list-style-type: none;
+      padding-left: 1rem;
+
+      &__item{
+        font-size: smaller;
+        font-weight: 900;
+        margin-bottom: 0.2rem;
+      }
+    }
+  }
+
+  &__more-info{
+    border-radius: 10px;
+    bottom: 0;
+    font-size: smaller;
+    margin-bottom: 0.1rem;
+    padding: 0.1rem 0.3rem;
+    position: absolute;
+    right: 0.3rem;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+
+    &:hover{
+      background-color: rgba(13, 14, 14, 0.192);
+    }
+  }
+}
