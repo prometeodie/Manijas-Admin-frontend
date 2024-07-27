@@ -10,7 +10,7 @@ export class ImgPipePipe implements PipeTransform {
 
   transform(card: CardTemplate):string {
 
-    if(!card.id || !card.imgPath) {
+    if(!card._id || !card.imgPath) {
       return 'assets/no-img/meeple.svg';
     }
       return card.imgPath;

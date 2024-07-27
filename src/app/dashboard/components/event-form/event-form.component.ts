@@ -31,29 +31,28 @@ export class EventFormComponent {
   public saveOrPublish:string = 'Guardar';
   public eventInputs: EventInput[] = [
     { name: 'title', placeHolder: 'Titulo', label: '', type: 'text', showIfAutoDelete: null, maxLenght: 24 },
-    { name: 'date', placeHolder: 'Fecha', label: 'Selecciona una fecha', type: 'date', showIfAutoDelete: true, maxLenght: null },
+    { name: 'eventDate', placeHolder: 'Fecha', label: 'Selecciona una fecha', type: 'date', showIfAutoDelete: true, maxLenght: null },
     { name: 'alternativeTxtEventDate', placeHolder: 'Fecha alternativa Ej(Todos los Domingos)', label: '', type: 'text', showIfAutoDelete: false, maxLenght: null },
     { name: 'startTime', placeHolder: 'hh:mm a.m./p.m.', label: 'Horario de inicio', type: 'time', showIfAutoDelete: null, maxLenght: null },
     { name: 'finishTime', placeHolder: 'hh:mm a.m./p.m.', label: 'Horario de finalización', type: 'time', showIfAutoDelete: null, maxLenght: null },
-    { name: 'place', placeHolder: 'Lugar', label: '', type: 'text', showIfAutoDelete: null, maxLenght: 50 },
+    { name: 'eventPlace', placeHolder: 'Lugar', label: '', type: 'text', showIfAutoDelete: null, maxLenght: 50 },
     { name: 'url', placeHolder: 'Url relacionado al evento', label: '', type: 'text', showIfAutoDelete: null, maxLenght: null },
     { name: 'eventImg', placeHolder: '', label: 'Seleccionar una imagen', type: 'file', showIfAutoDelete: null, maxLenght: null }
   ];
 
   public myForm = this.fb.group({
       title:                     ['',[Validators.required, Validators.maxLength(24)]],
-      date:                      ['',{validators:[Validators.required, this.eventsService.isValidDate()]}],
+      eventDate:                      ['',{validators:[Validators.required, this.eventsService.isValidDate()]}],
       alternativeTxtEventDate:   ['',[]],
       startTime:                 ['',[Validators.required, Validators.pattern(this.TIME_REGEX)]],
       finishTime:                ['',[Validators.required, Validators.pattern(this.TIME_REGEX)]],
-      place:                     ['',[Validators.maxLength(50)]],
-      color:                     ['#ff3296',[]],
+      eventPlace:                ['',[Validators.maxLength(50)]],
+      eventColor:                ['#ff3296',[]],
       url:                       ['',[]],
       publish:                   [false ,[Validators.required]],
-      autoDelete:                [true ,[Validators.required]],
+      mustBeAutomaticallyDeleted:[true ,[Validators.required]],
       eventImg:                  ['',[]],
     })
-
 
     updateSelectedColor(event: Event) {
       const selectElement = event.target as HTMLSelectElement;
@@ -64,7 +63,7 @@ export class EventFormComponent {
       const input = event.target as HTMLInputElement;
       this.autoDeleteChecked = event.target.checked;
       this.showPopUpAutoDelete = !event.target.checked;
-      this.eventsService.updateEventData({ autoDelete: !input.checked });
+      this.eventsService.updateEventData({ mustBeAutomaticallyDeleted: !input.checked });
       this.updateValidators();
       if(event.target.checked){
         this.myForm.get('alternativeTxtEventDate')?.reset()

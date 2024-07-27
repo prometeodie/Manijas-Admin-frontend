@@ -1,5 +1,5 @@
 export interface EventManija {
-  id:                         string;
+  _id:                         string;
   title:                      string;
   eventDate:                  Date;
   alternativeTxtEventDate:    string;

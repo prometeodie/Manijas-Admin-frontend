@@ -1,68 +1,67 @@
-import { Component, inject, OnDestroy, Signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, Signal } from '@angular/core';
 import { CardTemplate } from '../../interfaces/cards.interface';
 import { DashboardService } from '../../services/dashboard.service';
-import { EventCardSample } from '../../interfaces';
 import { EventsService } from '../../services/events.service';
+import { map } from 'rxjs';
+import { EventManija } from '../../interfaces';
 
 @Component({
   selector: 'app-events',
   templateUrl: './events.component.html',
   styleUrls: ['./events.component.scss']
 })
-export class EventsComponent implements OnDestroy {
+export class EventsComponent implements OnInit,OnDestroy {
 
   readonly eventPath = '/lmdr/create-edit/EVENT';
   private dashboardService = inject(DashboardService);
   private eventsService = inject(EventsService);
   public imgSrc = this.dashboardService.imgSrc;
   public eventSample = this.eventsService.eventCardSample;
-// TODO: hacer la peticion para traer todos los eventos,, borrar eventos,, cargar nuevos eventos, borrar img de eventos, editar eventos
+  public events: CardTemplate[] = [];
+  // TODO: hacer la peticion para traer todos los eventos,, borrar eventos,, cargar nuevos eventos, borrar img de eventos, editar eventos
+
+  ngOnInit(): void {
+    this.eventsService.getAllEvents().pipe(
+        map(event=> event!.map(event=>this.transformData(event)))
+    ).subscribe(
+      events=>{this.events = events}
+    )
+  }
 
   ngOnDestroy(): void {
     this.dashboardService.cleanImgSrc()
   }
 
-  public eventos : CardTemplate[] = [
-    {
-      id:'asdasdd',
-      title:' Luna Capital',
-      imgPath:'../../../../assets/images.jpeg',
-      isInfoAList:false,
-      info:['Dia/s: lalalalalala', 'Horario: 18:40hs', 'Lugar: arte y parte (yrigoyen 882 Tandil)'],
-      category:'EVENT',
-      publish: false,
-      manijometro:99,
-      hasVoted:false,
-     },{
-      id:'asdgggggggggggggggggasdd',
-      title:' Lafgafdgagfagfl',
-      imgPath:'',
-      isInfoAList:false,
-      info:['Dia/s: lalalalalala', 'Horario: 18:40hs', 'Lugar: arte y parte (yrigoyen 882 Tandil)'],
-      category:'EVENT',
-      publish: false,
-      manijometro:99,
-      hasVoted:true,
-     },{
-      id:'ererereeerer',
-      title:' Luna Capital',
-      imgPath:'../../../../assets/images.jpeg',
-      isInfoAList:false,
-      info:['Dia/s: lalalalalala', 'Horario: 18:40hs', 'Lugar: arte y parte (yrigoyen 882 Mar Del Plata) (yrigoyen 882 Mar Del Plata (yrigoyen 882 Mar Del Plata (yrigoyen 882 Mar Del Plata'],
-      category:'EVENT',
-      publish: false,
-      manijometro:99,
-      hasVoted:false,
-     },{
-      id:'tttttttttttttttttt',
-      title:' Luna ',
-      imgPath:'../../../../assets/images.jpeg',
-      isInfoAList:false,
-      info:['Dia/s: lalalalalala', 'Horario: 18:40hs', 'Lugar: arte y parte (yrigoyen 882 Tandil)'],
-      category:'EVENT',
-      publish: false,
-      manijometro:99,
-      hasVoted:false,
-     }
-  ];
+  private transformData(event: EventManija): CardTemplate {
+    const {
+      _id,
+      title,
+      eventDate,
+      alternativeTxtEventDate,
+      startTime,
+      finishTime,
+      eventPlace,
+      publish,
+      imgName,
+      section,
+      ...rest
+    } = event;
+
+    return {
+      _id,
+      title,
+      imgPath: imgName,
+      isInfoAList: false,
+      info: {
+        eventDate: eventDate.toString(),
+        alternativeTxtEventDate,
+        startTime,
+        finishTime,
+        eventPlace
+      },
+      section,
+      publish,
+      ...rest
+    };
+  }
 }

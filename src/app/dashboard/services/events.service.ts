@@ -1,6 +1,11 @@
-import {  computed, Injectable, signal } from '@angular/core';
+import {  computed, inject, Injectable, signal } from '@angular/core';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { EventCardSample } from '../interfaces/event-card-sample.interface';
+import { DashboardService } from './dashboard.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/assets/environments/environment';
+import { EventManija } from '../interfaces';
+import { catchError, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,18 +14,21 @@ export class EventsService {
 
   private eventPlaceHolder = {
     title: 'Example Title',
-    date:  '--/--/----',
+    eventDate:  '--/--/----',
     alternativeTxtEventDate: 'Ej: Todos los Domingos',
     startTime: '--:--',
     finishTime: '--:--',
-    place:'no where',
-    color:'#ff3296',
-    autoDelete: false,
+    eventPlace:'no where',
+    eventColor:'#ff3296',
+    mustBeAutomaticallyDeleted: false,
     url: '',
   }
 
   private _eventCardSample = signal<EventCardSample | null>(this.eventPlaceHolder);
   public  eventCardSample = computed(()=>this._eventCardSample())
+  private dashboardService= inject(DashboardService);
+  private http = inject(HttpClient);
+  readonly url = `${environment.baseUrl}/events`
 
 
 
@@ -52,5 +60,30 @@ export class EventsService {
 
   resetAllProperties(){
     this.updateEventData(this.eventPlaceHolder)
+  }
+
+  getAllEvents(){
+    const headers = this.dashboardService.getHeaders();
+
+    return this.http.get<EventManija[]>(`${this.url}`, { headers}).pipe(
+      catchError((err)=>{return of(undefined)})
+    )
+
+  }
+
+  getEvent(id:string){
+    // traer un evento especifico
+  }
+
+  postNewEvent(){
+    // guardar un nuevo evento
+  }
+
+  editEvent(){
+    // editar un evento
+  }
+
+  deleteEvent(id:string){
+    // borrar un evento
   }
 }

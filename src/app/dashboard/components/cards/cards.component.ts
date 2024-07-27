@@ -17,7 +17,7 @@ export class CardsComponent implements OnInit {
  public isEventCategory: boolean = false
 
  ngOnInit(){
-  (this.objectTemplate.category === 'EVENT')? this.isEventCategory = true : this.isEventCategory = false;
+  (this.objectTemplate.section === 'EVENTS')? this.isEventCategory = true : this.isEventCategory = false;
  }
 
 isBoardVoted(hasVoted: boolean){

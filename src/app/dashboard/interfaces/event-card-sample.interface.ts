@@ -1,12 +1,14 @@
 
   export interface EventCardSample {
+    id?:string
     title: string;
-    date:  string
+    eventDate:  string
     alternativeTxtEventDate: string;
     startTime: string
     finishTime: string
-    place: string;
-    color: string;
+    eventPlace: string;
+    eventColor: string;
     url: string;
-    autoDelete:boolean;
+    mustBeAutomaticallyDeleted:boolean;
+    imgName?: string;
   }

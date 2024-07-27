@@ -27,7 +27,7 @@
     <div>
       <label for="opciones">Selecciona un color </label>
       <select id="opciones" name="opciones" class="events__form__input events__form__input--selector"
-                                            formControlName="color"
+                                            formControlName="eventColor"
                                             (change)="updateSelectedColor($event); onFieldChange('color', $event)"
                                             [ngStyle]="{'background-color': selectedColor}">
         <option class="events__form__input events__form__input--option" *ngFor="let color of colors" [value]="color" [ngStyle]="{'background-color': color}"></option>
@@ -35,7 +35,7 @@
     </div>
     <!-- check-box autoDelete -->
     <span class="events__form__input__check-box-cont">Borrar automaticamente
-      <input type="checkbox" formControlName="autoDelete" class="events__form__input events__form__input--margin-l events__form__input__check-box-cont__cb"
+      <input type="checkbox" formControlName="mustBeAutomaticallyDeleted" class="events__form__input events__form__input--margin-l events__form__input__check-box-cont__cb"
                                                           (change)="onAutoDeleteChange($event)">
       <p class="events__form__input__check-box-cont__pop-up" *ngIf="showPopUpAutoDelete">
         Debes poner un texto alternativo en fecha (Ej:Todos los Domingos) ya que este evento no se borrar de forma automatica

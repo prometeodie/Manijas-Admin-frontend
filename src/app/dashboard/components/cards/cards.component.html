@@ -1,6 +1,6 @@
 <main class="card" [ngClass]="{'card--event': isEventCategory}">
   <div class="card__header">
-    <img class="card__header__img" [src]="objectTemplate | image" [alt]="objectTemplate.title">
+    <img class="card__header__img" src="C:\Users\Fran\Desktop\Programacion\manija-backend\upload\EVENTS\sample\QRAlias_CBU-bc77dbebba13cd68f0f82bda5e318955.png" [alt]="objectTemplate.title">
     <span class="card__header__manijometro" *ngIf="!isEventCategory">#{{objectTemplate.manijometro}}</span>
     <span class="card__header__edition-label" *ngIf="objectTemplate.publish">En edición</span>
   </div>
@@ -8,8 +8,10 @@
     <h3 class="card__section__title"> {{objectTemplate.title}}</h3>
     <div >
       <ul class="card__section__ul-info"  *ngIf="isEventCategory; else paragraph" >
-        <li class="card__section__ul-info__li-info" *ngFor="let info of objectTemplate.info" >- {{info}} </li>
-        <li class="card__section__ul-info__li-popup">{{objectTemplate.info[2]}}</li>
+        <li class="card__section__ul-info__li-info">- {{objectTemplate.info.eventDate | date}} </li>
+        <li class="card__section__ul-info__li-info">- {{objectTemplate.info.startTime}} a {{objectTemplate.info.finishTime}} hs </li>
+        <li class="card__section__ul-info__li-info">- {{objectTemplate.info.eventPlace}} </li>
+        <li class="card__section__ul-info__li-popup">{{objectTemplate.info.eventPlace}}</li>
       </ul>
     </div>
     <ng-template #paragraph>
