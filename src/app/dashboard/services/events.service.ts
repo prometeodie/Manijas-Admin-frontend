@@ -72,18 +72,30 @@ export class EventsService {
   }
 
   getEvent(id:string){
-    // traer un evento especifico
+    const headers = this.dashboardService.getHeaders();
+
+    return this.http.get<EventManija[]>(`${this.url}/${id}`, { headers}).pipe(
+      catchError((err)=>{return of(undefined)})
+    )
   }
 
-  postNewEvent(){
-    // guardar un nuevo evento
+  postNewEvent(newEvent: EventManija){
+    const headers = this.dashboardService.getHeaders();
+    return this.http.post<EventManija>(`${this.url}/upload`, newEvent, { headers}).pipe(
+      catchError((err)=>{return of(undefined)})
+    )
+  }
+
+  postEventImage(id:string){
+    const headers = this.dashboardService.getHeaders();
+    return this.http.post<EventManija>(`${this.url}/uploadImg/:id`, { headers}).pipe(
+      catchError((err)=>{return of(undefined)})
+    )
   }
 
   editEvent(){
     // editar un evento
   }
 
-  deleteEvent(id:string){
-    // borrar un evento
-  }
+
 }

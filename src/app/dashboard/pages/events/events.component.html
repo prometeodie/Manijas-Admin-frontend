@@ -5,7 +5,7 @@
     <div class="events__section__cards" >
       <div class="events__section__cards__container">
         <h3>Eventos Activos</h3>
-        <app-cards class="events__section__cards__container__cards" *ngFor="let event of events" [objectTemplate]="event"></app-cards>
+        <app-cards class="events__section__cards__container__cards" *ngFor="let event of events" [objectTemplate]="event" (delete)="onCardDelete()"></app-cards>
       </div>
        <event-sample-card class="events__section__sample-card"/>
     </div>

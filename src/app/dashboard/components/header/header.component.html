@@ -29,7 +29,7 @@
           <li class="header__messages__all-messages_ul__li__date">{{message.creationDate | date}} </li>
           <li class="header__messages__all-messages_ul__li"><span>De:</span> {{message.fullName}}</li>
           <li class="header__messages__all-messages_ul__li"><span>Email:</span> {{message.email}}</li>
-          <li class="header__messages__all-messages_ul__li"><span>Asunto:</span> {{reduceSubjectCharacters(message.subject)}}</li>
+          <li class="header__messages__all-messages_ul__li header__messages__all-messages_ul__li--text-of "><span>Asunto:</span> {{message.subject}}</li>
         </ul>
       </div>
     </ng-template>

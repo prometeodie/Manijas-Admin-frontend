@@ -16,7 +16,6 @@ export class HeaderComponent  implements OnInit {
   private authService = inject(AuthService);
   private dashboardService = inject(DashboardService);
   private messagesService = inject(MessagesService);
-  private screenWidth: number = 0;
   public messageRoute: string = '/lmdr/message/'
   public isMessagesWindowOpen: boolean = false;
   public unreadMessages: number = 0;
@@ -44,7 +43,6 @@ export class HeaderComponent  implements OnInit {
   }
 
   ngOnInit(): void {
-    this.screenWidth = window.innerWidth;
     this.getUnreadMessagesCount();
   }
 
@@ -97,14 +95,6 @@ openCloseMessages(){
   this.isMessagesWindowOpen = !this.isMessagesWindowOpen;
 }
 
-reduceSubjectCharacters(subject: string){
-  let charactersCount: number;
-
-  (this.screenWidth >= 500)? charactersCount = 50 : charactersCount = 21;
-
-  return (subject.length > 27)? `${subject.slice(0,charactersCount)}...` : subject;
-}
-
 changeMessageStatus(id: string){
   this.messagesService.messageHasBeenReaded(id).subscribe(
     resp=>{
@@ -130,10 +120,10 @@ deleteMessage(id:string, event: Event){
     if(result.isConfirmed) {
       this.messagesService.deleteMessage(id).subscribe(resp=>{
         if(resp){
-          this.dashboardService.successPopup('success','Mensaje eliminado')
+          this.dashboardService.notificationPopup('success','Mensaje eliminado')
           this.getAllMessages();
         }else{
-          this.dashboardService.successPopup("error", 'Algo salio mal :(')
+          this.dashboardService.notificationPopup("error", 'Algo salio mal :(')
         }
       })
     };

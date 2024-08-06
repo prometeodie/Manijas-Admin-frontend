@@ -12,13 +12,13 @@ import { EventManija } from '../../interfaces';
 })
 export class EventsComponent implements OnInit,OnDestroy {
 
-  readonly eventPath = '/lmdr/create-edit/EVENT';
+  readonly eventPath = '/lmdr/create-edit/EVENTS';
   private dashboardService = inject(DashboardService);
   private eventsService = inject(EventsService);
   public imgSrc = this.dashboardService.imgSrc;
   public eventSample = this.eventsService.eventCardSample;
   public events: CardTemplate[] = [];
-  // TODO: hacer la peticion para traer todos los eventos,, borrar eventos,, cargar nuevos eventos, borrar img de eventos, editar eventos
+  // TODO: hacer la peticion para traer todos los eventos, borrar eventos, cargar nuevos eventos, borrar img de eventos, editar eventos
 
   ngOnInit(): void {
     this.eventsService.getAllEvents().pipe(
@@ -30,6 +30,13 @@ export class EventsComponent implements OnInit,OnDestroy {
 
   ngOnDestroy(): void {
     this.dashboardService.cleanImgSrc()
+  }
+
+  onCardDelete(){
+    this.eventsService.getAllEvents().pipe(
+      map(event=> event!.map(event=>this.transformData(event)))
+  ).subscribe(
+    events=>{this.events = events})
   }
 
   private transformData(event: EventManija): CardTemplate {
@@ -48,7 +55,7 @@ export class EventsComponent implements OnInit,OnDestroy {
     } = event;
 
     return {
-      _id,
+      _id: _id!,
       title,
       imgPath: imgName,
       isInfoAList: false,

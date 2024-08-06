@@ -1,6 +1,6 @@
 <main class="card" [ngClass]="{'card--event': isEventCategory}">
   <div class="card__header">
-    <img class="card__header__img" src="C:\Users\Fran\Desktop\Programacion\manija-backend\upload\EVENTS\sample\QRAlias_CBU-bc77dbebba13cd68f0f82bda5e318955.png" [alt]="objectTemplate.title">
+    <img class="card__header__img" [src]="objectTemplate | image" [alt]="objectTemplate.title">
     <span class="card__header__manijometro" *ngIf="!isEventCategory">#{{objectTemplate.manijometro}}</span>
     <span class="card__header__edition-label" *ngIf="objectTemplate.publish">En edición</span>
   </div>
@@ -18,8 +18,8 @@
       <p class="card__section__p-info">{{objectTemplate.info}}</p>
     </ng-template>
     <ul class="card__section__menu">
-      <li class="card__section__menu__btn card__section__menu__btn--edit"><i class="fa-solid fa-pen"></i></li>
-      <li class="card__section__menu__btn card__section__menu__btn--delete"><i class="fa-solid fa-trash"></i></li>
+      <li class="card__section__menu__btn card__section__menu__btn--edit" [routerLink]="RouteToEditItem"><i class="fa-solid fa-pen"></i></li>
+      <li class="card__section__menu__btn card__section__menu__btn--delete" (click)="deleteItem(objectTemplate._id)"><i class="fa-solid fa-trash"></i></li>
       <li class="card__section__menu__btn card__section__menu__btn--manijometro" *ngIf="!isEventCategory"
           [ngClass]=" {'card__section__menu__btn--voted':objectTemplate.hasVoted}"
           (mouseenter)="isBoardVoted(objectTemplate.hasVoted!)"

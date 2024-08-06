@@ -1,7 +1,7 @@
 export interface EventManija {
-  _id:                         string;
+  _id?:                       string;
   title:                      string;
-  eventDate:                  Date;
+  eventDate:                  string;
   alternativeTxtEventDate:    string;
   startTime:                  string;
   finishTime:                 string;
@@ -11,5 +11,5 @@ export interface EventManija {
   section:                    string;
   publish:                    boolean;
   mustBeAutomaticallyDeleted: boolean;
-  imgName:                    string;
+  imgName:                    File | null;
 }

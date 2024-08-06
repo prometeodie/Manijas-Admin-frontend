@@ -8,6 +8,7 @@ import { EventInput } from './interface/input.interface';
 import { EventsService } from '../../services/events.service';
 import { DashboardService } from '../../services/dashboard.service';
 import { EventCardSample } from '../../interfaces';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'event-form',
@@ -37,7 +38,7 @@ export class EventFormComponent {
     { name: 'finishTime', placeHolder: 'hh:mm a.m./p.m.', label: 'Horario de finalización', type: 'time', showIfAutoDelete: null, maxLenght: null },
     { name: 'eventPlace', placeHolder: 'Lugar', label: '', type: 'text', showIfAutoDelete: null, maxLenght: 50 },
     { name: 'url', placeHolder: 'Url relacionado al evento', label: '', type: 'text', showIfAutoDelete: null, maxLenght: null },
-    { name: 'eventImg', placeHolder: '', label: 'Seleccionar una imagen', type: 'file', showIfAutoDelete: null, maxLenght: null }
+    { name: 'imgName', placeHolder: '', label: 'Seleccionar una imagen', type: 'file', showIfAutoDelete: null, maxLenght: null }
   ];
 
   public myForm = this.fb.group({
@@ -51,7 +52,7 @@ export class EventFormComponent {
       url:                       ['',[]],
       publish:                   [false ,[Validators.required]],
       mustBeAutomaticallyDeleted:[true ,[Validators.required]],
-      eventImg:                  ['',[]],
+      imgName:                  ['',[]],
     })
 
     updateSelectedColor(event: Event) {
@@ -123,12 +124,54 @@ export class EventFormComponent {
       return `${this.fvService.showError(this.myForm,field)}`
     }
 
+    get currentEvent(): EventManija {
+      const formValue = this.myForm.value;
+      const newEvent: EventManija = {
+        section: 'EVENTS',
+        title: formValue.title ?? '',
+        eventDate: formValue.eventDate ? new Date(formValue.eventDate).toISOString() : '',
+        alternativeTxtEventDate: formValue.alternativeTxtEventDate ?? ' ',
+        startTime: formValue.startTime ?? '',
+        finishTime: formValue.finishTime ?? '',
+        eventPlace: formValue.eventPlace ?? '',
+        eventColor: formValue.eventColor ?? '',
+        url: formValue.url ?? '',
+        publish: formValue.publish ?? false,
+        mustBeAutomaticallyDeleted: formValue.mustBeAutomaticallyDeleted ?? false,
+        imgName: null
+      };
+      return newEvent;
+    }
 
     onSubmit(){
       this.myForm.markAllAsTouched();
       if(this.myForm.invalid) return;
-      alert('cargando evento');
-      this.myForm.reset()
+      Swal.fire({
+        title: 'Do you want to save a new Warehouse?',
+        text: "",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, save it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const currentEvent = this.currentEvent;
+          console.log(currentEvent)
+            this.eventsService.postNewEvent(currentEvent).subscribe(
+              resp=>{
+                if(resp){
+                  const _id = resp._id;
+                  this.eventsService.postEventImage(_id!);
+                  this.dashboardService.notificationPopup('success','Evento agregado')
+                  this.myForm.reset()
+                }else{
+                  this.dashboardService.notificationPopup("error", 'Algo salio mal :(')
+                }
+              }
+            );
+        }
+      })
       this.eventsService.resetAllProperties()
     }
 }
