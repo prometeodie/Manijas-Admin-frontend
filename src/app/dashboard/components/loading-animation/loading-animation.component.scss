@@ -9,6 +9,7 @@
   align-items: center;
   top: 0;
   left: 0;
+  z-index: 99999;
 
   & img{
     animation: loading-grey-efect 1.2s alternate infinite;

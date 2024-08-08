@@ -11,5 +11,5 @@ export interface EventManija {
   section:                    string;
   publish:                    boolean;
   mustBeAutomaticallyDeleted: boolean;
-  imgName:                    File | null;
+  imgName:                    string;
 }

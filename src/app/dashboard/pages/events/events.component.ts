@@ -21,22 +21,27 @@ export class EventsComponent implements OnInit,OnDestroy {
   // TODO: hacer la peticion para traer todos los eventos, borrar eventos, cargar nuevos eventos, borrar img de eventos, editar eventos
 
   ngOnInit(): void {
-    this.eventsService.getAllEvents().pipe(
-        map(event=> event!.map(event=>this.transformData(event)))
-    ).subscribe(
-      events=>{this.events = events}
-    )
+    this.actualizeElements();
   }
 
   ngOnDestroy(): void {
     this.dashboardService.cleanImgSrc()
   }
 
-  onCardDelete(){
+  actualizeElements(){
     this.eventsService.getAllEvents().pipe(
       map(event=> event!.map(event=>this.transformData(event)))
   ).subscribe(
-    events=>{this.events = events})
+    events=>{this.events = events}
+  )
+  }
+
+  onCardDelete(){
+   this.actualizeElements();
+  }
+
+  onFormSubmit(){
+    this.actualizeElements();
   }
 
   private transformData(event: EventManija): CardTemplate {

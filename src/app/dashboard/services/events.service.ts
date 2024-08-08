@@ -24,6 +24,20 @@ export class EventsService {
     url: '',
   }
 
+  public defaultFormValues ={
+    title: '',
+    eventDate: '',
+    alternativeTxtEventDate: '',
+    startTime: '',
+    finishTime: '',
+    eventPlace: '',
+    eventColor: '#ff3296',
+    url: '',
+    publish: false,
+    mustBeAutomaticallyDeleted: true,
+    img: null
+}
+
   private _eventCardSample = signal<EventCardSample | null>(this.eventPlaceHolder);
   public  eventCardSample = computed(()=>this._eventCardSample())
   private dashboardService= inject(DashboardService);
@@ -31,7 +45,7 @@ export class EventsService {
   readonly url = `${environment.baseUrl}/events`
 
 
-
+// CUSTOM VALIDATORS
   isValidDate(): ValidatorFn{
     return (control: AbstractControl): ValidationErrors | null => {
       const value = control.value;
@@ -45,9 +59,24 @@ export class EventsService {
     };
   }
 
+  futureDateValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const selectedDate = new Date(control.value);
+      const today = new Date();
+
+      today.setHours(0, 0, 0, 0);
+      selectedDate.setHours(0, 0, 0, 0);
+
+      return selectedDate < today ? { pastDate: true } : null;
+    }
+  }
+
+
   updateEventData(newData: Partial<EventCardSample>) {
     this._eventCardSample.update(data => ({ ...data!, ...newData! }));
   }
+
+  // UPDATE DATA FOR CARD-SAMPLE
 
   resetpropertie(autoDelete:boolean){
     this._eventCardSample.update((eventCardSample) => {
@@ -61,6 +90,8 @@ export class EventsService {
   resetAllProperties(){
     this.updateEventData(this.eventPlaceHolder)
   }
+
+  // C.R.U.D
 
   getAllEvents(){
     const headers = this.dashboardService.getHeaders();
@@ -86,9 +117,9 @@ export class EventsService {
     )
   }
 
-  postEventImage(id:string){
+  postEventImage(id:string, formData: FormData){
     const headers = this.dashboardService.getHeaders();
-    return this.http.post<EventManija>(`${this.url}/uploadImg/:id`, { headers}).pipe(
+    return this.http.post<EventManija>(`${this.url}/uploadImg/${id}`, formData, { headers}).pipe(
       catchError((err)=>{return of(undefined)})
     )
   }
@@ -96,6 +127,5 @@ export class EventsService {
   editEvent(){
     // editar un evento
   }
-
 
 }

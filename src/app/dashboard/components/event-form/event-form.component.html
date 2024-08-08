@@ -1,3 +1,6 @@
+
+
+<loading-animation *ngIf="uploadingEvent"/>
 <div class="events">
   <h3>Agregar Nuevo Evento</h3>
   <form class="events__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
@@ -28,7 +31,7 @@
       <label for="opciones">Selecciona un color </label>
       <select id="opciones" name="opciones" class="events__form__input events__form__input--selector"
                                             formControlName="eventColor"
-                                            (change)="updateSelectedColor($event); onFieldChange('color', $event)"
+                                            (change)="updateSelectedColor($event); onFieldChange('eventColor', $event)"
                                             [ngStyle]="{'background-color': selectedColor}">
         <option class="events__form__input events__form__input--option" *ngFor="let color of colors" [value]="color" [ngStyle]="{'background-color': color}"></option>
       </select>
@@ -46,3 +49,4 @@
     <button type="submit" class="events__form__btn">{{saveOrPublish}}</button>
   </form>
 </div>
+

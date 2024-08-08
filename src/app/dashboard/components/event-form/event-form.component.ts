@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ImgPipePipe } from '../../pipes/img-pipe.pipe';
 import { EventManija } from '../../interfaces/event.interface';
@@ -9,23 +9,29 @@ import { EventsService } from '../../services/events.service';
 import { DashboardService } from '../../services/dashboard.service';
 import { EventCardSample } from '../../interfaces';
 import Swal from 'sweetalert2';
+import { Section } from '../../shared/enum/section.enum';
+import { LoadingAnimationComponent } from '../loading-animation/loading-animation.component';
+
 
 @Component({
   selector: 'event-form',
   standalone: true,
-  imports: [CommonModule, ImgPipePipe, ReactiveFormsModule],
+  imports: [CommonModule, ImgPipePipe, ReactiveFormsModule, LoadingAnimationComponent],
   templateUrl: './event-form.component.html',
   styleUrls: ['./event-form.component.scss']
 })
 export class EventFormComponent {
 
+  @Output() newElementAdded = new EventEmitter<void>();
   private fb = inject(FormBuilder);
   private fvService = inject(FormService);
   private eventsService = inject(EventsService);
+  private selectedFile: File | null = null;
   private dashboardService = inject(DashboardService);
+  private TIME_REGEX = /^([01][0-9]|2[0-3]):([0-5][0-9])$/;
+  public uploadingEvent:boolean = false;
   public  autoDeleteChecked: boolean = true;
   public  showPopUpAutoDelete: boolean = false;
-  private TIME_REGEX = /^([01][0-9]|2[0-3]):([0-5][0-9])$/;
   public  imgSrc:string | ArrayBuffer | null ='';
   public colors: string[] = ['#ff3296', '#ff4b4b', '#872e6e', '#00ff64', '#0064ff', '#0096ff', '#18dcff', '#00ffc8', '#00d59c', '#32ff96', '#c832ff', '#ff64c8', '#ffdc00']
   public selectedColor: string = this.colors[0];
@@ -38,12 +44,12 @@ export class EventFormComponent {
     { name: 'finishTime', placeHolder: 'hh:mm a.m./p.m.', label: 'Horario de finalización', type: 'time', showIfAutoDelete: null, maxLenght: null },
     { name: 'eventPlace', placeHolder: 'Lugar', label: '', type: 'text', showIfAutoDelete: null, maxLenght: 50 },
     { name: 'url', placeHolder: 'Url relacionado al evento', label: '', type: 'text', showIfAutoDelete: null, maxLenght: null },
-    { name: 'imgName', placeHolder: '', label: 'Seleccionar una imagen', type: 'file', showIfAutoDelete: null, maxLenght: null }
+    { name: 'img', placeHolder: '', label: 'Seleccionar una imagen', type: 'file', showIfAutoDelete: null, maxLenght: null }
   ];
 
   public myForm = this.fb.group({
       title:                     ['',[Validators.required, Validators.maxLength(24)]],
-      eventDate:                      ['',{validators:[Validators.required, this.eventsService.isValidDate()]}],
+      eventDate:                 ['',{validators:[Validators.required, this.eventsService.isValidDate(), this.eventsService.futureDateValidator()]}],
       alternativeTxtEventDate:   ['',[]],
       startTime:                 ['',[Validators.required, Validators.pattern(this.TIME_REGEX)]],
       finishTime:                ['',[Validators.required, Validators.pattern(this.TIME_REGEX)]],
@@ -52,7 +58,7 @@ export class EventFormComponent {
       url:                       ['',[]],
       publish:                   [false ,[Validators.required]],
       mustBeAutomaticallyDeleted:[true ,[Validators.required]],
-      imgName:                  ['',[]],
+      img:                       [null,[this.fvService.fileSizeValidator(3145728)]],
     })
 
     updateSelectedColor(event: Event) {
@@ -92,8 +98,10 @@ export class EventFormComponent {
     }
 
     async onFileSelected(event: Event) {
+
       this.imgSrc = await this.dashboardService.onFileSelected(event);
       this.dashboardService.loadImage(this.imgSrc);
+      this.selectedFile = this.dashboardService.returnOneImg(event);
     }
 
     onFieldChange(field: string, event: Event) {
@@ -138,7 +146,7 @@ export class EventFormComponent {
         url: formValue.url ?? '',
         publish: formValue.publish ?? false,
         mustBeAutomaticallyDeleted: formValue.mustBeAutomaticallyDeleted ?? false,
-        imgName: null
+        imgName: ''
       };
       return newEvent;
     }
@@ -156,33 +164,37 @@ export class EventFormComponent {
         confirmButtonText: 'Yes, save it!'
       }).then((result) => {
         if (result.isConfirmed) {
+          this.uploadingEvent = true;
           const currentEvent = this.currentEvent;
-          console.log(currentEvent)
-            this.eventsService.postNewEvent(currentEvent).subscribe(
-              resp=>{
-                if(resp){
-                  const _id = resp._id;
-                  this.eventsService.postEventImage(_id!);
-                  this.dashboardService.notificationPopup('success','Evento agregado')
-                  this.myForm.reset()
-                }else{
-                  this.dashboardService.notificationPopup("error", 'Algo salio mal :(')
-                }
+      this.eventsService.postNewEvent(currentEvent).subscribe(
+        resp=>{
+          if(resp){
+            // TODO:acer que borre la imagen cuando ponga borrar el elelemtno
+            const _id = resp._id;
+              const formData = this.dashboardService.formDataToUploadImg(Section.EVENTS, this.currentEvent.title.trim(), this.selectedFile!)
+            if(formData){
+                this.eventsService.postEventImage(_id!, formData).subscribe(imgResp=>{
+                  if(!imgResp){
+                    this.dashboardService.notificationPopup("error", 'Algo salio mal al guardar la img :(')
+                    this.uploadingEvent = false
+                  }
+                });
               }
-            );
+            this.uploadingEvent = false
+            this.dashboardService.notificationPopup('success','Evento agregado')
+            this.newElementAdded.emit();
+            this.imgSrc = null;
+            this.myForm.reset(this.eventsService.defaultFormValues);
+            this.dashboardService.cleanImgSrc();
+            this.selectedFile = null;
+          }else{
+            this.dashboardService.notificationPopup("error", 'Algo salio mal :(')
+          }
+        }
+      );
         }
       })
       this.eventsService.resetAllProperties()
     }
 }
-
-
-
-
-
-
-
-
-
-
 

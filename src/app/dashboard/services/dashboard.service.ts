@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 
 import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { catchError, of } from 'rxjs';
+import { Section } from '../shared/enum/section.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +38,7 @@ export class DashboardService {
       icon,
       title,
       showConfirmButton: false,
-      timer: 1500
+      timer: 2000
     });
   }
 
@@ -62,6 +63,26 @@ export class DashboardService {
     } else {
       return null;
     }
+  }
+
+  returnOneImg(event: Event){
+    const input = event.target as HTMLInputElement;
+      if (input.files && input.files.length > 0) {
+        return input.files[0];
+      }
+      return null;
+  }
+
+  formDataToUploadImg(section: Section, itemName: string, imgFile: File){
+    const formData = new FormData();
+    if (!imgFile) {
+      return;
+    }
+    formData.append('section',section);
+    formData.append('itemName',itemName);
+    formData.append('file', imgFile);
+
+    return formData;
   }
 
   loadImage(img:string | ArrayBuffer | null){
