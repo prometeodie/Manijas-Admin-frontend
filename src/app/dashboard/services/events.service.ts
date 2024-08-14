@@ -4,7 +4,7 @@ import { EventCardSample } from '../interfaces/event-card-sample.interface';
 import { DashboardService } from './dashboard.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/assets/environments/environment';
-import { EventManija } from '../interfaces';
+import { EditEventManija, EventManija } from '../interfaces';
 import { catchError, of } from 'rxjs';
 
 @Injectable({
@@ -124,8 +124,11 @@ export class EventsService {
     )
   }
 
-  editEvent(){
-    // editar un evento
+  editEvent( id: string, editedEvent: EditEventManija){
+    const headers = this.dashboardService.getHeaders();
+    return this.http.patch<EditEventManija>(`${this.url}/edit/${id}`, editedEvent, { headers}).pipe(
+      catchError((err)=>{return of(undefined)})
+    )
   }
 
 }

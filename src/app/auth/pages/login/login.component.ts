@@ -44,19 +44,27 @@ export class LoginComponent {
           this.existLoginError = false;
           this.router.navigateByUrl('/dashboard/boardgames')
         },
-        error: (message)=>{
+        error: (err)=>{
           this.existLoginError= true;
-          Swal.fire({
-            position: "center",
-            icon: "error",
-            title: `Credenciales no validas`,
-            showConfirmButton: false,
-            timer: 1000
-          });
+          if(err === 'Invalid credentials'){
+            this.showErrorSwal(`Credenciales no validas`);
+          }else{
+            this.showErrorSwal(`Ocurrió un error inesperado`);
+          }
           this.chekingCredentials = false;
         },
         complete: () => this.chekingCredentials = false,
       })
+  }
+
+  showErrorSwal(text:string ){
+    Swal.fire({
+      position: "center",
+      icon: "error",
+      title: `${text}`,
+      showConfirmButton: false,
+      timer: 1000
+    });
   }
 
   togglePassword(){

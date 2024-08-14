@@ -20,6 +20,7 @@ import { CardsComponent } from './components/cards/cards.component';
 import { NewBtnComponent } from './components/new-btn/new-btn.component';
 import { EventFormComponent } from './components/event-form/event-form.component';
 import { EventSampleCardComponent } from './components/event-sample-card/event-sample-card.component';
+import { ComponentsNavBarComponent } from './components/components-nav-bar/components-nav-bar.component';
 
 
 @NgModule({
@@ -45,7 +46,8 @@ import { EventSampleCardComponent } from './components/event-sample-card/event-s
     NavBarComponent,
     NewBtnComponent,
     EventFormComponent,
-    EventSampleCardComponent
+    EventSampleCardComponent,
+    ComponentsNavBarComponent
   ]
 })
 export class DashboardModule { }

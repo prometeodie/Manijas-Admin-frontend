@@ -1,1 +1,12 @@
-<p>blogs works!</p>
+<main class="blogs">
+  <h1>Blogs</h1>
+  <components-nav-bar class="blogs__nav-bar" (category)="onCategorySelected($event)"[categories]="categories"/>
+  <section class="blogs__section">
+    <div class="blogs__section__cards" >
+      <div class="blogs__section__cards__container">
+        <!-- <app-cards class="blogs__section__cards__container__cards" *ngFor="let blog of blogs" [objectTemplate]="blog" (delete)="onCardDelete()"/> -->
+      </div>
+    </div>
+  </section>
+  <new-btn [path]="blogsPath" class="blogs__new-btn"/>
+</main>

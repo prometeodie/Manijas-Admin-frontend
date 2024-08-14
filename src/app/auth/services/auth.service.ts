@@ -67,6 +67,5 @@ export class AuthService {
     this._currentUser.set(null);
     this._authStatus.set(AuthStatus.noAuthenticated);
   }
-
 }
 

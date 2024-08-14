@@ -26,7 +26,10 @@ export class AppComponent{
   public authStatusChangeEfect = effect(()=>{
     const authStatusActions = {
       [AuthStatus.checking]: () => {},
-      [AuthStatus.authenticated]: () => {},
+      [AuthStatus.authenticated]: () => {
+        const lastUrl = localStorage.getItem('lastUrl');
+        (lastUrl)? this.router.navigateByUrl(lastUrl) : this.router.navigateByUrl('lmdr/boardgames')
+      },
       [AuthStatus.noAuthenticated]: () => {this.router.navigateByUrl('/auth/login')}
     };
 
@@ -36,11 +39,4 @@ export class AppComponent{
       action();
     }
   })
-
-  getUserRoute(): string{
-    const url = localStorage.getItem('url');
-    if(!url) return 'lmdr'
-
-    return url;
-  }
 }

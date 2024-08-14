@@ -2,6 +2,7 @@ export interface CardTemplate{
   _id:string
   title: string;
   imgPath:string;
+  imgName: string;
   isInfoAList:boolean;
   info:Info;
   section:string;

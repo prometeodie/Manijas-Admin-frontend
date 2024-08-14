@@ -7,8 +7,8 @@ import { FormService } from 'src/app/services/form-validator.service';
 import { EventInput } from './interface/input.interface';
 import { EventsService } from '../../services/events.service';
 import { DashboardService } from '../../services/dashboard.service';
-import { EventCardSample } from '../../interfaces';
-import Swal from 'sweetalert2';
+import { EditEventManija, EventCardSample } from '../../interfaces';
+import   Swal from 'sweetalert2';
 import { Section } from '../../shared/enum/section.enum';
 import { LoadingAnimationComponent } from '../loading-animation/loading-animation.component';
 
@@ -58,7 +58,7 @@ export class EventFormComponent {
       url:                       ['',[]],
       publish:                   [false ,[Validators.required]],
       mustBeAutomaticallyDeleted:[true ,[Validators.required]],
-      img:                       [null,[this.fvService.fileSizeValidator(3145728)]],
+      img:                       [],
     })
 
     updateSelectedColor(event: Event) {
@@ -98,10 +98,23 @@ export class EventFormComponent {
     }
 
     async onFileSelected(event: Event) {
-
+      const input = event.target as HTMLInputElement;
       this.imgSrc = await this.dashboardService.onFileSelected(event);
       this.dashboardService.loadImage(this.imgSrc);
       this.selectedFile = this.dashboardService.returnOneImg(event);
+      if(input.files){
+        const file = input.files[0];
+        const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
+        if(validSize){
+          this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.')
+            const fileControl = this.myForm.get('img');
+            if (fileControl) {
+              fileControl.reset();
+              this.cleanImg()
+            }
+          return;
+        }
+      }
     }
 
     onFieldChange(field: string, event: Event) {
@@ -151,6 +164,11 @@ export class EventFormComponent {
       return newEvent;
     }
 
+    cleanImg(){
+      this.imgSrc = null;
+      this.dashboardService.cleanImgSrc();
+    }
+
     onSubmit(){
       this.myForm.markAllAsTouched();
       if(this.myForm.invalid) return;
@@ -169,7 +187,6 @@ export class EventFormComponent {
       this.eventsService.postNewEvent(currentEvent).subscribe(
         resp=>{
           if(resp){
-            // TODO:acer que borre la imagen cuando ponga borrar el elelemtno
             const _id = resp._id;
               const formData = this.dashboardService.formDataToUploadImg(Section.EVENTS, this.currentEvent.title.trim(), this.selectedFile!)
             if(formData){
@@ -185,8 +202,7 @@ export class EventFormComponent {
             this.newElementAdded.emit();
             this.imgSrc = null;
             this.myForm.reset(this.eventsService.defaultFormValues);
-            this.dashboardService.cleanImgSrc();
-            this.selectedFile = null;
+            this.cleanImg();
           }else{
             this.dashboardService.notificationPopup("error", 'Algo salio mal :(')
           }

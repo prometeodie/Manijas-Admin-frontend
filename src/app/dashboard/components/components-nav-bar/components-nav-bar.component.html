@@ -1,0 +1,7 @@
+<main class="categories-bar">
+  <ul class="categories-bar__ul">
+    <li *ngFor="let category of categories" class="categories-bar__ul__li" (click)="emitCategory(category)">
+      <span>{{category | titlecase}}</span>
+    </li>
+  </ul>
+</main>

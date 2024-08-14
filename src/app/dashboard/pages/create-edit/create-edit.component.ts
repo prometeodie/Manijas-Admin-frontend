@@ -11,7 +11,5 @@ export class CreateEditComponent implements OnInit {
 
   // TODO: tomar la seccion del url y con eso filtrar que metodo para traer evento, board,about,etc y crear variable con cada uno de esoscon usando los interface e injectarlos en los standalone, si no tiene id espara agregar uno nuevo en vase a la seccioin
 
-  ngOnInit(): void {
-    this.test.getEvent('66a436ccbbf8f93399d4559c').subscribe(console.log)
-  }
+  ngOnInit(): void {}
 }

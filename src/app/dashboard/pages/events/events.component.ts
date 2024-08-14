@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, Signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CardTemplate } from '../../interfaces/cards.interface';
 import { DashboardService } from '../../services/dashboard.service';
 import { EventsService } from '../../services/events.service';
@@ -32,7 +32,10 @@ export class EventsComponent implements OnInit,OnDestroy {
     this.eventsService.getAllEvents().pipe(
       map(event=> event!.map(event=>this.transformData(event)))
   ).subscribe(
-    events=>{this.events = events}
+    events=>{
+      this.events = events
+    }
+
   )
   }
 
@@ -62,6 +65,7 @@ export class EventsComponent implements OnInit,OnDestroy {
     return {
       _id: _id!,
       title,
+      imgName,
       imgPath: imgName,
       isInfoAList: false,
       info: {

@@ -16,7 +16,7 @@ import { RouterModule } from '@angular/router';
 export class CardsComponent implements OnInit {
 
   @Input() objectTemplate!: CardTemplate;
-  @Output() delete = new EventEmitter<void>(); //TODO: this Output is to emmit an event, when the card is deleted successfuly the father lisen to this event and actualize the cards list
+  @Output() delete = new EventEmitter<void>(); //TODO: this Output emmits an event, when the card is deleted successfuly the father lisen to this event and actualize the cards list
 private dashboardService = inject(DashboardService);
  public isTheBoardVoted: boolean = false;
  public isEventCategory: boolean = false
@@ -33,8 +33,8 @@ private dashboardService = inject(DashboardService);
     (this.dashboardService.screenWidth > 800)?
       this.objectTemplate.imgPath = `assets/upload/${this.objectTemplate.section}/${this.objectTemplate.title}/${this.objectTemplate.imgPath}`:
       this.objectTemplate.imgPath = `assets/upload/${this.objectTemplate.section}/${this.objectTemplate.title}/optimize/smallS-${this.objectTemplate.imgPath}`;
+      // TODO:acomodar bien el url cuando tenga el backend en produccion
   }
-// TODO:acomodar bien el url cuando tenga el backend en produccion
  }
 
 isBoardVoted(hasVoted: boolean){
@@ -56,10 +56,12 @@ deleteItem(id:string){
     confirmButtonText: "borrar!"
   }).then((result) => {
     if (result.isConfirmed) {
-      this.dashboardService.deleteEvent(id, section).subscribe(
+      this.dashboardService.deleteItem(id, section).subscribe(
         resp =>{
           if(resp){
+            const path = `${this.objectTemplate.title}`;
             this.dashboardService.notificationPopup('success','item eliminado')
+            this.dashboardService.deleteItemImg(path,section)?.subscribe()
             this.delete.emit();
           }else{
             this.dashboardService.notificationPopup("error", 'Algo salio mal :(')

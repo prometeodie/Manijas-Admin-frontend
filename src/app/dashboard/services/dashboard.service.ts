@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { catchError, of } from 'rxjs';
 import { Section } from '../shared/enum/section.enum';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +14,9 @@ import { Section } from '../shared/enum/section.enum';
 export class DashboardService {
 
   readonly url = `${environment.baseUrl}`
-  private _imgSrc = signal<string | ArrayBuffer | null>(null);
   private http = inject(HttpClient);
+  public router = inject(Router);
+  private _imgSrc = signal<string | ArrayBuffer | null>(null);
   public imgSrc = computed(( )=> this._imgSrc());
   public screenWidth:number = 0;
 
@@ -98,9 +100,17 @@ export class DashboardService {
     return input.checked;
   }
 
-  deleteEvent(id:string, section: string){
+  deleteItem(id:string, section: string){
     const headers = this.getHeaders();
     return this.http.delete(`${this.url}/${section}/delete/${id}`,{headers}).pipe(
+      catchError((err)=>{return of(undefined)})
+    )
+  }
+
+  deleteItemImg(path:string, section: string, ){
+    if(!path) return;
+    const headers = this.getHeaders();
+    return this.http.delete(`${this.url}/${section}/delete/img/upload/${section}/${path}`,{headers}).pipe(
       catchError((err)=>{return of(undefined)})
     )
   }

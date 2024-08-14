@@ -1,0 +1,47 @@
+
+@import '../../../scss/variables.scss';
+h1{
+  padding-left: 0.5rem;
+}
+
+
+.blogs{
+  position: relative;
+  &__new-btn{
+    position: fixed;
+    right: 0.8rem;
+    bottom: 0.8rem;
+    z-index: 999;
+  }
+
+  &__section{
+    width: 100%;
+    margin-top: 1.5rem;
+    background-color:$main-element-color ;
+
+    height: 100vh;
+  }
+
+  &__nav-bar{
+    position: sticky;
+    top: 4rem;
+  }
+}
+
+
+// MEDIA QUERIES
+
+@media (min-width:600px) {
+  .blogs{
+    padding-right: 5.5rem;
+  }
+  .blogs__nav-bar{
+    top: 0;
+  }
+}
+
+@media (min-width:1100px) {
+  .blogs{
+    padding: 0;
+  }
+}

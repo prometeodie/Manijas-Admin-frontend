@@ -5,3 +5,4 @@ export * from './icons.interface';
 export * from './message-status.interface';
 export * from './/message.interface';
 export * from './unread-messages.interface';
+export * from './event-patch-interface';

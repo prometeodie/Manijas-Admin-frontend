@@ -1,6 +1,6 @@
 <nav class="menu">
-  <div class="menu__btn"  *ngFor="let icon of icons" [routerLink]="icon.route">
-    <i class="{{icon.icon}} menu__btn__icon" routerLinkActive="active"></i>
+  <div class="menu__btn"  *ngFor="let icon of icons" [routerLink]="icon.route" (click)="saveCurrentUrl(icon.route)">
+    <i class="{{icon.icon}} menu__btn__icon" routerLinkActive="active" ></i>
     <span class="menu__btn__name" >{{icon.name | titlecase}}</span>
   </div>
 </nav>

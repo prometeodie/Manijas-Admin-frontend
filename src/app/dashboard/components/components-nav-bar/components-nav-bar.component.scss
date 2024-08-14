@@ -1,0 +1,23 @@
+
+@import '../../../scss/variables.scss';
+
+.categories-bar{
+  background-color: $secondary-element-color;
+  color: $main-text-color;
+
+  &__ul{
+    width: 100%;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+
+    &__li{
+      padding: 0.5rem;
+      &:hover{
+        background-color: rgba(240, 248, 255, 0.137);
+      }
+      cursor: pointer;
+    }
+  }
+}

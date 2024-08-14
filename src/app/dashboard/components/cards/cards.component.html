@@ -2,7 +2,7 @@
   <div class="card__header">
     <img class="card__header__img" [src]="objectTemplate | image" [alt]="objectTemplate.title">
     <span class="card__header__manijometro" *ngIf="!isEventCategory">#{{objectTemplate.manijometro}}</span>
-    <span class="card__header__edition-label" *ngIf="objectTemplate.publish">En edición</span>
+    <span class="card__header__edition-label" *ngIf="!objectTemplate.publish">En edición</span>
   </div>
   <section class="card__section">
     <h3 class="card__section__title"> {{objectTemplate.title}}</h3>

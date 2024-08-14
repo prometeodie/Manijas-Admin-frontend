@@ -1,13 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { AbstractControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FormService {
 
-  private http = inject(HttpClient);
   constructor() { }
 
   isValidField(myForm: FormGroup,field: string):boolean | null{
@@ -15,16 +14,6 @@ export class FormService {
            myForm.get(field)!.touched
   }
 
-  fileSizeValidator(maxSize: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const file = control.value;
-      if (file && file.size > maxSize) {
-        return { fileSizeExceeded: true };
-      }
-      return null;
-    };
-    // TODO:hacer andar el validador de tamano
-  }
 
   showError(form: FormGroup, field: string):string | null{
     if (!form.contains(field)) return null;
@@ -50,6 +39,14 @@ export class FormService {
 
     for (const key of Object.keys(errors)) {
         return errorMenssages[key];
+    }
+    return null;
+  }
+
+  avoidImgExceedsMaxSize(fileSize:number, maxSize:number){
+
+    if (fileSize > maxSize) {
+      return true;
     }
     return null;
   }
