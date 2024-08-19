@@ -35,6 +35,23 @@
   position: absolute;
 }
 
+.card__section__title
+{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+}
+
+.card__section__p-info{
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5em;
+  max-height: 4.5em;
+}
+
 .card{
   flex-direction: column;
   background-color: #f0ffff;
@@ -195,7 +212,7 @@
         }
       }
     }
-
   }
-
 }
+
+

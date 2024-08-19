@@ -1,8 +1,10 @@
-export * from './cards.interface';
-export * from './event-card-sample.interface';
-export * from './event.interface';
-export * from './icons.interface';
-export * from './message-status.interface';
-export * from './/message.interface';
-export * from './unread-messages.interface';
-export * from './event-patch-interface';
+export * from './card interface/cards.interface';
+export * from './event inteefaces/event-card-sample.interface';
+export * from './event inteefaces/event.interface';
+export * from './others/icons.interface';
+export * from './messages interfaces/message-status.interface';
+export * from './messages interfaces/message.interface';
+export * from './messages interfaces/unread-messages.interface';
+export * from './event inteefaces/event-patch-interface';
+export * from './blogs interfaces/blog-interface';
+export * from './blogs interfaces/blog-patch.interface';

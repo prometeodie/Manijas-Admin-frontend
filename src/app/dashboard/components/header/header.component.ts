@@ -3,7 +3,7 @@ import { AuthService } from '../../../auth/services/auth.service';
 import Swal from 'sweetalert2';
 import { DashboardService } from '../../services/dashboard.service';
 import { catchError, map, of } from 'rxjs';
-import { Message } from '../../interfaces/message.interface';
+import { Message } from '../../interfaces/messages interfaces/message.interface';
 import { MessagesService } from '../../services/messages.service';
 
 @Component({

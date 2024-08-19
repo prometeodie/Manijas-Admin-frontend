@@ -2,10 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { environment } from 'src/assets/environments/environment';
 import { DashboardService } from './dashboard.service';
-import { UnreadMessages } from '../interfaces/unread-messages.interface';
+import { UnreadMessages } from '../interfaces/messages interfaces/unread-messages.interface';
 import { catchError, of } from 'rxjs';
-import { Message } from '../interfaces/message.interface';
-import { MessageStatus } from '../interfaces/message-status.interface';
+import { Message } from '../interfaces/messages interfaces/message.interface';
+import { MessageStatus } from '../interfaces/messages interfaces/message-status.interface';
 
 @Injectable({
   providedIn: 'root'

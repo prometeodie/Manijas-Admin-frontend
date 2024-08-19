@@ -1,8 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Icons } from '../../interfaces/icons.interface';
+import { Icons } from '../../interfaces/others/icons.interface';
 import { RouterModule } from '@angular/router';
-import { DashboardService } from '../../services/dashboard.service';
 
 @Component({
   selector: 'nav-bar',
@@ -12,8 +11,6 @@ import { DashboardService } from '../../services/dashboard.service';
   styleUrls: ['./nav-bar.component.scss']
 })
 export class NavBarComponent {
-
-  private dashboardService = inject(DashboardService);
 
   readonly standarRoute: string = '/lmdr'
   public icons: Icons[] =[

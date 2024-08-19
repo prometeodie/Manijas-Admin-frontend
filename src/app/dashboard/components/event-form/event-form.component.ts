@@ -1,7 +1,7 @@
 import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ImgPipePipe } from '../../pipes/img-pipe.pipe';
-import { EventManija } from '../../interfaces/event.interface';
+import { EventManija } from '../../interfaces/event inteefaces/event.interface';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormService } from 'src/app/services/form-validator.service';
 import { EventInput } from './interface/input.interface';

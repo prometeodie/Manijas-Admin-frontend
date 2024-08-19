@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CardTemplate } from '../../interfaces/cards.interface';
+import { CardTemplate } from '../../interfaces/card interface/cards.interface';
 import { ImgPipePipe } from '../../pipes/img-pipe.pipe';
 import { DashboardService } from '../../services/dashboard.service';
 import Swal from 'sweetalert2';
@@ -36,6 +36,13 @@ private dashboardService = inject(DashboardService);
       // TODO:acomodar bien el url cuando tenga el backend en produccion
   }
  }
+
+ truncateText(text:string, maxLength:number) {
+  if (text.length <= maxLength) {
+    return text;
+  }
+  return `${text.slice(0, maxLength)}...`;
+}
 
 isBoardVoted(hasVoted: boolean){
   if(hasVoted){

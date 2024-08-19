@@ -1,6 +1,6 @@
 import {  computed, inject, Injectable, signal } from '@angular/core';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { EventCardSample } from '../interfaces/event-card-sample.interface';
+import { EventCardSample } from '../interfaces/event inteefaces/event-card-sample.interface';
 import { DashboardService } from './dashboard.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/assets/environments/environment';
@@ -96,7 +96,7 @@ export class EventsService {
   getAllEvents(){
     const headers = this.dashboardService.getHeaders();
 
-    return this.http.get<EventManija[]>(`${this.url}`, { headers}).pipe(
+    return this.http.get<EventManija[]>(`${this.url}/admin`, { headers}).pipe(
       catchError((err)=>{return of(undefined)})
     )
 

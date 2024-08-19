@@ -1,5 +1,6 @@
 
 @import '../../../scss/variables.scss';
+
 h1{
   padding-left: 0.5rem;
 }
@@ -14,17 +15,32 @@ h1{
     z-index: 999;
   }
 
-  &__section{
+  &__section {
     width: 100%;
     margin-top: 1.5rem;
-    background-color:$main-element-color ;
+    background-color: $main-element-color;
+    padding: 1rem 0;
+    display: flex;
+    justify-content: center;
 
-    height: 100vh;
+    &__cards {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    &__empty{
+      font-weight: 100;
+      font-size: 2rem;
+    }
   }
 
   &__nav-bar{
     position: sticky;
+    display: block;
     top: 4rem;
+    z-index: 999;
   }
 }
 
@@ -34,14 +50,35 @@ h1{
 @media (min-width:600px) {
   .blogs{
     padding-right: 5.5rem;
+    &__section__empty{
+      font-size: 3rem;
+    }
   }
   .blogs__nav-bar{
     top: 0;
   }
 }
 
+@media (min-width:850px) {
+  .blogs__section__cards {
+     grid-template-columns: repeat(2, 1fr);
+   }
+ }
+
 @media (min-width:1100px) {
   .blogs{
     padding: 0;
+  }
+}
+
+@media (min-width:1200px) {
+  .blogs__section__cards {
+     grid-template-columns: repeat(3, 1fr);
+   }
+ }
+
+@media (min-width:1500px) {
+ .blogs__section__cards {
+    grid-template-columns: repeat(4, 1fr);
   }
 }

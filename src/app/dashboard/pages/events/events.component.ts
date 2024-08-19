@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { CardTemplate } from '../../interfaces/cards.interface';
+import { CardTemplate } from '../../interfaces/card interface/cards.interface';
 import { DashboardService } from '../../services/dashboard.service';
 import { EventsService } from '../../services/events.service';
 import { map } from 'rxjs';
