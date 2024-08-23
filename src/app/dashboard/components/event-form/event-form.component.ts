@@ -7,7 +7,7 @@ import { FormService } from 'src/app/services/form-validator.service';
 import { EventInput } from './interface/input.interface';
 import { EventsService } from '../../services/events.service';
 import { DashboardService } from '../../services/dashboard.service';
-import { EditEventManija, EventCardSample } from '../../interfaces';
+import { EventCardSample } from '../../interfaces';
 import   Swal from 'sweetalert2';
 import { Section } from '../../shared/enum/section.enum';
 import { LoadingAnimationComponent } from '../loading-animation/loading-animation.component';

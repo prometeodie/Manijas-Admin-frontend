@@ -19,6 +19,7 @@ const routes: Routes = [
       {path:'boardgames', component:BoardgamesComponent},
       {path:'blogs', component:BlogsComponent},
       {path:'us', component:AboutComponent},
+      {path:'manijometro/:id', component:ManijometroComponent},
       {path:'manijometro', component:ManijometroComponent},
       {path:'control-panel', component:ControlPanelComponent},
       {path:'messages', component:MessagesComponent},

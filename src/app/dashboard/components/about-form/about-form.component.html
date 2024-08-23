@@ -1,0 +1,29 @@
+<!-- <loading-animation/> -->
+ <div class="about">
+  <h3>Fragmento de historia Manija</h3>
+  <form class="about__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
+    <div class="about__form__input-label" *ngFor="let input of aboutInputs">
+      <label class="about__form__input-label__label" *ngIf="input.label.length > 0">{{input.label}}</label>
+      <input class="about__form__input-label__input"
+              [formControlName]="input.name"
+              [maxLength]="input.maxLenght"
+              [type]="input.type"
+              [placeholder]="input.placeHolder"
+              *ngIf="input.type !== 'textArea'; else textArea"
+              (change)="input.type === 'file' ? onFileSelected($event) : null"
+              [ngClass]="{'about__form__input-label__input--cb': input.type === 'checkbox'}">
+
+              <div class="about__form__img-container" *ngIf="imgSrc && input.name === 'img'">
+                <img  [src]="imgSrc" alt="event-Img" class="about__form__img-container__img">
+              </div>
+      <ng-template #textArea>
+        <textarea class="about__form__input-label__input about__form__input-label__input--txt-area" #txtQuery (keyup)="countingChar(txtQuery.value)" [placeholder]="input.placeHolder" name="feedback"></textarea>
+        <div class="about__form__input-label__input__characters-container">
+          <span>Caracteres: {{charCount}}</span>
+          <span>Promedio de caracteres de "Fragmentos de historia Manija": 150</span>
+        </div>
+      </ng-template>
+    </div>
+    <button type="submit" class="about__form__btn">Guardar</button>
+  </form>
+ </div>

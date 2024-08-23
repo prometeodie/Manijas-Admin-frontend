@@ -1,0 +1,32 @@
+
+@import '../../../scss/variables.scss';
+
+.search-bar{
+  display: flex;
+  max-width: 18rem;
+  border-bottom: 3px solid $search-bar-boardgames-color;
+  padding: 0.2rem;
+  border-radius: 3px;
+  margin-top: 1rem;
+  justify-content: center;
+
+  &__search-bar{
+    color: $main-text-color;
+    background-color: transparent;
+    height: 2.5;
+    border: 0;
+    width: 100%;
+    outline: none;
+    font-size: xx-large;
+    margin-left: 0.5rem;
+
+    &::placeholder {
+      color: $search-bar-boardgames-color;
+    }
+  }
+
+  &__icon{
+    color: $search-bar-boardgames-color;
+    font-size: xx-large;
+  }
+}

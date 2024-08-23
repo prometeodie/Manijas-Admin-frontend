@@ -2,25 +2,29 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 
-import { DashboardRoutingModule } from './dashboard-routing.module';
-import { LayoutComponent } from './pages/layout/layout.component';
-import { BoardgamesComponent } from './pages/boardgames/boardgames.component';
-import { BlogsComponent } from './pages/blogs/blogs.component';
-import { EventsComponent } from './pages/events/events.component';
 import { AboutComponent } from './pages/about/about.component';
-import { MessagesComponent } from './pages/messages/messages.component';
-import { ManijometroComponent } from './pages/manijometro/manijometro.component';
-import { CreateEditComponent } from './pages/create-edit/create-edit.component';
-import { MessageComponent } from './pages/message/message.component';
-import { HeaderComponent } from './components/header/header.component';
-import { NavBarComponent } from './components/nav-bar/nav-bar.component';
-import { ControlPanelComponent } from './pages/control-panel/control-panel.component';
-import { LoadingAnimationComponent } from './components/loading-animation/loading-animation.component';
+import { AboutFormComponent } from './components/about-form/about-form.component';
+import { BlogsComponent } from './pages/blogs/blogs.component';
+import { BlogsFormComponent } from './components/blogs-form/blogs-form.component';
+import { BoardgamesComponent } from './pages/boardgames/boardgames.component';
+import { BoardgamesFormComponent } from './components/boardgames-form/boardgames-form.component';
 import { CardsComponent } from './components/cards/cards.component';
-import { NewBtnComponent } from './components/new-btn/new-btn.component';
+import { ComponentsNavBarComponent } from './components/components-nav-bar/components-nav-bar.component';
+import { ControlPanelComponent } from './pages/control-panel/control-panel.component';
+import { CreateEditComponent } from './pages/create-edit/create-edit.component';
+import { DashboardRoutingModule } from './dashboard-routing.module';
 import { EventFormComponent } from './components/event-form/event-form.component';
 import { EventSampleCardComponent } from './components/event-sample-card/event-sample-card.component';
-import { ComponentsNavBarComponent } from './components/components-nav-bar/components-nav-bar.component';
+import { EventsComponent } from './pages/events/events.component';
+import { HeaderComponent } from './components/header/header.component';
+import { LayoutComponent } from './pages/layout/layout.component';
+import { LoadingAnimationComponent } from './components/loading-animation/loading-animation.component';
+import { ManijometroComponent } from './pages/manijometro/manijometro.component';
+import { MessageComponent } from './pages/message/message.component';
+import { MessagesComponent } from './pages/messages/messages.component';
+import { NavBarComponent } from './components/nav-bar/nav-bar.component';
+import { NewBtnComponent } from './components/new-btn/new-btn.component';
+import { SearchBarComponent } from './components/search-bar/search-bar.component';
 
 
 @NgModule({
@@ -40,14 +44,18 @@ import { ComponentsNavBarComponent } from './components/components-nav-bar/compo
   imports: [
     HttpClientModule,
     CommonModule,
-    DashboardRoutingModule,
+    AboutFormComponent,
+    BlogsFormComponent,
+    BoardgamesFormComponent,
     CardsComponent,
+    ComponentsNavBarComponent,
+    DashboardRoutingModule,
+    EventFormComponent,
+    EventSampleCardComponent,
     LoadingAnimationComponent,
     NavBarComponent,
     NewBtnComponent,
-    EventFormComponent,
-    EventSampleCardComponent,
-    ComponentsNavBarComponent
+    SearchBarComponent,
   ]
 })
 export class DashboardModule { }

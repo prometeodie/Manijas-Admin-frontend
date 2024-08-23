@@ -1,0 +1,5 @@
+
+<section class="search-bar">
+  <i class="fa-solid fa-magnifying-glass search-bar__icon"></i>
+<input type="text" class="search-bar__search-bar" placeholder="Search..." #txtQuery (keyup)="searchBoardGame(txtQuery.value)" (blur)="closeSearchBar(txtQuery)">
+</section>

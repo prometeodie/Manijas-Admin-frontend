@@ -1,0 +1,94 @@
+@import './../../../scss/variables.scss';
+
+.about,
+.about__form__input-label__input,
+.about__form__btn{
+  width: 100%;
+}
+
+.about__form__input-label__input,
+.about__form__btn{
+  background-color:$inputs-bc;
+  font-weight: 200;
+}
+
+.about__form__input-label__input::placeholder,
+.about__form__input-label__input,
+.about__form__btn{
+  color: $text-color-inputs;
+}
+
+.about__form__input-label__input__characters-container,
+.about__form__img-container{
+  display: flex;
+}
+h3{
+  text-decoration: underline;
+  padding: 0.3rem;
+  margin: auto;
+}
+
+.about{
+  border-radius: 5px;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: $secondary-element-color;
+  max-width: 67rem;
+
+  &__form{
+    &__input-label__input{
+      font-size: larger;
+      padding: 1rem 0.5rem 0.5rem 0.5rem;
+      border: none;
+      outline: none;
+      margin: 0.7rem 0;
+
+      &--txt-area{
+        height: 16rem;
+      }
+
+      &--cb{
+        width: auto;
+        margin-left: 1rem;
+      }
+
+      &__characters-container{
+        flex-direction: column;
+        margin-bottom: 1rem;
+      }
+
+    }
+
+    &__img-container{
+      width: 100%;
+      background-color:$inputs-bc;
+      justify-content: center;
+      padding: 1rem;
+      &__img{
+        max-width: 18rem;
+        object-fit: scale-down;
+      }
+    }
+
+    &__btn{
+      border-radius: 10px;
+      border: 1px solid #AFA3A3;
+      font-weight: 500;
+      padding: 1rem;
+      text-align: center;
+      transition: background-color 0.5s ease;
+      border: none;
+      cursor: pointer;
+
+      &:hover{
+        background-color:#bbacac7c ;
+      }
+
+      &:active{
+        transform: scale(0.9);
+      }
+    }
+
+
+  }
+}

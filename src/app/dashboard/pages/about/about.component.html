@@ -1,1 +1,14 @@
+<main class="about">
+  <h1>Historia Manija</h1>
+  <section class="about__section">
+    <loading-animation *ngIf="isLoading"/>
+    <span class="about__section__empty" *ngIf="aboutItems.length === 0; else aboutCards">No hay nada que mostrar <i class="fa-solid fa-dragon"></i></span>
+    <ng-template #aboutCards>
+      <div class="about__section__cards" >
+          <app-cards class="about__section__cards__card" *ngFor="let item of aboutItems" [objectTemplate]="item" (delete)="onCardDelete()"/>
+      </div>
+    </ng-template>
 
+  </section>
+  <new-btn [path]="aboutPath" class="about__new-btn"/>
+</main>

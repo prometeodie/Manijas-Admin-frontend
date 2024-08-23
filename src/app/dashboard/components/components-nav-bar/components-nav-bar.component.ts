@@ -10,10 +10,10 @@ import { BlogsCategories } from '../../interfaces/blogs interfaces/blog-categori
   styleUrls: ['./components-nav-bar.component.scss']
 })
 export class ComponentsNavBarComponent {
-  @Input() categories!: BlogsCategories[];
-  @Output() category = new EventEmitter<BlogsCategories>();
+  @Input() categories!: string[];
+  @Output() category = new EventEmitter<string>();
 
-  emitCategory(category: BlogsCategories){
+  emitCategory(category: string){
     this.category.emit(category);
   }
 }

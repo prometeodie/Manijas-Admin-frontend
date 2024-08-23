@@ -1,16 +1,18 @@
+import { ManijometroPoolEntity } from "../boards interfaces/manijometro-pool.interface";
 import { Info } from "./info.interface";
 
 export interface CardTemplate{
   _id:string
-  title: string;
+  title?: string;
   imgPath:string;
   imgName: string;
-  isInfoAList:boolean;
+  isInfoAList?:boolean;
   info?:Info;
   text?:string;
   section:string;
   publish:boolean;
-  manijometro?:Number;
+  manijometroPosition?:Number;
+  manijometroPool?:ManijometroPoolEntity[];
   hasVoted?:boolean;
  }
 

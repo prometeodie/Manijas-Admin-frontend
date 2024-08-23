@@ -21,3 +21,10 @@
   from {filter: grayscale(0);}
   to {filter: grayscale(97%);}
 }
+
+.loading-animation--scroll-loading{
+  bottom: 0;
+  height: auto;
+  top:auto;
+  padding: 0.7rem 0;
+}

@@ -18,6 +18,7 @@ export class NavBarComponent {
     {name:'eventos', icon:'fa-solid fa-calendar-day', route:`${this.standarRoute}/events`},
     {name:'blogs', icon:'fa-solid fa-newspaper', route:`${this.standarRoute}/blogs`},
     {name:'nosotros', icon:'fa-solid fa-people-group', route:`${this.standarRoute}/us`},
+    {name:'manijometro', icon:'fa-solid fa-trophy', route:`${this.standarRoute}/manijometro`},
     {name:'panel de control', icon:'fa-solid fa-gears', route:`${this.standarRoute}/control-panel`}
   ];
 

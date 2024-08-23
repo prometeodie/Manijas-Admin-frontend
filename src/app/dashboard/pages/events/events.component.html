@@ -3,9 +3,13 @@
   <h1>Eventos</h1>
   <section class="events__section">
     <div class="events__section__cards" >
+      <loading-animation *ngIf="isLoading"/>
       <div class="events__section__cards__container">
         <h3>Eventos Activos</h3>
-        <app-cards class="events__section__cards__container__cards" *ngFor="let event of events" [objectTemplate]="event" (delete)="onCardDelete()"/>
+        <span class="about__section__empty" *ngIf="events.length === 0; else eventsCards">No hay eventos que mostrar <i class="fa-solid fa-dragon"></i></span>
+        <ng-template #eventsCards>
+          <app-cards class="events__section__cards__container__cards" *ngFor="let event of events" [objectTemplate]="event" (delete)="onCardDelete()"/>
+        </ng-template>
       </div>
        <event-sample-card class="events__section__sample-card"/>
     </div>

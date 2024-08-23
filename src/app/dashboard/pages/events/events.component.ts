@@ -18,7 +18,8 @@ export class EventsComponent implements OnInit,OnDestroy {
   public imgSrc = this.dashboardService.imgSrc;
   public eventSample = this.eventsService.eventCardSample;
   public events: CardTemplate[] = [];
-  // TODO: hacer la peticion para traer todos los eventos, borrar eventos, cargar nuevos eventos, borrar img de eventos, editar eventos
+  public isLoading:boolean = false;
+
 
   ngOnInit(): void {
     this.actualizeElements();
@@ -29,14 +30,15 @@ export class EventsComponent implements OnInit,OnDestroy {
   }
 
   actualizeElements(){
+    this.isLoading = true;
     this.eventsService.getAllEvents().pipe(
       map(event=> event!.map(event=>this.transformData(event)))
-  ).subscribe(
-    events=>{
-      this.events = events
-    }
-
-  )
+    ).subscribe(
+      events=>{
+        this.events = events
+      }
+    )
+    this.isLoading = false;
   }
 
   onCardDelete(){

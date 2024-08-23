@@ -1,0 +1,97 @@
+
+@import '../../../scss/variables.scss';
+
+h1{
+  padding-left: 0.5rem;
+}
+
+  .boards__section,
+  .boards__search-bar{
+  display: flex;
+  }
+
+  .boards__section,
+  .boards__search-bar,
+  .boards__section{
+    justify-content: center;
+  }
+
+.boards{
+  position: relative;
+  &__new-btn{
+    position: fixed;
+    right: 0.8rem;
+    bottom: 0.8rem;
+    z-index: 999;
+  }
+
+  &__section {
+    width: 100%;
+    margin-top: 1.5rem;
+    background-color: $main-element-color;
+    padding: 1rem 0;
+
+    &__cards {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      gap: 1rem;
+    }
+
+    &__empty{
+      font-weight: 100;
+      font-size: 1.8rem;
+    }
+  }
+
+  &__nav-bar{
+    display: block;
+    top: 4rem;
+    z-index: 999;
+  }
+}
+
+
+// MEDIA QUERIES
+
+@media (min-width:600px) {
+  .boards{
+    padding-right: 5.5rem;
+    &__section__empty{
+      font-size: 3rem;
+    }
+  }
+  .boards__nav-bar{
+    top: 0;
+  }
+}
+
+
+@media (min-width:700px) {
+  .boards__nav-bar{
+    position: sticky;
+  }
+}
+
+@media (min-width:850px) {
+  .boards__section__cards {
+     grid-template-columns: repeat(2, 1fr);
+   }
+ }
+
+@media (min-width:1100px) {
+  .boards{
+    padding: 0;
+  }
+}
+
+@media (min-width:1200px) {
+  .boards__section__cards {
+     grid-template-columns: repeat(3, 1fr);
+   }
+ }
+
+@media (min-width:1500px) {
+ .boards__section__cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

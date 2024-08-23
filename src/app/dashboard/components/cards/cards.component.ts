@@ -5,6 +5,7 @@ import { ImgPipePipe } from '../../pipes/img-pipe.pipe';
 import { DashboardService } from '../../services/dashboard.service';
 import Swal from 'sweetalert2';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-cards',
@@ -18,18 +19,22 @@ export class CardsComponent implements OnInit {
   @Input() objectTemplate!: CardTemplate;
   @Output() delete = new EventEmitter<void>(); //TODO: this Output emmits an event, when the card is deleted successfuly the father lisen to this event and actualize the cards list
 private dashboardService = inject(DashboardService);
+private authService = inject(AuthService);
  public isTheBoardVoted: boolean = false;
  public isEventCategory: boolean = false
+ public hasVoted: boolean = false;
  public imgUrl: string = '';
- public RouteToEditItem: string= '';
+ public routeToEditItem: string= '';
+ public routeToVoteBoard: string= '';
 
 
  ngOnInit(){
-  this.RouteToEditItem = `/lmdr/create-edit/${this.objectTemplate.section}/${this.objectTemplate._id}`;
+  this.routeToEditItem = `/lmdr/create-edit/${this.objectTemplate.section}/${this.objectTemplate._id}`;
+  this.routeToVoteBoard = `/lmdr/manijometro/${this.objectTemplate._id}`;
   (this.objectTemplate.section === 'EVENTS')? this.isEventCategory = true : this.isEventCategory = false;
   this.imgUrl = this.objectTemplate.imgPath;
-
-  if(this.objectTemplate.imgPath.length > 0){
+  this.hasUserVoted();
+  if(this.objectTemplate.imgPath){
     (this.dashboardService.screenWidth > 800)?
       this.objectTemplate.imgPath = `assets/upload/${this.objectTemplate.section}/${this.objectTemplate.title}/${this.objectTemplate.imgPath}`:
       this.objectTemplate.imgPath = `assets/upload/${this.objectTemplate.section}/${this.objectTemplate.title}/optimize/smallS-${this.objectTemplate.imgPath}`;
@@ -49,6 +54,14 @@ isBoardVoted(hasVoted: boolean){
     this.isTheBoardVoted = !this.isTheBoardVoted;
   }
   return;
+}
+
+hasUserVoted(){
+  if(this.objectTemplate.manijometroPool){
+    if(this.objectTemplate.manijometroPool!.filter(manijometro => manijometro.userId === this.authService.currentUser()!._id).length !== 0){
+      this.hasVoted = true;
+    }
+  }
 }
 
 deleteItem(id:string){

@@ -15,7 +15,7 @@
     background-color: $secondary-element-color;
     border-radius: 0 0 10px 10px;
     color: $main-text-color;
-    font-size: 2rem;
+    font-size: 1.6rem;
     justify-content: space-around;
     padding: 0.5rem 0;
     position: sticky;
@@ -30,7 +30,7 @@
       cursor: pointer;
 
       &__name{
-        font-size: 0.7rem;
+        font-size: 0.55rem;
       }
 
       &__icon:active{
@@ -40,6 +40,12 @@
   }
 
   // MEDIA QUERIES
+
+  @media (min-width:500px) {
+    .menu__btn__name{
+      font-size: 0.8rem;
+    }
+  }
 
   @media (min-width:600px) {
     .menu{
@@ -69,7 +75,6 @@
           padding: 0 0.5rem;
           position: absolute;
           text-align: center;
-          width: 5rem;
       }
 
       &:first-child {

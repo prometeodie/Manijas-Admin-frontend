@@ -15,7 +15,6 @@ export class BlogsService {
   private dashboardService = inject(DashboardService);
   private http = inject(HttpClient);
 
-  // TODO:hacer todas las peticiones de los blogs
 
   // C.R.U.D
   getAllBlogs(category?: BlogsCategories | null, page: number = 1) {

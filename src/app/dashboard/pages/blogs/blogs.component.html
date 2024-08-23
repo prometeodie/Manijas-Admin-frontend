@@ -2,7 +2,7 @@
   <h1>Blogs</h1>
   <components-nav-bar class="blogs__nav-bar" (category)="onCategorySelected($event)"[categories]="categories"/>
   <section class="blogs__section">
-    <loading-animation *ngIf="isLoading"/>
+    <loading-animation *ngIf="isLoading" [isScrolling]="isScrolling"/>
     <span class="blogs__section__empty" *ngIf="blogs.length === 0; else blogsCards">No hay blogs <i class="fa-solid fa-dragon"></i></span>
     <ng-template #blogsCards>
       <div class="blogs__section__cards" >
@@ -13,5 +13,3 @@
   </section>
   <new-btn [path]="blogsPath" class="blogs__new-btn"/>
 </main>
-
-<!-- TODOÑ cambiar en el backend que las imagenes se guarden en vez del nombre del item con el id asi no tengo problema cuando se modifica el titulo -->
