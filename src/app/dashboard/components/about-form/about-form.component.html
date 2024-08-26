@@ -12,13 +12,19 @@
               *ngIf="input.type !== 'textArea'; else textArea"
               (change)="input.type === 'file' ? onFileSelected($event) : null"
               [ngClass]="{'about__form__input-label__input--cb': input.type === 'checkbox'}">
-
               <div class="about__form__img-container" *ngIf="imgSrc && input.name === 'img'">
                 <img  [src]="imgSrc" alt="event-Img" class="about__form__img-container__img">
               </div>
       <ng-template #textArea>
-        <textarea class="about__form__input-label__input about__form__input-label__input--txt-area" #txtQuery (keyup)="countingChar(txtQuery.value)" [placeholder]="input.placeHolder" name="feedback"></textarea>
+        <textarea class="about__form__input-label__input about__form__input-label__input--txt-area"   [placeholder]="input.placeHolder" ></textarea>
         <div class="about__form__input-label__input__characters-container">
+          <ckeditor
+            [editor]="Editor"
+            [config]="editorConfig"
+            #txtQuery
+            (change)="countingChar($event)"
+            name="editor">
+          </ckeditor>
           <span>Caracteres: {{charCount}}</span>
           <span>Promedio de caracteres de "Fragmentos de historia Manija": 150</span>
         </div>

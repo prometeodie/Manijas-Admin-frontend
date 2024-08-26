@@ -67,6 +67,18 @@ export class DashboardService {
     }
   }
 
+  countingChar(event: any) {
+    const editorContent = event.editor.getData();  // Obtiene el contenido del editor
+    const textContent = this.stripHtml(editorContent);
+    return textContent.length;
+  }
+
+  stripHtml(html: string): string {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+  }
+
   returnOneImg(event: Event){
     const input = event.target as HTMLInputElement;
       if (input.files && input.files.length > 0) {

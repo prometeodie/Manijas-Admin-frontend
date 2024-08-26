@@ -6,23 +6,33 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DashboardService } from '../../services/dashboard.service';
 import { FormService } from 'src/app/services/form-validator.service';
 
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+
+
 @Component({
   selector: 'about-form',
   standalone: true,
-  imports: [CommonModule, LoadingAnimationComponent, ReactiveFormsModule],
+  imports: [CommonModule, LoadingAnimationComponent, ReactiveFormsModule, CKEditorModule],
   templateUrl: './about-form.component.html',
   styleUrls: ['./about-form.component.scss']
 })
-export class AboutFormComponent implements OnDestroy{
+export class AboutFormComponent implements  OnDestroy{
 
-  private fb = inject(FormBuilder);
-  private dashboardService= inject(DashboardService);
-  private fvService= inject(FormService);
-  @ViewChild('txtQuery')
-  txtQuery!: ElementRef;
-  public charCount:number = 0;
-  public imgSrc:string | ArrayBuffer | null ='';
-  public aboutInputs: AboutInput[] = [
+  public editorConfig = {
+  toolbar: ['bold', 'italic', 'link', 'undo', 'redo'],
+  contentsCss: '\about-form\about-form.component.scss'
+};
+
+@ViewChild('txtQuery')
+txtQuery!: ElementRef;
+private fb = inject(FormBuilder);
+private dashboardService= inject(DashboardService);
+private fvService= inject(FormService);
+public Editor = ClassicEditor;
+public charCount:number = 0;
+public imgSrc:string | ArrayBuffer | null ='';
+public aboutInputs: AboutInput[] = [
     { name: 'textArea', placeHolder: 'Escribir un fragmento de la historia Manija', label:'', type: 'textArea', maxLenght: 24 },
     { name: 'img', placeHolder: '', label: 'Seleccionar una imagen', type: 'file', maxLenght:null},
     { name: 'publish', placeHolder: ':', label: 'Publicar:', type: 'checkbox', maxLenght:null }
@@ -33,6 +43,7 @@ export class AboutFormComponent implements OnDestroy{
     publish:                   [false ,[Validators.required]],
     img:                       [],
   })
+
 
   ngOnDestroy(): void {
     this.cleanImg();
@@ -62,8 +73,8 @@ export class AboutFormComponent implements OnDestroy{
     this.dashboardService.cleanImgSrc();
   }
 
-  countingChar(txtQuery: string){
-    this.charCount = txtQuery.length;
+  countingChar(event: any){
+    this.charCount = this.dashboardService.countingChar(event)
   }
 
   onSubmit(){
