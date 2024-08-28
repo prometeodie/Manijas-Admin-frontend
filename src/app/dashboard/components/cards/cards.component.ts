@@ -31,6 +31,7 @@ private authService = inject(AuthService);
  ngOnInit(){
   this.routeToEditItem = `/lmdr/create-edit/${this.objectTemplate.section}/${this.objectTemplate._id}`;
   this.routeToVoteBoard = `/lmdr/manijometro/${this.objectTemplate._id}`;
+  this.objectTemplate.text = this.dashboardService.stripHtml(this.objectTemplate.text!);
   (this.objectTemplate.section === 'EVENTS')? this.isEventCategory = true : this.isEventCategory = false;
   this.imgUrl = this.objectTemplate.imgPath;
   this.hasUserVoted();
@@ -49,6 +50,9 @@ private authService = inject(AuthService);
   return `${text.slice(0, maxLength)}...`;
 }
 
+stripHtml(html: string){
+  this.dashboardService.stripHtml(html)
+}
 isBoardVoted(hasVoted: boolean){
   if(hasVoted){
     this.isTheBoardVoted = !this.isTheBoardVoted;

@@ -16,12 +16,11 @@
                 <img  [src]="imgSrc" alt="event-Img" class="about__form__img-container__img">
               </div>
       <ng-template #textArea>
-        <textarea class="about__form__input-label__input about__form__input-label__input--txt-area"   [placeholder]="input.placeHolder" ></textarea>
         <div class="about__form__input-label__input__characters-container">
           <ckeditor
+            [formControlName]="input.name"
             [editor]="Editor"
             [config]="editorConfig"
-            #txtQuery
             (change)="countingChar($event)"
             name="editor">
           </ckeditor>

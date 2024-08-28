@@ -1,1 +1,44 @@
-<p>blogs-form works!</p>
+<!-- <loading-animation/> -->
+<div class="blog">
+  <h3>Blog</h3>
+  <form class="blog__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
+    <div class="blog__form__input-label" *ngFor="let input of aboutInputs">
+      <label class="blog__form__input-label__label" *ngIf="input.label.length > 0">{{input.label}}</label>
+      <input class="blog__form__input-label__input"
+              [formControlName]="input.name"
+              [maxLength]="input.maxLenght"
+              [type]="input.type"
+              [placeholder]="input.placeHolder"
+              *ngIf="input.type !== 'textArea' && input.type !== 'select'; else textArea"
+              (change)="input.type === 'file' ? onFileSelected($event) : null"
+              [ngClass]="{'blog__form__input-label__input--cb': input.type === 'checkbox'}">
+              <div class="blog__form__img-container" *ngIf="imgSrc && input.name === 'img'">
+                <img  [src]="imgSrc" alt="event-Img" class="blog__form__img-container__img">
+              </div>
+      <ng-template #textArea>
+        <div class="blog__form__input-label__input__characters-container">
+          <div *ngIf="input.type !== 'textArea'">
+            <ckeditor
+              [formControlName]="input.name"
+              [editor]="Editor"
+              [config]="editorConfig"
+              (change)="countingChar($event)"
+              name="editor">
+            </ckeditor>
+            <span>Caracteres: {{charCount}}</span>
+            <span>Promedio de caracteres en los "Blogs": 150</span>
+          </div>
+            <div *ngIf="input.type !== 'select'">
+              <label for="options">Seleccione el autor de este Blog:</label>
+              <select id="options" formControlName="selectedOption" class="blog__form__input-label__select">
+                <option *ngFor="let option of options" class="blog__form__input-label__select__options">
+                  {{ option }}
+                </option>
+              </select>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+    <button type="submit" class="blog__form__btn">Guardar</button>
+  </form>
+ </div>

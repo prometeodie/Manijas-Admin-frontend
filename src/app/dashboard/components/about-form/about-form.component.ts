@@ -1,34 +1,28 @@
-import { Component, ElementRef, inject, OnDestroy, ViewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormService } from 'src/app/services/form-validator.service';
 import { LoadingAnimationComponent } from '../loading-animation/loading-animation.component';
 import { AboutInput } from '../../interfaces';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DashboardService } from '../../services/dashboard.service';
-import { FormService } from 'src/app/services/form-validator.service';
-
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
-
+import { ClassicEditor, EditorConfig } from 'ckeditor5';
+import { toolBarConfig } from 'src/app/utils/toolbar-config';
 
 @Component({
   selector: 'about-form',
   standalone: true,
+  encapsulation: ViewEncapsulation.None,
   imports: [CommonModule, LoadingAnimationComponent, ReactiveFormsModule, CKEditorModule],
   templateUrl: './about-form.component.html',
   styleUrls: ['./about-form.component.scss']
 })
-export class AboutFormComponent implements  OnDestroy{
+export class AboutFormComponent implements  OnInit,OnDestroy{
 
-  public editorConfig = {
-  toolbar: ['bold', 'italic', 'link', 'undo', 'redo'],
-  contentsCss: '\about-form\about-form.component.scss'
-};
-
-@ViewChild('txtQuery')
-txtQuery!: ElementRef;
 private fb = inject(FormBuilder);
 private dashboardService= inject(DashboardService);
 private fvService= inject(FormService);
+public editorConfig!:EditorConfig;
 public Editor = ClassicEditor;
 public charCount:number = 0;
 public imgSrc:string | ArrayBuffer | null ='';
@@ -38,12 +32,17 @@ public aboutInputs: AboutInput[] = [
     { name: 'publish', placeHolder: ':', label: 'Publicar:', type: 'checkbox', maxLenght:null }
   ];
 
-  public myForm = this.fb.group({
+public myForm = this.fb.group({
     textArea:                   ['',[Validators.required]],
     publish:                   [false ,[Validators.required]],
     img:                       [],
   })
 
+  ngOnInit(): void {
+    this.editorConfig = toolBarConfig;
+    this.editorConfig.placeholder = 'Ingresa un fragmento de la historia Manija!';
+    // TODO: para meter data en el editor se usa la propiedad 	this.editorConfig.initialData: 'data...'
+ }
 
   ngOnDestroy(): void {
     this.cleanImg();
@@ -80,5 +79,4 @@ public aboutInputs: AboutInput[] = [
   onSubmit(){
     alert('elemnto cargado')
   }
-
 }
