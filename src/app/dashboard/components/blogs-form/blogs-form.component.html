@@ -8,6 +8,7 @@
               [formControlName]="input.name"
               [maxLength]="input.maxLenght"
               [type]="input.type"
+              accept="image/*"
               [placeholder]="input.placeHolder"
               *ngIf="input.type !== 'textArea' && input.type !== 'select'; else textArea"
               (change)="input.type === 'file' ? onFileSelected($event) : null"
@@ -17,7 +18,7 @@
               </div>
       <ng-template #textArea>
         <div class="blog__form__input-label__input__characters-container">
-          <div *ngIf="input.type !== 'textArea'">
+          <div *ngIf="input.type === 'textArea'">
             <ckeditor
               [formControlName]="input.name"
               [editor]="Editor"
@@ -26,12 +27,12 @@
               name="editor">
             </ckeditor>
             <span>Caracteres: {{charCount}}</span>
-            <span>Promedio de caracteres en los "Blogs": 150</span>
+            <span> / Promedio de caracteres en los "Blogs": 150</span>
           </div>
-            <div *ngIf="input.type !== 'select'">
-              <label for="options">Seleccione el autor de este Blog:</label>
-              <select id="options" formControlName="selectedOption" class="blog__form__input-label__select">
-                <option *ngFor="let option of options" class="blog__form__input-label__select__options">
+            <div *ngIf="input.type === 'select'">
+              <label for="options">{{this.input.placeHolder}}</label>
+              <select id="options" [formControlName]="input.name" class="blog__form__input-label__select">
+                <option *ngFor="let option of input.selectOptions" class="blog__form__input-label__select__options">
                   {{ option }}
                 </option>
               </select>

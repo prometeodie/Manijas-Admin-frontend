@@ -12,6 +12,16 @@ import { BlogsCategories } from '../interfaces/blogs interfaces/blog-categories.
 export class BlogsService {
 
   readonly url = `${environment.baseUrl}/blogs`
+  readonly blogsCategories: string[] = [
+    BlogsCategories.BOARDGAMES,
+    BlogsCategories.ROL,
+    BlogsCategories.LMDR,
+    BlogsCategories.COCINA,
+    BlogsCategories.CRAFTING,
+    BlogsCategories.EVENTOS,
+    BlogsCategories.MIEMBROS,
+    BlogsCategories.OTROS
+  ]
   private dashboardService = inject(DashboardService);
   private http = inject(HttpClient);
 

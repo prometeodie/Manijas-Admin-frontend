@@ -4,6 +4,8 @@ import { DashboardService } from './dashboard.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Boardgame, CategoryGame } from '../interfaces';
 import { catchError, of } from 'rxjs';
+import { Dificulty } from '../interfaces/boards interfaces/dificulty.enum';
+import { Replayability } from '../interfaces/boards interfaces/replayability.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +13,41 @@ import { catchError, of } from 'rxjs';
 export class BoardgamesService {
 
   readonly url = `${environment.baseUrl}/boardgames`
+  readonly boardsCategories: string[] = [
+    CategoryGame.EUROGAMES,
+    CategoryGame.AMERITRASH,
+    CategoryGame.PARTY,
+    CategoryGame.AREA,
+    CategoryGame.COOPERATIVE,
+    CategoryGame.DECKBUILDING,
+    CategoryGame.DESTREZA,
+    CategoryGame.ECONOMICSIMULATION,
+    CategoryGame.EDUCATIVO,
+    CategoryGame.WORKERPLACEMENT,
+    CategoryGame.ENGINEBUILDING,
+    CategoryGame.ENGAÑO,
+    CategoryGame.ABSTRACTO,
+    CategoryGame.FILLER,
+    CategoryGame.LEGACY,
+    CategoryGame.LOSETA,
+    CategoryGame.NARRACION,
+    CategoryGame.NARRACION,
+    CategoryGame.ROL,
+    CategoryGame.SOCIAL,
+    CategoryGame.TEMATICO,
+    CategoryGame.WARGAMES
+  ]
+  readonly dificulty:string[] =[
+    Dificulty.LOW,
+    Dificulty.MEDIUM,
+    Dificulty.HIGH
+  ]
+
+  readonly replayability:string[] =[
+    Replayability.LOW,
+    Replayability.MEDIUM,
+    Replayability.HIGH
+  ]
   private dashboardService = inject(DashboardService);
   private http = inject(HttpClient);
 

@@ -8,6 +8,7 @@
               [formControlName]="input.name"
               [maxLength]="input.maxLenght"
               [type]="input.type"
+              accept="image/*"
               [placeholder]="input.placeHolder"
               *ngIf="input.type !== 'textArea'; else textArea"
               (change)="input.type === 'file' ? onFileSelected($event) : null"
@@ -25,7 +26,7 @@
             name="editor">
           </ckeditor>
           <span>Caracteres: {{charCount}}</span>
-          <span>Promedio de caracteres de "Fragmentos de historia Manija": 150</span>
+          <span> / Promedio de caracteres de "Fragmentos de historia Manija": 150</span>
         </div>
       </ng-template>
     </div>
