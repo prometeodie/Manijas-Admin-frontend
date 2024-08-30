@@ -99,7 +99,7 @@ export class EventFormComponent {
 
     async onFileSelected(event: Event) {
       const input = event.target as HTMLInputElement;
-      this.imgSrc = await this.dashboardService.onFileSelected(event);
+      // this.imgSrc = await this.dashboardService.onFileSelected(event);
       this.dashboardService.loadImage(this.imgSrc);
       this.selectedFile = this.dashboardService.returnOneImg(event);
       if(input.files){

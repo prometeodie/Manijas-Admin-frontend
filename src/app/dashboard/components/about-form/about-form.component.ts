@@ -50,7 +50,7 @@ public myForm = this.fb.group({
 
   async onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.imgSrc = await this.dashboardService.onFileSelected(event);
+    // this.imgSrc = await this.dashboardService.onFileSelected(event);
     this.dashboardService.loadImage(this.imgSrc);
     if(input.files){
       const file = input.files[0];

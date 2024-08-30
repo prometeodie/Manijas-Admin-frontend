@@ -1,49 +1,65 @@
 <!-- <loading-animation/> -->
-<div class="board-games">
+<div class="board-games" [ngClass]="{'board-games__no-scroll': isExplanationOpen}">
   <h3>Board Games</h3>
   <form class="board-games__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
     <div class="board-games__form__input-label" *ngFor="let input of aboutInputs">
       <label class="board-games__form__input-label__label" *ngIf="input.label.length > 0">{{input.label}}</label>
       <input class="board-games__form__input-label__input"
-              [formControlName]="input.name"
-              [maxLength]="input.maxLenght"
-              step="1"
-              [type]="input.type"
-              [placeholder]="input.placeHolder"
-              *ngIf="input.type !== 'textArea' && input.type !== 'select'; else textArea"
-              [attr.multiple]="input.name === 'img' ? true : null"
-              accept="image/*"
-              (change)="input.type === 'file' ? onFileSelected($event) : null"
+      [formControlName]="input.name"
+      [maxLength]="input.maxLenght"
+      step="1"
+      [type]="input.type"
+      [placeholder]="input.placeHolder"
+      *ngIf="input.type !== 'textArea' && input.type !== 'select'; else textArea"
+      [attr.multiple]="input.name === 'img' ? true : null"
+      accept="image/*"
+      (change)="input.type === 'file' ? onFileSelected($event, input.name) : null"
+      [ngClass]="{'board-games__form__input-label__input--cb': input.type === 'checkbox'}">
 
-              [ngClass]="{'board-games__form__input-label__input--cb': input.type === 'checkbox'}">
-              <div class="board-games__form__img-container" *ngIf="imgSrc && input.name === 'img'">
-                <img  [src]="imgSrc" alt="event-Img" class="board-games__form__img-container__img">
-              </div>
+      <div *ngIf="imgSrc && input.name === 'img' || cardCoverImgSrc && input.name === 'cardCoverImgName'" >
+        <div *ngFor="let item of cardCoverImgSrc"  class="board-games__form__img-container ">
+          <img  [src]="item" alt="event-Img" class="board-games__form__img-container__img board-games__form__img-container__img--card-cover">
+        </div>
+        <div *ngFor="let item of imgSrc" class="board-games__form__img-container">
+          <img  [src]="item" alt="event-Img" class="board-games__form__img-container__img">
+        </div>
+      </div>
+      <!-- TODO:acomodar esto para que salga ifgual a figma -->
       <ng-template #textArea>
         <div class="board-games__form__input-label__input__characters-container">
           <div *ngIf="input.type === 'textArea'">
             <ckeditor
-              [formControlName]="input.name"
-              [editor]="Editor"
-              [config]="editorConfig"
-              (change)="countingChar($event)"
-              name="editor">
-            </ckeditor>
-            <span>Caracteres: {{charCount}} </span>
-            <span>/ Promedio de caracteres en las "reseñas": 150</span>
-          </div>
-            <div *ngIf="input.type === 'select'">
-              <label for="options">{{this.input.placeHolder}}</label>
-              <select id="options" [formControlName]="input.name" class="board-games__form__input-label__select">
-                <option *ngFor="let option of input.selectOptions" class="board-games__form__input-label__select__options">
-                  {{ option }}
-                </option>
-              </select>
+            [formControlName]="input.name"
+            [editor]="Editor"
+            [config]="editorConfig"
+            (change)="countingChar($event)"
+            name="editor">
+          </ckeditor>
+          <span>Caracteres: {{charCount}} </span>
+          <span>/ Promedio de caracteres en las "reseñas": 150</span>
+        </div>
+        <div *ngIf="input.type === 'select'">
+          <label for="options">{{this.input.placeHolder}}</label>
+          <select id="options" [formControlName]="input.name" class="board-games__form__input-label__select">
+            <option *ngFor="let option of input.selectOptions" class="board-games__form__input-label__select__options">
+              {{ option }}
+            </option>
+          </select>
+          <div class="board-games__form__input-label__select__explanation" *ngIf="input.name === 'category'" (click)="openExplanation()">
+            <i class="fa-solid fa-circle-info"></i>
+            <span class="board-games__form__input-label__select__explanation__hover-text">"Haz clic para saber más de cada categoría."</span>
           </div>
         </div>
+      </div>
       </ng-template>
     </div>
     <button type="submit" class="board-games__form__btn">Guardar</button>
+    <ul class="board-games__form__categories-ul" [ngClass]="{'board-games__form__categories-ul--active': isExplanationOpen}">
+      <li class="board-games__form__categories-ul--not-dot"><h2>Explicación de cada categoria</h2></li>
+      <li class="board-games__form__categories-ul__close-mark board-games__form__categories-ul--not-dot" (click)="openCloseExplanation()">
+        <i class="fa-solid fa-circle-xmark events__form__img-container__mark"></i>
+      </li>
+      <li *ngFor="let category of categoryExplanation"><p>{{category}}</p></li>
+    </ul>
   </form>
-  <p class="board-games__category-explanation">{{boardExplanation}}</p>
  </div>

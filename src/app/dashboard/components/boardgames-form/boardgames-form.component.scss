@@ -10,7 +10,9 @@
 
 .board-games,
 .board-games__form__input-label__input,
-.board-games__form__btn{
+.board-games__form__btn,
+.board-games__form__img-container,
+.board-games__form__img-container__img--card-cover{
   width: 100%;
 }
 
@@ -48,6 +50,11 @@ h3{
   padding: 1rem;
   background-color: $secondary-element-color;
   max-width: 67rem;
+  position: relative;
+
+  &__no-scroll{
+    overflow: hidden;
+  }
 
   &__form{
     &__input-label__input{
@@ -83,17 +90,43 @@ h3{
         background-color: #2e666e;
         border: 1px solid transparent;
       }
+
+      &__explanation{
+        margin-left: 0.5rem;
+        display: inline;
+        font-size: medium;
+        cursor: pointer;
+        &:hover &__hover-text{
+          display: inline-block;
+        }
+
+        &__hover-text{
+          display: none;
+          position: absolute;
+          font-size: x-small;
+          padding: 0 0.2rem;
+          margin-left: 0.3rem;
+          background-color: #000000ba;
+          border-radius: 3px;
+        }
+      }
     }
 
     &__img-container{
-      width: 100%;
       background-color:$inputs-bc;
       justify-content: center;
       padding: 1rem;
       margin-bottom: 1rem;
+
       &__img{
         max-width: 18rem;
         object-fit: scale-down;
+
+        &--card-cover{
+          height: 8rem;
+          max-width: 30rem;
+          object-fit: cover;
+        }
       }
     }
 
@@ -116,6 +149,37 @@ h3{
       }
     }
   }
+
+  &__form__categories-ul{
+    position: absolute;
+    display: none;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: #000000c4;
+    overflow: auto;
+    padding: 6rem 1.5rem;
+
+    &--active{
+      display: block;
+    }
+    &__close-mark{
+      position: absolute;
+      top: 4rem;
+      right: 0.6rem;
+      font-size: medium;
+      padding: 0.6rem;
+      cursor: pointer;
+
+      &:active{
+        transform: scale(0.9);
+      }
+    }
+
+    &--not-dot{
+      list-style-type: none;
+    }
+  }
 }
 
 // SCROLL BAR
@@ -123,3 +187,15 @@ h3{
   display: none;
 }
 
+// MEDIA QUERIES
+@media (min-width:600px) {
+  .board-games__form__categories-ul{
+    padding: 1rem 5.5rem;
+
+    &__close-mark{
+      top: 1rem;
+      right: 1rem;
+      font-size: x-large;
+    }
+  }
+}

@@ -44,26 +44,58 @@ export class DashboardService {
     });
   }
 
-  async onFileSelected(event: Event): Promise<string | ArrayBuffer | null> {
+  // async onFileSelected(event: Event): Promise<string | ArrayBuffer | null> {
+  //   const input = event.target as HTMLInputElement;
+
+  //   if (input.files && input.files[0]) {
+  //     const file = input.files[0];
+  //     const reader = new FileReader();
+  //     console.log(input.files.length)
+  //     return new Promise((resolve, reject) => {
+  //       reader.onload = () => {
+  //         resolve(reader.result);
+  //       };
+
+  //       reader.onerror = (error) => {
+  //         reject(error);
+  //       };
+
+  //       reader.readAsDataURL(file);
+  //     });
+  //   } else {
+  //     return null;
+  //   }
+  // }
+  async onFileSelected(event: Event): Promise<(string | ArrayBuffer)[]> {
     const input = event.target as HTMLInputElement;
 
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      const reader = new FileReader();
+    if (input.files && input.files.length > 0) {
+      const filePromises: Promise<string | ArrayBuffer>[] = [];
 
-      return new Promise((resolve, reject) => {
-        reader.onload = () => {
-          resolve(reader.result);
-        };
+      for (let i = 0; i < input.files.length; i++) {
+        const file = input.files[i];
+        const reader = new FileReader();
+        const filePromise = new Promise<string | ArrayBuffer>((resolve, reject) => {
+          reader.onload = () => {
+            resolve(reader.result!);
+          };
+          reader.onerror = (error) => {
+            reject(error);
+          };
+          reader.readAsDataURL(file);
+        });
+        filePromises.push(filePromise);
+      }
 
-        reader.onerror = (error) => {
-          reject(error);
-        };
-
-        reader.readAsDataURL(file);
-      });
+      try {
+        const results = await Promise.all(filePromises);
+        return results;
+      } catch (error) {
+        console.error('Error al leer uno o más archivos:', error);
+        return [];
+      }
     } else {
-      return null;
+      return [];
     }
   }
 

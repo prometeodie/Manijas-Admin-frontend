@@ -9,7 +9,7 @@ import { ClassicEditor, EditorConfig } from 'ckeditor5';
 import { BoardInput } from '../../interfaces/boards interfaces/BoardGamesInput.interface';
 import { FormService } from 'src/app/services/form-validator.service';
 import { toolBarConfig } from 'src/app/utils/toolbar-config';
-import { categoryExplanation } from './utils/categories-explanation';
+import { boardGameCategories } from './utils/categories-explanation';
 
 @Component({
   selector: 'boardgames-form',
@@ -24,11 +24,14 @@ export class BoardgamesFormComponent {
   private dashboardService = inject(DashboardService);
   private boardgamesService = inject(BoardgamesService);
   private fvService= inject(FormService);
-  readonly boardExplanation:string = categoryExplanation;
+  readonly categoryExplanation:string[] = boardGameCategories;
+  public isExplanationOpen: boolean = false;
   public editorConfig!:EditorConfig;
   public Editor = ClassicEditor;
   public charCount:number = 0;
-  public imgSrc:string | ArrayBuffer | null ='';
+  public imgSrc:(string | ArrayBuffer)[] = [];
+  public cardCoverImgSrc:(string | ArrayBuffer)[] = [];
+  // public imgSrc:any;
   public aboutInputs: BoardInput[] = [
     { name: 'title',            placeHolder: 'Titulo', label:'', type: 'text', maxLenght: 50,  selectOptions:[]},
     { name: 'categoryChips',    placeHolder: 'Ingrese un Tag del juego EJ: Zombies,cooperative game, etc', label:'', type: 'text', maxLenght: 60,  selectOptions:[]},
@@ -77,32 +80,80 @@ export class BoardgamesFormComponent {
     this.cleanImg();
   }
 
-  async onFileSelected(event: Event) {
+  // async onFileSelected(event: Event) {
+  //   const input = event.target as HTMLInputElement;
+  //     this.imgSrc = await this.dashboardService.onFileSelected(event);
+  //     if(input.files){
+  //       const file = input.files[0];
+  //       const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
+  //       if(validSize){
+  //         this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.')
+  //           const fileControl = this.myForm.get('img');
+  //           if (fileControl) {
+  //             fileControl.reset();
+  //             this.cleanImg()
+  //           }
+  //         return;
+  //       }
+  //     }
+  //   }
+  async onFileSelected(event: Event, formControlName:string) {
     const input = event.target as HTMLInputElement;
-      this.imgSrc = await this.dashboardService.onFileSelected(event);
-      this.dashboardService.loadImage(this.imgSrc);
-      if(input.files){
-        const file = input.files[0];
+    console.log(`nombre del input:${input.name}`)
+
+    // Verifica si hay archivos seleccionados
+    if (input.files && input.files.length > 0) {
+      // Recorre cada archivo seleccionado
+      for (let i = 0; i < input.files.length; i++) {
+        const file = input.files[i];
+
+        // Valida el tamaño del archivo
         const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
-        if(validSize){
-          this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.')
-            const fileControl = this.myForm.get('img');
-            if (fileControl) {
-              fileControl.reset();
-              this.cleanImg()
-            }
-          return;
+        if (validSize) {
+          this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.');
+          const fileControl = this.myForm.get('img');
+          if (fileControl) {
+            fileControl.reset();
+            this.cleanImg();
+          }
+          return; // Termina la función si alguno de los archivos excede el tamaño
+        }
+
+        // Carga la imagen usando el servicio
+        try {
+          (formControlName === 'cardCoverImgName' )?
+          this.cardCoverImgSrc = await this.dashboardService.onFileSelected(event):
+          this.imgSrc = await this.dashboardService.onFileSelected(event);
+        } catch (error) {
+          console.error('Error al cargar el archivo:', error);
+          // Maneja el error según sea necesario
         }
       }
+    } else {
+      console.log('No se seleccionaron archivos.');
+    }
+  }
+
+    openCloseExplanation(){
+      this.isExplanationOpen =  !this.isExplanationOpen;
+    }
+
+    openExplanation(){
+      this.openCloseExplanation();
+      this.scrollToTop();
     }
 
     cleanImg(){
-      this.imgSrc = null;
+      this.imgSrc = [];
       this.dashboardService.cleanImgSrc();
     }
 
     countingChar(event: any){
       this.charCount = this.dashboardService.countingChar(event)
+    }
+
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     onSubmit(){

@@ -64,8 +64,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
 
   async onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-      this.imgSrc = await this.dashboardService.onFileSelected(event);
-      this.dashboardService.loadImage(this.imgSrc);
+      // this.imgSrc = await this.dashboardService.onFileSelected(event);
       if(input.files){
         const file = input.files[0];
         const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
