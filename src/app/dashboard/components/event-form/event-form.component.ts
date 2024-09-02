@@ -32,7 +32,7 @@ export class EventFormComponent {
   public uploadingEvent:boolean = false;
   public  autoDeleteChecked: boolean = true;
   public  showPopUpAutoDelete: boolean = false;
-  public  imgSrc:string | ArrayBuffer | null ='';
+  public imgSrc:(string | ArrayBuffer)[] = [];
   public colors: string[] = ['#ff3296', '#ff4b4b', '#872e6e', '#00ff64', '#0064ff', '#0096ff', '#18dcff', '#00ffc8', '#00d59c', '#32ff96', '#c832ff', '#ff64c8', '#ffdc00']
   public selectedColor: string = this.colors[0];
   public saveOrPublish:string = 'Guardar';
@@ -99,8 +99,8 @@ export class EventFormComponent {
 
     async onFileSelected(event: Event) {
       const input = event.target as HTMLInputElement;
-      // this.imgSrc = await this.dashboardService.onFileSelected(event);
-      this.dashboardService.loadImage(this.imgSrc);
+      this.imgSrc = await this.dashboardService.onFileSelected(event);
+      this.dashboardService.loadImage(this.imgSrc[0]);
       this.selectedFile = this.dashboardService.returnOneImg(event);
       if(input.files){
         const file = input.files[0];
@@ -165,7 +165,7 @@ export class EventFormComponent {
     }
 
     cleanImg(){
-      this.imgSrc = null;
+      this.imgSrc = [];
       this.dashboardService.cleanImgSrc();
     }
 
@@ -200,7 +200,7 @@ export class EventFormComponent {
             this.uploadingEvent = false
             this.dashboardService.notificationPopup('success','Evento agregado')
             this.newElementAdded.emit();
-            this.imgSrc = null;
+            this.imgSrc = [];
             this.myForm.reset(this.eventsService.defaultFormValues);
             this.cleanImg();
           }else{

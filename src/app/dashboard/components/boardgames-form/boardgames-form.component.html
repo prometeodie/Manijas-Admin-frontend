@@ -15,29 +15,27 @@
       accept="image/*"
       (change)="input.type === 'file' ? onFileSelected($event, input.name) : null"
       [ngClass]="{'board-games__form__input-label__input--cb': input.type === 'checkbox'}">
-
-      <div *ngIf="imgSrc && input.name === 'img' || cardCoverImgSrc && input.name === 'cardCoverImgName'" >
-        <div *ngFor="let item of cardCoverImgSrc"  class="board-games__form__img-container ">
-          <img  [src]="item" alt="event-Img" class="board-games__form__img-container__img board-games__form__img-container__img--card-cover">
-        </div>
-        <div *ngFor="let item of imgSrc" class="board-games__form__img-container">
-          <img  [src]="item" alt="event-Img" class="board-games__form__img-container__img">
-        </div>
+      <div *ngIf="input.type === 'textArea'">
+        <ckeditor
+        [formControlName]="input.name"
+        [editor]="Editor"
+        [config]="editorConfig"
+        (change)="countingChar($event)"
+        name="editor">
+      </ckeditor>
+      <span>Caracteres: {{charCount}} </span>
+      <span>/ Promedio de caracteres en las "reseñas": 150</span>
+    </div>
+    <div *ngIf="input.name === 'img'">
+      <div *ngIf="cardCoverImgSrc.length === 1" class="board-games__form__img-container">
+        <img  [src]="cardCoverItem" alt="event-Img" *ngFor="let cardCoverItem of cardCoverImgSrc" class="board-games__form__img-container__img board-games__form__img-container__img--card-cover">
       </div>
-      <!-- TODO:acomodar esto para que salga ifgual a figma -->
+      <div *ngIf="imgSrc.length > 0" class="board-games__form__img-container board-games__form__img-container__images">
+        <img  [src]="images" alt="event-Img" *ngFor="let images of imgSrc" class="board-games__form__img-container__img">
+      </div>
+    </div>
       <ng-template #textArea>
         <div class="board-games__form__input-label__input__characters-container">
-          <div *ngIf="input.type === 'textArea'">
-            <ckeditor
-            [formControlName]="input.name"
-            [editor]="Editor"
-            [config]="editorConfig"
-            (change)="countingChar($event)"
-            name="editor">
-          </ckeditor>
-          <span>Caracteres: {{charCount}} </span>
-          <span>/ Promedio de caracteres en las "reseñas": 150</span>
-        </div>
         <div *ngIf="input.type === 'select'">
           <label for="options">{{this.input.placeHolder}}</label>
           <select id="options" [formControlName]="input.name" class="board-games__form__input-label__select">

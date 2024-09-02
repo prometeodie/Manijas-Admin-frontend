@@ -25,7 +25,7 @@ private fvService= inject(FormService);
 public editorConfig!:EditorConfig;
 public Editor = ClassicEditor;
 public charCount:number = 0;
-public imgSrc:string | ArrayBuffer | null ='';
+public imgSrc:(string | ArrayBuffer)[] = [];
 public aboutInputs: AboutInput[] = [
     { name: 'textArea', placeHolder: 'Escribir un fragmento de la historia Manija', label:'', type: 'textArea', maxLenght: 24 },
     { name: 'img', placeHolder: '', label: 'Seleccionar una imagen', type: 'file', maxLenght:null},
@@ -50,8 +50,8 @@ public myForm = this.fb.group({
 
   async onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    // this.imgSrc = await this.dashboardService.onFileSelected(event);
-    this.dashboardService.loadImage(this.imgSrc);
+    this.imgSrc = await this.dashboardService.onFileSelected(event);
+    this.dashboardService.loadImage(this.imgSrc[0]);
     if(input.files){
       const file = input.files[0];
       const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
@@ -68,7 +68,7 @@ public myForm = this.fb.group({
   }
 
   cleanImg(){
-    this.imgSrc = null;
+    this.imgSrc = [];
     this.dashboardService.cleanImgSrc();
   }
 

@@ -79,35 +79,16 @@ export class BoardgamesFormComponent {
   ngOnDestroy(): void {
     this.cleanImg();
   }
-
-  // async onFileSelected(event: Event) {
-  //   const input = event.target as HTMLInputElement;
-  //     this.imgSrc = await this.dashboardService.onFileSelected(event);
-  //     if(input.files){
-  //       const file = input.files[0];
-  //       const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
-  //       if(validSize){
-  //         this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.')
-  //           const fileControl = this.myForm.get('img');
-  //           if (fileControl) {
-  //             fileControl.reset();
-  //             this.cleanImg()
-  //           }
-  //         return;
-  //       }
-  //     }
-  //   }
   async onFileSelected(event: Event, formControlName:string) {
     const input = event.target as HTMLInputElement;
-    console.log(`nombre del input:${input.name}`)
 
-    // Verifica si hay archivos seleccionados
     if (input.files && input.files.length > 0) {
-      // Recorre cada archivo seleccionado
+      if(formControlName === 'cardCoverImgName'){
+        this.changeFileName(input.files[0]);
+      }
       for (let i = 0; i < input.files.length; i++) {
         const file = input.files[i];
 
-        // Valida el tamaño del archivo
         const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
         if (validSize) {
           this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.');
@@ -116,17 +97,15 @@ export class BoardgamesFormComponent {
             fileControl.reset();
             this.cleanImg();
           }
-          return; // Termina la función si alguno de los archivos excede el tamaño
+          return;
         }
-
-        // Carga la imagen usando el servicio
         try {
           (formControlName === 'cardCoverImgName' )?
           this.cardCoverImgSrc = await this.dashboardService.onFileSelected(event):
           this.imgSrc = await this.dashboardService.onFileSelected(event);
         } catch (error) {
           console.error('Error al cargar el archivo:', error);
-          // Maneja el error según sea necesario
+
         }
       }
     } else {
@@ -150,6 +129,22 @@ export class BoardgamesFormComponent {
 
     countingChar(event: any){
       this.charCount = this.dashboardService.countingChar(event)
+    }
+
+    changeFileName(file: File | null) {
+      if (!file) {
+        return;
+      }
+      const originalName = file.name;
+      const extension = originalName.slice(originalName.lastIndexOf('.'));
+      const justOriginalName = originalName.slice(0,originalName.lastIndexOf('.'));
+      const newFileName = `${justOriginalName}-cardCover${extension}`;
+      const newFile = new File([file], newFileName, {
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+
+      return newFile;
     }
 
     scrollToTop() {

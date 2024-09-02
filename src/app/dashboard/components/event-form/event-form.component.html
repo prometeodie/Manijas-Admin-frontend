@@ -22,8 +22,8 @@
       </ng-container>
     </div>
     <!-- image-->
-    <div class="events__form__img-container" *ngIf="imgSrc">
-      <img  [src]="imgSrc" alt="event-Img" class="events__form__img-container__img">
+    <div class="events__form__img-container" *ngIf="imgSrc[0]">
+      <img  [src]="imgSrc[0]" alt="event-Img" class="events__form__img-container__img">
       <i class="fa-solid fa-circle-xmark events__form__img-container__mark"></i>
     </div>
     <!-- select color-->

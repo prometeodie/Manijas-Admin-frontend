@@ -13,8 +13,8 @@
               *ngIf="input.type !== 'textArea'; else textArea"
               (change)="input.type === 'file' ? onFileSelected($event) : null"
               [ngClass]="{'about__form__input-label__input--cb': input.type === 'checkbox'}">
-              <div class="about__form__img-container" *ngIf="imgSrc && input.name === 'img'">
-                <img  [src]="imgSrc" alt="event-Img" class="about__form__img-container__img">
+              <div class="about__form__img-container" *ngIf="imgSrc[0] && input.name === 'img'">
+                <img  [src]="imgSrc[0]" alt="event-Img" class="about__form__img-container__img">
               </div>
       <ng-template #textArea>
         <div class="about__form__input-label__input__characters-container">

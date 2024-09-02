@@ -29,7 +29,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
   public editorConfig!:EditorConfig;
   public Editor = ClassicEditor;
   public charCount:number = 0;
-  public imgSrc:string | ArrayBuffer | null ='';
+  public imgSrc:(string | ArrayBuffer)[] = [];
   public aboutInputs: BlogInput[] = [
     { name: 'title',       placeHolder: 'Titulo', label:'', type: 'text', maxLenght: 50,  selectOptions:[]},
     { name: 'subTitle',    placeHolder: 'subtítulo', label:'', type: 'text', maxLenght: 60,  selectOptions:[]},
@@ -64,7 +64,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
 
   async onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-      // this.imgSrc = await this.dashboardService.onFileSelected(event);
+      this.imgSrc = await this.dashboardService.onFileSelected(event);
       if(input.files){
         const file = input.files[0];
         const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
@@ -81,7 +81,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
     }
 
     cleanImg(){
-      this.imgSrc = null;
+      this.imgSrc = [];
       this.dashboardService.cleanImgSrc();
     }
 

@@ -1,10 +1,8 @@
 
 // TAREAS PRIORITARIAS
 
-// TODO: hacer formulario para boardgames
-// TODO: acomodar los nombres de las categorias hace un array y que se anden por una ul como un li asi quedan todos separados
 // TODO: hacer un validador para que compruebe q los links sean validos para eventos y boards
-// TODO:actualizar la forma de poner imagenes en blogs, about y eventos
+// TODO:hacer funcionar de manera correcta el cambio de nombre del cardcover antes de subirlo
 
 // TAREAS SECUNDARIAS
 
