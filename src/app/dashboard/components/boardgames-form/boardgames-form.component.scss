@@ -30,7 +30,8 @@
 }
 
 .board-games__form__input-label__input__characters-container,
-.board-games__form__img-container{
+.board-games__form__img-container,
+.board-games__form__key-words{
   display: flex;
 }
 
@@ -45,13 +46,18 @@ h3{
   margin: auto;
 }
 
+.board-games,
+.board-games__form__key-words,
+.board-games__form__key-words__word{
+  position: relative;
+}
+
 .board-games{
   border-radius: 5px;
   margin-bottom: 2rem;
   padding: 1rem;
   background-color: $secondary-element-color;
   max-width: 67rem;
-  position: relative;
 
   &__no-scroll{
     overflow: hidden;
@@ -80,6 +86,34 @@ h3{
       }
 
     }
+
+    &__key-words{
+      list-style: none;
+      padding: 0;
+      font-size: small;
+      flex-wrap: wrap;
+      justify-content: start;
+      gap: 10px;
+
+
+      &__word{
+      position: relative;
+      background: #80808073;
+      padding: 0.1rem 0.4rem;
+      border-radius: 10px;
+
+      &__close-mark{
+        position: absolute;
+        top: -6px;
+        right: -1px;
+        cursor: pointer;
+        &:hover{
+          color: rgb(194, 62, 62);
+        }
+      }
+      }
+    }
+
     &__input-label__select{
       border: none;
       padding: 0.3rem;
@@ -111,6 +145,12 @@ h3{
           border-radius: 3px;
         }
       }
+    }
+
+    &__input-label__error-menssage{
+      font-size: 0.7rem;
+      color:$form-error-color;
+      font-weight: 700;
     }
 
     &__img-container{
@@ -146,6 +186,11 @@ h3{
       transition: background-color 0.5s ease;
       border: none;
       cursor: pointer;
+
+      &--small{
+        width: 7rem;
+        padding: 0.6rem;
+      }
 
       &:hover{
         background-color:#bbacac7c ;

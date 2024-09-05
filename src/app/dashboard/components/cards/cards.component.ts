@@ -68,6 +68,10 @@ hasUserVoted(){
   }
 }
 
+saveCurrentUrl(route: string){
+  this.dashboardService.saveCurrentUrl(route);
+}
+
 deleteItem(id:string){
   const section = this.objectTemplate.section.toLocaleLowerCase();
   Swal.fire({

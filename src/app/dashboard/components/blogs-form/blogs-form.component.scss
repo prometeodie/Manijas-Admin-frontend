@@ -68,10 +68,17 @@ h3{
 
       &__characters-container{
         flex-direction: column;
-        margin-bottom: 1rem;
+        margin-bottom: 0.6rem;
       }
 
     }
+
+    &__input-label__error-menssage{
+      font-size: 0.7rem;
+      color:$form-error-color;
+      font-weight: 700;
+    }
+
     &__input-label__select{
       border: none;
       padding: 0.3rem;

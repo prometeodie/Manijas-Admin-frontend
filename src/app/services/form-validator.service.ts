@@ -1,11 +1,14 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FormService {
+
+  readonly urlRegEx = /^(https?:\/\/)?([\w\-]+(\.[\w\-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
+  readonly instaUrlRegEx = /^(https?:\/\/)?(www\.)?instagram\.com\/(p|reel|tv|stories)\/[A-Za-z0-9_-]+\/?$|^(https?:\/\/)?(www\.)?instagram\.com\/[A-Za-z0-9._-]+\/?$/;
+  readonly tikTokUrlRegEx = /^(https?:\/\/)?(www\.)?(tiktok\.com)\/(@[a-zA-Z0-9._-]+\/video\/\d+|t\/[a-zA-Z0-9._-]+|embed\/[a-zA-Z0-9._-]+|v|video\/\d+)(\/)?(\?.*)?$/;
 
   constructor() { }
 
@@ -25,16 +28,22 @@ export class FormService {
                    Al menos un número,
                    Al menos un caracter especial: !@#$%^&*.`,
         startTime: 'Debe introducir una hora válida',
+        howToPlayUrl:'Debe introducir un link valido',
+        url:'Debe introducir un link valido',
+        reelInstagram:'Debe introducir un link de Instagram valido',
+        reelTikTok: 'Debe introducir un link de Tik-Tok valido'
       };
 
     const errorMenssages:any = {
       required: 'This field is required',
-      maxlength:`Maximo de Caracteres ${errors['maxlength']?.requiredLength}`,
       minlength:`Minimo de Caracteres ${errors['minlength']?.requiredLength}`,
+      maxlength:`Maximo de Caracteres ${errors['maxlength']?.requiredLength}`,
+      min:`Valor minimo permitido ${errors['min']?.min}`,
+      max:`Valor maximo permitido ${errors['max']?.max}`,
       pattern:`${invalidPatternMessages[field]}`,
       invalidDate:'Formato de Fecha no valido',
       pastDate:'La fecha debe ser menor a la actual o podes volver al pasado gil?',
-      fileSizeExceeded:'El tamaño de la imagen no debe superar los 3MB'
+      fileSizeExceeded:'El tamaño de la imagen no debe superar los 3MB',
     }
 
     for (const key of Object.keys(errors)) {

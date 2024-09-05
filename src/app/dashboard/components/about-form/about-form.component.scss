@@ -64,7 +64,11 @@ h3{
         flex-direction: column;
         margin-bottom: 1rem;
       }
-
+    }
+    &__input-label__error-menssage{
+        font-size: 0.7rem;
+        color:$form-error-color;
+        font-weight: 700;
     }
 
     &__img-container{

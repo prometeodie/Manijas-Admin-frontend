@@ -41,13 +41,13 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
   ];
 
   public myForm = this.fb.group({
-    title:                   ['',[Validators.required]],
-    subTitle: [,[]],
+    title:       ['',[Validators.required]],
+    subTitle:    [,[]],
     blogContent: [,[]],
     category:    [,[Validators.required]],
-    writedBy: [,[Validators.required]],
-    publish:                   [false ,[Validators.required]],
-    img:                       [],
+    writedBy:    [,[Validators.required]],
+    publish:     [false ,[]],
+    img:         [],
   })
 
   ngOnInit(): void {
@@ -78,6 +78,14 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
           return;
         }
       }
+    }
+
+    isValidField(field: string):boolean | null{
+      return this.fvService.isValidField(this.myForm,field);
+    }
+
+    showError(field: string):string | null{
+      return `${this.fvService.showError(this.myForm,field)}`
     }
 
     cleanImg(){

@@ -1,6 +1,6 @@
 <!-- <loading-animation/> -->
 <div class="blog">
-  <h3>Blog</h3>
+  <h2>Blog</h2>
   <form class="blog__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
     <div class="blog__form__input-label" *ngFor="let input of aboutInputs">
       <label class="blog__form__input-label__label" *ngIf="input.label.length > 0">{{input.label}}</label>
@@ -13,6 +13,9 @@
               *ngIf="input.type !== 'textArea' && input.type !== 'select'; else textArea"
               (change)="input.type === 'file' ? onFileSelected($event) : null"
               [ngClass]="{'blog__form__input-label__input--cb': input.type === 'checkbox'}">
+              <span class="blog__form__input-label__error-menssage"
+              *ngIf="isValidField(input.name)">{{showError(input.name)}}
+              </span>
               <div class="blog__form__img-container" *ngIf="imgSrc[0] && input.name === 'img'">
                 <img  [src]="imgSrc[0]" alt="event-Img" class="blog__form__img-container__img">
               </div>

@@ -44,28 +44,6 @@ export class DashboardService {
     });
   }
 
-  // async onFileSelected(event: Event): Promise<string | ArrayBuffer | null> {
-  //   const input = event.target as HTMLInputElement;
-
-  //   if (input.files && input.files[0]) {
-  //     const file = input.files[0];
-  //     const reader = new FileReader();
-  //     console.log(input.files.length)
-  //     return new Promise((resolve, reject) => {
-  //       reader.onload = () => {
-  //         resolve(reader.result);
-  //       };
-
-  //       reader.onerror = (error) => {
-  //         reject(error);
-  //       };
-
-  //       reader.readAsDataURL(file);
-  //     });
-  //   } else {
-  //     return null;
-  //   }
-  // }
   async onFileSelected(event: Event): Promise<(string | ArrayBuffer)[]> {
     const input = event.target as HTMLInputElement;
 
@@ -142,6 +120,10 @@ export class DashboardService {
   onPublicCheckChange(event: Event){
     const input = event.target as HTMLInputElement;
     return input.checked;
+  }
+
+  saveCurrentUrl(route: string) {
+    localStorage.setItem('lastUrl', route);
   }
 
   deleteItem(id:string, section: string){

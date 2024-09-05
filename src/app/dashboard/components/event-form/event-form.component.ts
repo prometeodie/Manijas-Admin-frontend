@@ -55,7 +55,7 @@ export class EventFormComponent {
       finishTime:                ['',[Validators.required, Validators.pattern(this.TIME_REGEX)]],
       eventPlace:                ['',[Validators.maxLength(50)]],
       eventColor:                ['#ff3296',[]],
-      url:                       ['',[]],
+      url:                       ['',[Validators.pattern(this.fvService.urlRegEx)]],
       publish:                   [false ,[Validators.required]],
       mustBeAutomaticallyDeleted:[true ,[Validators.required]],
       img:                       [],

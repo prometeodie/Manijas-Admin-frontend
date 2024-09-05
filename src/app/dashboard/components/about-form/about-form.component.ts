@@ -34,7 +34,7 @@ public aboutInputs: AboutInput[] = [
 
 public myForm = this.fb.group({
     textArea:                   ['',[Validators.required]],
-    publish:                   [false ,[Validators.required]],
+    publish:                   [false ,[]],
     img:                       [],
   })
 
@@ -47,6 +47,7 @@ public myForm = this.fb.group({
   ngOnDestroy(): void {
     this.cleanImg();
   }
+
 
   async onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -65,6 +66,14 @@ public myForm = this.fb.group({
         return;
       }
     }
+  }
+
+  isValidField(field: string):boolean | null{
+    return this.fvService.isValidField(this.myForm,field);
+  }
+
+  showError(field: string):string | null{
+    return `${this.fvService.showError(this.myForm,field)}`
   }
 
   cleanImg(){

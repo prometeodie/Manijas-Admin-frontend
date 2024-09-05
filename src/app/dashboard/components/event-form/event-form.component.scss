@@ -7,6 +7,11 @@
 .events__form__input__check-box-cont{
   display: flex;
 }
+
+.events__form,
+.events__form__input{
+  width: 100%;
+}
 .events,
 .events__form{
   flex-direction: column;
@@ -70,7 +75,6 @@ h3{
   background-color: $secondary-element-color;
 
   &__form{
-    width: 29vw;
 
     &__input{
       color: $text-color-inputs;
@@ -79,7 +83,6 @@ h3{
       border: none;
       outline: none;
       margin: 0.7rem 0;
-      width: 100%;
 
       &::placeholder{
         color: $text-color-inputs;
@@ -151,4 +154,12 @@ h3{
       }
     }
 
+  }
+
+  // MEDIA QUERIES
+
+  @media (min-width:600px){
+    .events__form{
+      width: 29vw;
+    }
   }

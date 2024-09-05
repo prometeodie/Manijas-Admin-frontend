@@ -1,6 +1,6 @@
 <!-- <loading-animation/> -->
  <div class="about">
-  <h3>Fragmento de historia Manija</h3>
+  <h2>Fragmento de historia Manija</h2>
   <form class="about__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
     <div class="about__form__input-label" *ngFor="let input of aboutInputs">
       <label class="about__form__input-label__label" *ngIf="input.label.length > 0">{{input.label}}</label>
@@ -25,8 +25,10 @@
             (change)="countingChar($event)"
             name="editor">
           </ckeditor>
-          <span>Caracteres: {{charCount}}</span>
-          <span> / Promedio de caracteres de "Fragmentos de historia Manija": 150</span>
+          <span>Caracteres: {{charCount}} / Promedio de caracteres de "Fragmentos de historia Manija": 150</span>
+          <span class="about__form__input-label__error-menssage"
+              *ngIf="isValidField(input.name)">{{showError(input.name)}}
+              </span>
         </div>
       </ng-template>
     </div>

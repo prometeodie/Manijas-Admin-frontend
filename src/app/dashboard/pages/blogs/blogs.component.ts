@@ -10,7 +10,7 @@ import { BlogsCategories } from '../../interfaces/blogs interfaces/blog-categori
   styleUrls: ['./blogs.component.scss']
 })
 export class BlogsComponent implements OnInit{
-  readonly blogsPath = '/lmdr/create-edit/EVENTS';
+  readonly blogsPath = '/lmdr/create-edit/BLOGS';
   private blogsService = inject(BlogsService);
   public blogs: CardTemplate[] = [];
   public page = 1;

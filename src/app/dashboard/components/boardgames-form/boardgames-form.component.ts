@@ -25,13 +25,14 @@ export class BoardgamesFormComponent {
   private boardgamesService = inject(BoardgamesService);
   private fvService= inject(FormService);
   readonly categoryExplanation:string[] = boardGameCategories;
+  readonly urlPattern = /^(https?:\/\/)?(www\.)?instagram\.com\/(p|reel|tv|stories)\/[A-Za-z0-9_-]+\/?$|^(https?:\/\/)?(www\.)?instagram\.com\/[A-Za-z0-9._-]+\/?$/;
   public isExplanationOpen: boolean = false;
   public editorConfig!:EditorConfig;
   public Editor = ClassicEditor;
+  public keywods: string[] = [];
   public charCount:number = 0;
   public imgSrc:(string | ArrayBuffer)[] = [];
   public cardCoverImgSrc:(string | ArrayBuffer)[] = [];
-  // public imgSrc:any;
   public aboutInputs: BoardInput[] = [
     { name: 'title',            placeHolder: 'Titulo', label:'', type: 'text', maxLenght: 50,  selectOptions:[]},
     { name: 'categoryChips',    placeHolder: 'Ingrese un Tag del juego EJ: Zombies,cooperative game, etc', label:'', type: 'text', maxLenght: 60,  selectOptions:[]},
@@ -42,9 +43,9 @@ export class BoardgamesFormComponent {
     { name: 'category',         placeHolder: 'Selecciona una categoria:', label:'', type: 'select', maxLenght: null,  selectOptions: this.boardgamesService.boardsCategories},
     { name: 'dificulty',        placeHolder: 'Selecciona la dificultad:', label:'', type: 'select', maxLenght: null,  selectOptions: this.boardgamesService.dificulty},
     { name: 'replayability',    placeHolder: 'Selecciona la rejugabilidad:', label:'', type: 'select', maxLenght: null,  selectOptions: this.boardgamesService.replayability},
-    { name: 'howToPlayUrl',     placeHolder: 'Ingrese el url de algun video que explique como Jugar', label:'', type: 'text', maxLenght: 60,  selectOptions:[]},
-    { name: 'reelInstagram',    placeHolder: 'Ingrese el url de algun Reel de instagram que hayamos hecho sobre el juego', label:'', type: 'text', maxLenght: 60,  selectOptions:[]},
-    { name: 'reelTikTok',       placeHolder: 'Ingrese el url de algun Reel de tik-tok que hayamos hecho sobre el juego', label:'', type: 'text', maxLenght: 60,  selectOptions:[]},
+    { name: 'howToPlayUrl',     placeHolder: 'Ingrese el url de algun video que explique como Jugar', label:'', type: 'text', maxLenght: 9999,  selectOptions:[]},
+    { name: 'reelInstagram',    placeHolder: 'Ingrese el url de algun Reel de instagram que hayamos hecho sobre el juego', label:'', type: 'text', maxLenght: 9999,  selectOptions:[]},
+    { name: 'reelTikTok',       placeHolder: 'Ingrese el url de algun Reel de tik-tok que hayamos hecho sobre el juego', label:'', type: 'text', maxLenght: 9999,  selectOptions:[]},
     { name: 'cardCoverImgName', placeHolder: '', label: 'Seleccione la imagen de portada', type: 'file', maxLenght:null, selectOptions:[]},
     { name: 'img',              placeHolder: '', label: 'Seleccione las imágenes', type: 'file', maxLenght:null, selectOptions:[]},
     { name: 'gameReview',       placeHolder: '', label:'', type: 'textArea', maxLenght: null,  selectOptions:[]},
@@ -54,22 +55,21 @@ export class BoardgamesFormComponent {
   public myForm = this.fb.group({
     title:[,[Validators.required]],
     categoryChips:[,[]],
-    minPlayers:[,[]],
-    maxPlayers:[,[]],
-    duration:[,[]],
+    minPlayers:[,[Validators.min(1)]],
+    maxPlayers:[,[Validators.min(1)]],
+    duration:  [,  [Validators.min(1)]],
     subTitle:[,[]],
     category:[,[Validators.required]],
     dificulty:[,[]],
     replayability:[,[]],
-    howToPlayUrl:[,[]],
-    reelInstagram:[,[]],
-    reelTikTok:[,[]],
+    howToPlayUrl:[,[Validators.pattern(this.fvService.urlRegEx)]],
+    reelInstagram:[,[Validators.pattern(this.fvService.instaUrlRegEx)]],
+    reelTikTok:[,[Validators.pattern(this.fvService.tikTokUrlRegEx)]],
     cardCoverImgName:[,[]],
     img:[,[]],
     gameReview:[,[]],
-    publish:[false ,[Validators.required]],
+    publish:[false ,[]],
   })
-  // TODO:hacer un validador para que pueda ingresar solo numero entero positicvo mayor a 1 en miny max players
   ngOnInit(): void {
     this.editorConfig = toolBarConfig;
     this.editorConfig.placeholder = 'Escribe la reseña de este juegazo!';
@@ -113,6 +113,14 @@ export class BoardgamesFormComponent {
     }
   }
 
+    isValidField(field: string):boolean | null{
+      return this.fvService.isValidField(this.myForm,field);
+    }
+
+    showError(field: string):string | null{
+      return `${this.fvService.showError(this.myForm,field)}`
+    }
+
     openCloseExplanation(){
       this.isExplanationOpen =  !this.isExplanationOpen;
     }
@@ -145,6 +153,32 @@ export class BoardgamesFormComponent {
       });
 
       return newFile;
+    }
+
+    saveNewTag(){
+
+      const categoryControl = this.myForm.get('categoryChips');
+
+      // Verifica que el control exista y el valor sea de tipo string
+      if (!categoryControl || typeof categoryControl.value !== 'string') return;
+
+      // Aplica trim() al valor del input
+      const tag: string= categoryControl.value;
+
+      // Verifica si el tag está vacío
+      if (!tag) return;
+
+      if(this.keywods.includes(tag.trim())){
+        alert('Ese tag ya esta ingresado, no sabes leer o sos parte del ojo del Hugo?')
+        categoryControl.reset();
+        return
+      }
+      this.keywods.push(tag.toLowerCase().trim());
+      categoryControl.reset();
+    }
+
+    deleteTag(deletedTag: String){
+      this.keywods = this.keywods.filter(tag => tag !== deletedTag);
     }
 
     scrollToTop() {

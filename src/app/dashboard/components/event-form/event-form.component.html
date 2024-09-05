@@ -2,7 +2,7 @@
 
 <loading-animation *ngIf="uploadingEvent"/>
 <div class="events">
-  <h3>Agregar Nuevo Evento</h3>
+  <h2>Evento</h2>
   <form class="events__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
     <div *ngFor="let eventInput of eventInputs">
       <ng-container *ngIf="shouldShowInput(eventInput)">
