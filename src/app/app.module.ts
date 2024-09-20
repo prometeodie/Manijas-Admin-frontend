@@ -5,7 +5,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MaterialModule } from './material/material.module';
 import { LoadingAnimationComponent } from './dashboard/components/loading-animation/loading-animation.component';
 
 
@@ -19,7 +18,6 @@ import { LoadingAnimationComponent } from './dashboard/components/loading-animat
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    MaterialModule,
     LoadingAnimationComponent,
   ],
   providers: [],

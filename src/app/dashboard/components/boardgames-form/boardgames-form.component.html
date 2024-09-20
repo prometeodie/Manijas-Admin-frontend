@@ -1,4 +1,4 @@
-<!-- <loading-animation/> -->
+<loading-animation *ngIf="uploadingBoardG"/>
 <div class="board-games" [ngClass]="{'board-games__no-scroll': isExplanationOpen}">
   <h2>Board Games</h2>
   <form class="board-games__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
@@ -25,7 +25,7 @@
       <span class="board-games__form__input-label__error-menssage"
               *ngIf="isValidField(input.name)">{{showError(input.name)}}
               </span>
-              <div *ngIf="input.name === 'categoryChips'"  (click)="saveNewTag()" class="board-games__form__btn board-games__form__btn--small">Agregar Tag</div>
+              <div *ngIf="input.name === 'categoryChips'" (click)="saveNewTag()" class="board-games__form__btn board-games__form__btn--small">Agregar Tag</div>
       <div *ngIf="input.type === 'textArea'">
         <ckeditor
         [formControlName]="input.name"
@@ -50,6 +50,7 @@
         <div *ngIf="input.type === 'select'">
           <label for="options">{{this.input.placeHolder}}</label>
           <select id="options" [formControlName]="input.name" class="board-games__form__input-label__select">
+            <option value="" disabled>Elija una opción</option>
             <option *ngFor="let option of input.selectOptions" class="board-games__form__input-label__select__options">
               {{ option }}
             </option>

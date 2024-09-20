@@ -120,10 +120,10 @@ deleteMessage(id:string, event: Event){
     if(result.isConfirmed) {
       this.messagesService.deleteMessage(id).subscribe(resp=>{
         if(resp){
-          this.dashboardService.notificationPopup('success','Mensaje eliminado')
+          this.dashboardService.notificationPopup('success','Mensaje eliminado',1500)
           this.getAllMessages();
         }else{
-          this.dashboardService.notificationPopup("error", 'Algo salio mal :(')
+          this.dashboardService.notificationPopup("error", 'Algo salio mal :(',2000)
         }
       })
     };

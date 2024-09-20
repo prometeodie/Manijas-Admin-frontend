@@ -34,13 +34,13 @@ export class DashboardService {
     return  new HttpHeaders().set('Authorization',`Bearer ${token}`);
   }
 
-  notificationPopup(icon:SweetAlertIcon, title:string){
+  notificationPopup(icon:SweetAlertIcon, title:string, timer:number){
     Swal.fire({
       position: "center",
       icon,
       title,
       showConfirmButton: false,
-      timer: 2000
+      timer: timer
     });
   }
 
@@ -97,17 +97,35 @@ export class DashboardService {
       return null;
   }
 
-  formDataToUploadImg(section: Section, itemName: string, imgFile: File){
+  formDataToUploadImg(section: Section, imgFile: File){
     const formData = new FormData();
     if (!imgFile) {
       return;
     }
     formData.append('section',section);
-    formData.append('itemName',itemName);
     formData.append('file', imgFile);
 
     return formData;
   }
+
+  formDataToUploadImgs(section: Section, imgFiles: FileList) {
+    const formData = new FormData();
+
+    if (!imgFiles || imgFiles.length === 0) {
+      return;
+    }
+
+    // Añade la sección
+    formData.append('section', section);
+
+
+    for (let i = 0; i < imgFiles.length; i++) {
+      formData.append('files', imgFiles[i]);
+    }
+
+    return formData;
+  }
+
 
   loadImage(img:string | ArrayBuffer | null){
     this._imgSrc.set(img);

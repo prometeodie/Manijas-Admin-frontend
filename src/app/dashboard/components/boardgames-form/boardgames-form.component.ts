@@ -10,6 +10,10 @@ import { BoardInput } from '../../interfaces/boards interfaces/BoardGamesInput.i
 import { FormService } from 'src/app/services/form-validator.service';
 import { toolBarConfig } from 'src/app/utils/toolbar-config';
 import { boardGameCategories } from './utils/categories-explanation';
+import { Boardgame, BoardgameUpload, CategoryGame, Section } from '../../interfaces';
+import Swal from 'sweetalert2';
+import { Dificulty } from '../../interfaces/boards interfaces/dificulty.enum';
+import { Replayability } from '../../interfaces/boards interfaces/replayability.enum';
 
 @Component({
   selector: 'boardgames-form',
@@ -27,7 +31,10 @@ export class BoardgamesFormComponent {
   readonly categoryExplanation:string[] = boardGameCategories;
   readonly urlPattern = /^(https?:\/\/)?(www\.)?instagram\.com\/(p|reel|tv|stories)\/[A-Za-z0-9_-]+\/?$|^(https?:\/\/)?(www\.)?instagram\.com\/[A-Za-z0-9._-]+\/?$/;
   public isExplanationOpen: boolean = false;
+  public uploadingBoardG: boolean = false;
   public editorConfig!:EditorConfig;
+  private selectedFiles: FileList | null = null;
+  private cardCoverFile: FileList | null = null;
   public Editor = ClassicEditor;
   public keywods: string[] = [];
   public charCount:number = 0;
@@ -39,7 +46,6 @@ export class BoardgamesFormComponent {
     { name: 'minPlayers',       placeHolder: 'Minima cantidad de players', label:'', type: 'number', maxLenght: null,  selectOptions:[]},
     { name: 'maxPlayers',       placeHolder: 'Maxima cantidad de players', label:'', type: 'number', maxLenght: null,  selectOptions:[]},
     { name: 'duration',         placeHolder: 'Duración', label:'', type: 'number', maxLenght: null,  selectOptions:[]},
-    { name: 'subTitle',         placeHolder: 'subtítulo', label:'', type: 'text', maxLenght: 60,  selectOptions:[]},
     { name: 'category',         placeHolder: 'Selecciona una categoria:', label:'', type: 'select', maxLenght: null,  selectOptions: this.boardgamesService.boardsCategories},
     { name: 'dificulty',        placeHolder: 'Selecciona la dificultad:', label:'', type: 'select', maxLenght: null,  selectOptions: this.boardgamesService.dificulty},
     { name: 'replayability',    placeHolder: 'Selecciona la rejugabilidad:', label:'', type: 'select', maxLenght: null,  selectOptions: this.boardgamesService.replayability},
@@ -59,9 +65,9 @@ export class BoardgamesFormComponent {
     maxPlayers:[,[Validators.min(1)]],
     duration:  [,  [Validators.min(1)]],
     subTitle:[,[]],
-    category:[,[Validators.required]],
-    dificulty:[,[]],
-    replayability:[,[]],
+    category:[CategoryGame.NONE,[Validators.required]],
+    dificulty:[Dificulty.NONE,[]],
+    replayability:[Replayability.NONE,[]],
     howToPlayUrl:[,[Validators.pattern(this.fvService.urlRegEx)]],
     reelInstagram:[,[Validators.pattern(this.fvService.instaUrlRegEx)]],
     reelTikTok:[,[Validators.pattern(this.fvService.tikTokUrlRegEx)]],
@@ -75,23 +81,22 @@ export class BoardgamesFormComponent {
     this.editorConfig.placeholder = 'Escribe la reseña de este juegazo!';
     // TODO: para meter data en el editor se usa la propiedad 	this.editorConfig.initialData: 'data...'
   }
-
   ngOnDestroy(): void {
     this.cleanImg();
   }
   async onFileSelected(event: Event, formControlName:string) {
     const input = event.target as HTMLInputElement;
-
+    this.selectedFiles = input.files;
     if (input.files && input.files.length > 0) {
       if(formControlName === 'cardCoverImgName'){
-        this.changeFileName(input.files[0]);
+          this.cardCoverFile = this.changeFileName(input.files);
       }
       for (let i = 0; i < input.files.length; i++) {
         const file = input.files[i];
 
         const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
         if (validSize) {
-          this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.');
+          this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.',2000);
           const fileControl = this.myForm.get('img');
           if (fileControl) {
             fileControl.reset();
@@ -132,6 +137,7 @@ export class BoardgamesFormComponent {
 
     cleanImg(){
       this.imgSrc = [];
+      this.cardCoverImgSrc = [];
       this.dashboardService.cleanImgSrc();
     }
 
@@ -139,33 +145,28 @@ export class BoardgamesFormComponent {
       this.charCount = this.dashboardService.countingChar(event)
     }
 
-    changeFileName(file: File | null) {
-      if (!file) {
-        return;
-      }
-      const originalName = file.name;
-      const extension = originalName.slice(originalName.lastIndexOf('.'));
-      const justOriginalName = originalName.slice(0,originalName.lastIndexOf('.'));
-      const newFileName = `${justOriginalName}-cardCover${extension}`;
-      const newFile = new File([file], newFileName, {
-        type: file.type,
-        lastModified: file.lastModified,
+    changeFileName(fileList: FileList): FileList {
+      const fileArray = Array.from(fileList);
+
+      const renamedFiles = fileArray.map(file => {
+        const fileName = file.name;
+        const newFileName = fileName.replace(/(\.[\w\d_-]+)$/i, `-cardCover$1`); // Añade '-cardCover' al nombre
+        return new File([file], newFileName, { type: file.type });
       });
 
-      return newFile;
+      const dataTransfer = new DataTransfer();
+      renamedFiles.forEach(file => dataTransfer.items.add(file));
+
+      return dataTransfer.files;
     }
 
     saveNewTag(){
 
       const categoryControl = this.myForm.get('categoryChips');
 
-      // Verifica que el control exista y el valor sea de tipo string
       if (!categoryControl || typeof categoryControl.value !== 'string') return;
-
-      // Aplica trim() al valor del input
       const tag: string= categoryControl.value;
 
-      // Verifica si el tag está vacío
       if (!tag) return;
 
       if(this.keywods.includes(tag.trim())){
@@ -185,7 +186,82 @@ export class BoardgamesFormComponent {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+
+    get currentBoardGame(): BoardgameUpload {
+      const formValue = this.myForm.value;
+
+      const newBoardGame: BoardgameUpload = {
+        section:             Section.BOARDGAMES,
+        title:               formValue.title!,
+        categoryGame:        formValue.category!,
+        categoryChips:       this.keywods,
+        minPlayers:          formValue.minPlayers ?? 1,
+        maxPlayers:          formValue.maxPlayers ?? 1,
+        duration:            formValue.duration ?? 0,
+        gameReview:          formValue.gameReview ?? '',
+        dificulty:           formValue.dificulty ?? Dificulty.NONE,
+        replayability:       formValue.replayability ?? Replayability.NONE,
+        howToPlayUrl:        formValue.howToPlayUrl ?? '',
+        reel:                [{plataform: 'Instagram', reelUrl: formValue.reelInstagram ?? ''},{plataform: 'TikTok', reelUrl: formValue.reelTikTok ?? ''}],
+        imgName: [],
+        publish: formValue.publish ?? false,
+
+      };
+
+      return newBoardGame;
+    }
+
+    uploadFormData(formData: FormData, _id: string){
+      if(formData){
+        this.boardgamesService.postBoardGImage(_id!, formData).subscribe(imgResp=>{
+          if(!imgResp){
+            this.uploadingBoardG = false
+            this.dashboardService.notificationPopup("error", 'El Board Game fue guardado, pero algo salio mal al guardar la/s imagen/es revisa q su formato sea valido :(',3000)
+          }
+        });
+      }
+    }
+
     onSubmit(){
-      alert('elemnto cargado')
+      this.myForm.markAllAsTouched();
+      if(this.myForm.invalid) return;
+      Swal.fire({
+        title: 'Do you want to save a new Warehouse?',
+        text: "",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, save it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.uploadingBoardG = true;
+          const currentBoardGame = this.currentBoardGame;
+      this.boardgamesService.postNewBoardG(currentBoardGame).subscribe(
+        resp=>{
+          if(resp){
+              const _id = resp._id;
+              const formDataCardCover = this.dashboardService.formDataToUploadImgs(Section.BOARDGAMES, this.cardCoverFile!);
+              const formData = this.dashboardService.formDataToUploadImgs(Section.BOARDGAMES, this.selectedFiles!);
+            this.uploadFormData(formDataCardCover!, _id);
+            this.uploadFormData(formData!, _id);
+            this.uploadingBoardG = false
+            this.dashboardService.notificationPopup('success','Board Game agregado',2000)
+            this.imgSrc = [];
+            this.myForm.reset({
+              category: CategoryGame.NONE,
+              dificulty:Dificulty.NONE,
+              replayability:Replayability.NONE
+            });
+            this.keywods = [];
+            this.cleanImg();
+          }else{
+            this.uploadingBoardG = false
+            this.dashboardService.notificationPopup("error", 'Algo salio mal al Guardar el Board :(',3000)
+          }
+        }
+      );
+        }
+      })
     }
 }

@@ -10,6 +10,9 @@ import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { BlogInput } from '../../interfaces/blogs interfaces/blogs-inputs.interface';
 import { BlogsService } from '../../services/blogs.service';
+import { Blog, Section } from '../../interfaces';
+import Swal from 'sweetalert2';
+import { BlogsCategories } from '../../interfaces/blogs interfaces/blog-categories.enum';
 
 @Component({
   selector: 'blogs-form',
@@ -24,8 +27,10 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
   private dashboardService= inject(DashboardService);
   private blogsService= inject(BlogsService);
   private authService= inject(AuthService);
-  public options: string[] = ['LMDR'];
   private fvService= inject(FormService);
+  public uploadingBlog: boolean = false;
+  private selectedFile: File | null = null;
+  public options: string[] = ['LMDR'];
   public editorConfig!:EditorConfig;
   public Editor = ClassicEditor;
   public charCount:number = 0;
@@ -37,15 +42,14 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
     { name: 'category',    placeHolder: 'Selecciona una categoria:', label:'', type: 'select', maxLenght: null,  selectOptions: this.blogsService.blogsCategories},
     { name: 'writedBy',    placeHolder: 'Seleccione el autor de este Blog:', label:'', type: 'select', maxLenght: null,  selectOptions: this.options},
     { name: 'img',         placeHolder: '', label: 'Seleccionar una imagen', type: 'file', maxLenght:null, selectOptions:[]},
-    { name: 'publish',     placeHolder: ':', label: 'Publicar:', type: 'checkbox', maxLenght:null,  selectOptions:[]},
   ];
 
   public myForm = this.fb.group({
     title:       ['',[Validators.required]],
     subTitle:    [,[]],
-    blogContent: [,[]],
-    category:    [,[Validators.required]],
-    writedBy:    [,[Validators.required]],
+    blogContent: ['',[]],
+    category:    [BlogsCategories.NONE,[Validators.required]],
+    writedBy:    ['',[Validators.required]],
     publish:     [false ,[]],
     img:         [],
   })
@@ -65,11 +69,12 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
   async onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
       this.imgSrc = await this.dashboardService.onFileSelected(event);
+      this.selectedFile = this.dashboardService.returnOneImg(event);
       if(input.files){
         const file = input.files[0];
         const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
         if(validSize){
-          this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.')
+          this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.',2000)
             const fileControl = this.myForm.get('img');
             if (fileControl) {
               fileControl.reset();
@@ -97,7 +102,64 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
       this.charCount = this.dashboardService.countingChar(event)
     }
 
+    get currentBlog(): Blog {
+      const formValue = this.myForm.value;
+
+      const newBlog: Blog = {
+        section: Section.BLOGS,
+        title:       formValue.title!,
+        subTitle:    formValue.subTitle!,
+        writedBy:    formValue.writedBy!,
+        blogContent: formValue.blogContent!,
+        category:    formValue.category!,
+        imgName: '',
+        publish: formValue.publish ?? false,
+      };
+      console.log(newBlog)
+      return newBlog;
+    }
+
     onSubmit(){
-      alert('elemnto cargado')
+      this.myForm.markAllAsTouched();
+      if(this.myForm.invalid) return;
+      Swal.fire({
+        title: 'Do you want to save a new Warehouse?',
+        text: "",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, save it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.uploadingBlog = true;
+          const currentBlog = this.currentBlog;
+      this.blogsService.postNewBlog(currentBlog).subscribe(
+        resp=>{
+          if(resp){
+            const _id = resp._id;
+              const formData = this.dashboardService.formDataToUploadImg(Section.BLOGS, this.selectedFile!)
+            if(formData){
+                this.blogsService.postBlogImage(_id!, formData).subscribe(imgResp=>{
+                  if(!imgResp){
+                    this.uploadingBlog = false
+                    this.dashboardService.notificationPopup("error",'El Blog fue guardado, pero algo salio mal al guardar la/s imagen/es revisa q su formato sea valido :(', 3000)
+                  }
+                });
+              }
+            this.uploadingBlog = false
+            this.dashboardService.notificationPopup('success','Evento agregado',2000)
+            this.imgSrc = [];
+            this.myForm.reset({ writedBy: "", category:BlogsCategories.NONE });
+            this.cleanImg();
+          }else{
+            this.uploadingBlog = false
+            this.dashboardService.notificationPopup("error", 'Algo salio mal :(',2000)
+          }
+        }
+      );
+        }
+      })
     }
 }
+

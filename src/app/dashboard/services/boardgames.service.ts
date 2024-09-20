@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from 'src/assets/environments/environment';
 import { DashboardService } from './dashboard.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Boardgame, CategoryGame } from '../interfaces';
+import { Boardgame, BoardgameUpload, CategoryGame } from '../interfaces';
 import { catchError, of } from 'rxjs';
 import { Dificulty } from '../interfaces/boards interfaces/dificulty.enum';
 import { Replayability } from '../interfaces/boards interfaces/replayability.enum';
@@ -75,32 +75,32 @@ export class BoardgamesService {
     return this.http.get<Boardgame[]>(`${this.url}/findboardgame/admin`, { headers, params });
   }
 
-  // getBoard(id:string){
-  //   const headers = this.dashboardService.getHeaders();
+  getBoard(id:string){
+    const headers = this.dashboardService.getHeaders();
 
-  //   return this.http.get<Blog>(`${this.url}/${id}`, { headers}).pipe(
-  //     catchError((err)=>{return of(undefined)})
-  //   )
-  // }
+    return this.http.get<Boardgame>(`${this.url}/${id}`, { headers}).pipe(
+      catchError((err)=>{return of(undefined)})
+    )
+  }
 
-  // postNewBoard(newBlog: Blog){
-  //   const headers = this.dashboardService.getHeaders();
-  //   return this.http.post<Blog>(`${this.url}/upload`, newBlog, { headers}).pipe(
-  //     catchError((err)=>{return of(undefined)})
-  //   )
-  // }
+  postNewBoardG(newBoardGame: BoardgameUpload){
+    const headers = this.dashboardService.getHeaders();
+    return this.http.post<Boardgame>(`${this.url}/upload`, newBoardGame, { headers}).pipe(
+      catchError((err)=>{return of(undefined)})
+    )
+  }
 
-  // postBoardImage(id:string, formData: FormData){
-  //   const headers = this.dashboardService.getHeaders();
-  //   return this.http.post<Blog>(`${this.url}/uploadImg/${id}`, formData, { headers}).pipe(
-  //     catchError((err)=>{return of(undefined)})
-  //   )
-  // }
+  postBoardGImage(id:string, formData: FormData){
+    const headers = this.dashboardService.getHeaders();
+    return this.http.post<Boardgame>(`${this.url}/uploadImg/${id}`, formData, { headers}).pipe(
+      catchError((err)=>{return of(undefined)})
+    )
+  }
 
-  // editBoard( id: string, editedEvent: EditBlog){
-  //   const headers = this.dashboardService.getHeaders();
-  //   return this.http.patch<EditBlog>(`${this.url}/edit/${id}`, editedEvent, { headers}).pipe(
-  //     catchError((err)=>{return of(undefined)})
-  //   )
-  // }
+  editBoard( id: string, editedEvent: BoardgameUpload){
+    const headers = this.dashboardService.getHeaders();
+    return this.http.patch<BoardgameUpload>(`${this.url}/edit/${id}`, editedEvent, { headers}).pipe(
+      catchError((err)=>{return of(undefined)})
+    )
+  }
 }

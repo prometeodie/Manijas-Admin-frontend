@@ -2,7 +2,7 @@
 // TAREAS PRIORITARIAS
 
 // TODO: conectar todos los forms con el backend
-// TODO: traery cragar en elform si esta esditando
+// TODO: traer y cragar en el form si esta esditando
 // TODO: agregar el boton de borrar fotos
 // TODO: logica pra q el usuario verifique si se quiere ir o actualizar la pagina tieniendo cambios sin guardar
 // TODO: hacer un autosave cada tanto tiempo

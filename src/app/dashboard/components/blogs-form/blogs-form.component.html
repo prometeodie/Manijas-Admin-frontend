@@ -1,4 +1,4 @@
-<!-- <loading-animation/> -->
+<loading-animation *ngIf="uploadingBlog"/>
 <div class="blog">
   <h2>Blog</h2>
   <form class="blog__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
@@ -35,6 +35,7 @@
             <div *ngIf="input.type === 'select'">
               <label for="options">{{this.input.placeHolder}}</label>
               <select id="options" [formControlName]="input.name" class="blog__form__input-label__select">
+                <option value="" disabled>Elija una opción</option>
                 <option *ngFor="let option of input.selectOptions" class="blog__form__input-label__select__options">
                   {{ option }}
                 </option>
@@ -43,6 +44,8 @@
         </div>
       </ng-template>
     </div>
+    <label class="blog__form__input-label__label" >Publicar:</label>
+    <input type="checkbox" formControlName="publish" class="blog__form__input-label__input--cb">
     <button type="submit" class="blog__form__btn">Guardar</button>
   </form>
  </div>

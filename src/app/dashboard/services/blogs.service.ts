@@ -29,7 +29,6 @@ export class BlogsService {
   // C.R.U.D
   getAllBlogs(category?: BlogsCategories | null, page: number = 1) {
     const headers = this.dashboardService.getHeaders();
-
     const params = new HttpParams()
       .set('category', category ?? '')
       .set('page', page.toString());

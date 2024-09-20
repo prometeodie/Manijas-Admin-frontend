@@ -1,5 +1,6 @@
 export enum BlogsCategories{
   ALL = 'ALL',
+  NONE = '',
   BOARDGAMES = 'BOARDGAMES',
   ROL = 'ROL',
   EVENTOS = 'EVENTOS',

@@ -1,3 +1,4 @@
+import { Section } from "../others/sections.enum";
 import { Reel } from "./board-reel.interface";
 import { ManijometroPoolEntity } from "./manijometro-pool.interface";
 
@@ -16,11 +17,11 @@ export interface Boardgame {
   replayability:       string;
   howToPlayUrl:        string;
   reel:                Reel[];
-  section:             string;
+  section:             Section.BOARDGAMES;
   cardCoverImgName:    string;
   imgName:             string[];
   publish:             boolean;
   creationDate?:        Date;
-  manijometroPosition: number;
+  manijometroPosition?: number;
 }
 

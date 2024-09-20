@@ -106,7 +106,7 @@ export class EventFormComponent {
         const file = input.files[0];
         const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
         if(validSize){
-          this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.')
+          this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.', 2000)
             const fileControl = this.myForm.get('img');
             if (fileControl) {
               fileControl.reset();
@@ -188,23 +188,23 @@ export class EventFormComponent {
         resp=>{
           if(resp){
             const _id = resp._id;
-              const formData = this.dashboardService.formDataToUploadImg(Section.EVENTS, this.currentEvent.title.trim(), this.selectedFile!)
+              const formData = this.dashboardService.formDataToUploadImg(Section.EVENTS, this.selectedFile!)
             if(formData){
                 this.eventsService.postEventImage(_id!, formData).subscribe(imgResp=>{
                   if(!imgResp){
-                    this.dashboardService.notificationPopup("error", 'Algo salio mal al guardar la img :(')
+                    this.dashboardService.notificationPopup("error", 'El Evento fue guardado, pero algo salio mal al guardar la/s imagen/es revisa q su formato sea valido :(', 3000)
                     this.uploadingEvent = false
                   }
                 });
               }
             this.uploadingEvent = false
-            this.dashboardService.notificationPopup('success','Evento agregado')
+            this.dashboardService.notificationPopup('success','Evento agregado',1500)
             this.newElementAdded.emit();
             this.imgSrc = [];
             this.myForm.reset(this.eventsService.defaultFormValues);
             this.cleanImg();
           }else{
-            this.dashboardService.notificationPopup("error", 'Algo salio mal :(')
+            this.dashboardService.notificationPopup("error", 'Algo salio mal :(',2000)
           }
         }
       );

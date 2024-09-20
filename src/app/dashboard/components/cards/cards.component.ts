@@ -88,11 +88,11 @@ deleteItem(id:string){
         resp =>{
           if(resp){
             const path = `${this.objectTemplate.title}`;
-            this.dashboardService.notificationPopup('success','item eliminado')
+            this.dashboardService.notificationPopup('success','item eliminado', 1500)
             this.dashboardService.deleteItemImg(path,section)?.subscribe()
             this.delete.emit();
           }else{
-            this.dashboardService.notificationPopup("error", 'Algo salio mal :(')
+            this.dashboardService.notificationPopup("error", 'Algo salio mal :(', 2000)
           }
         }
       )

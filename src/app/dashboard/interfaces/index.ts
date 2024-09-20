@@ -10,6 +10,7 @@ export * from './blogs interfaces/blog-interface';
 export * from './blogs interfaces/blog-patch.interface';
 export * from './boards interfaces/board-category.enum';
 export * from './boards interfaces/boardgames.interface';
+export * from './boards interfaces/board-upload.interface';
 export * from './about interface/edit-about-item.iterface';
 export * from './about interface/about.interface';
 export * from './about interface/about-Input.interface';

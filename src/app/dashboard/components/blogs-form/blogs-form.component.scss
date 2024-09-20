@@ -97,6 +97,7 @@ h3{
       background-color:$inputs-bc;
       justify-content: center;
       padding: 1rem;
+      margin-bottom: 0.5rem;
       &__img{
         max-width: 18rem;
         object-fit: scale-down;
@@ -108,6 +109,7 @@ h3{
       border: 1px solid #AFA3A3;
       font-weight: 500;
       padding: 1rem;
+      margin-top: 0.5rem;
       text-align: center;
       transition: background-color 0.5s ease;
       border: none;

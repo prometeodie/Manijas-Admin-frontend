@@ -1,4 +1,4 @@
-<!-- <loading-animation/> -->
+<loading-animation *ngIf="uploadingAboutItem"/>
  <div class="about">
   <h2>Fragmento de historia Manija</h2>
   <form class="about__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
@@ -11,8 +11,7 @@
               accept="image/*"
               [placeholder]="input.placeHolder"
               *ngIf="input.type !== 'textArea'; else textArea"
-              (change)="input.type === 'file' ? onFileSelected($event) : null"
-              [ngClass]="{'about__form__input-label__input--cb': input.type === 'checkbox'}">
+              (change)="input.type === 'file' ? onFileSelected($event) : null">
               <div class="about__form__img-container" *ngIf="imgSrc[0] && input.name === 'img'">
                 <img  [src]="imgSrc[0]" alt="event-Img" class="about__form__img-container__img">
               </div>
@@ -32,6 +31,8 @@
         </div>
       </ng-template>
     </div>
+    <label class="about__form__input-label__label" >Publicar:</label>
+    <input type="checkbox" formControlName="publish" class="about__form__input-label__input--cb" >
     <button type="submit" class="about__form__btn">Guardar</button>
   </form>
  </div>

@@ -1,4 +1,5 @@
 export enum CategoryGame {
+  NONE = '',
   ALL='ALL',
   EUROGAMES = 'EUROGAMES',
   AMERITRASH = 'AMERITRASH',
