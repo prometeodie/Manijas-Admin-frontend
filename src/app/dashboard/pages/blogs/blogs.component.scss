@@ -5,6 +5,11 @@ h1{
   padding-left: 0.5rem;
 }
 
+.blogs__section__cards,
+.blogs__section__empty
+{
+  margin-top: 2rem;
+}
 
 .blogs{
   position: relative;
@@ -28,6 +33,11 @@ h1{
       grid-template-columns: repeat(1, 1fr);
       gap: 1rem;
       justify-content: center;
+    }
+
+    &__current-category{
+      position: absolute;
+      left: 1rem;
     }
 
     &__empty{

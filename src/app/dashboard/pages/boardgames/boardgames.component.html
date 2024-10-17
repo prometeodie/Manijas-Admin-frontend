@@ -4,6 +4,7 @@
   <search-bar (searchQuery)="onSearch($event)" class="boards__search-bar"/>
   <section class="boards__section">
     <loading-animation *ngIf="isLoading" [isScrolling]="isScrolling"/>
+    <h4 class="boards__section__current-category">{{currentCategory}}</h4>
     <span class="boards__section__empty" *ngIf="boards.length === 0; else boardsCards">No hay Boardgames <i class="fa-solid fa-dragon"></i></span>
     <ng-template #boardsCards>
       <div class="boards__section__cards" >

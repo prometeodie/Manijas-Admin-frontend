@@ -16,6 +16,12 @@ h1{
     justify-content: center;
   }
 
+  .boards__section__cards,
+  .boards__section__empty
+  {
+    margin-top: 2rem;
+  }
+
 .boards{
   position: relative;
   &__new-btn{
@@ -35,6 +41,11 @@ h1{
       display: grid;
       grid-template-columns: repeat(1, 1fr);
       gap: 1rem;
+    }
+
+    &__current-category{
+      position: absolute;
+      left: 1rem;
     }
 
     &__empty{

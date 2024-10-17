@@ -40,7 +40,7 @@ export class DashboardService {
       icon,
       title,
       showConfirmButton: false,
-      timer: timer
+      timer: 2300
     });
   }
 
@@ -115,7 +115,6 @@ export class DashboardService {
       return;
     }
 
-    // Añade la sección
     formData.append('section', section);
 
 
@@ -130,6 +129,8 @@ export class DashboardService {
   loadImage(img:string | ArrayBuffer | null){
     this._imgSrc.set(img);
   }
+
+
 
   cleanImgSrc(){
     this._imgSrc.set(null);

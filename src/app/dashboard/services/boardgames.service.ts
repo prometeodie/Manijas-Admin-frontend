@@ -31,7 +31,6 @@ export class BoardgamesService {
     CategoryGame.LEGACY,
     CategoryGame.LOSETA,
     CategoryGame.NARRACION,
-    CategoryGame.NARRACION,
     CategoryGame.ROL,
     CategoryGame.SOCIAL,
     CategoryGame.TEMATICO,
@@ -50,6 +49,26 @@ export class BoardgamesService {
   ]
   private dashboardService = inject(DashboardService);
   private http = inject(HttpClient);
+
+  imgPathCreator(boardGame: Boardgame, screenSize: number, cardCover:boolean){
+
+    if(boardGame){
+      if (!boardGame.cardCoverImgName && cardCover  || boardGame.imgName.length === 0) {
+        return [];
+      }
+
+      if(screenSize < 800){
+        return (cardCover)?
+        [`assets/upload/${boardGame!.section}/${boardGame!._id}/optimize/smallS-${boardGame!.cardCoverImgName}`]:
+        boardGame!.imgName.map( boardImg =>{ return `assets/upload/${boardGame!.section}/optimize/smallS-${boardGame!._id}/${boardImg}`})
+      }else{
+         return (!cardCover)?
+          boardGame!.imgName.map( boardImg =>{ return `assets/upload/${boardGame!.section}/${boardGame!._id}/${boardImg}`}):
+          [`assets/upload/${boardGame!.section}/${boardGame!._id}/${boardGame!.cardCoverImgName}`]
+      }
+    }
+    return [];
+  }
 
 
   // C.R.U.D

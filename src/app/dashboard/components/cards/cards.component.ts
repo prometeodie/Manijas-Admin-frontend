@@ -39,7 +39,7 @@ private authService = inject(AuthService);
     (this.dashboardService.screenWidth > 800)?
       this.objectTemplate.imgPath = `assets/upload/${this.objectTemplate.section}/${this.objectTemplate.title}/${this.objectTemplate.imgPath}`:
       this.objectTemplate.imgPath = `assets/upload/${this.objectTemplate.section}/${this.objectTemplate.title}/optimize/smallS-${this.objectTemplate.imgPath}`;
-      // TODO:acomodar bien el url cuando tenga el backend en produccion
+      // TODO:acomodar bien el url cuando tenga el backend en produccion/ cambiar por la id ya que las fotos ahora se guardan con el id
   }
  }
 

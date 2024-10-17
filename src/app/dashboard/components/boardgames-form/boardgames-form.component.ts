@@ -1,4 +1,5 @@
-import { Component, inject, ViewEncapsulation } from '@angular/core';
+import { Boardgame } from './../../interfaces/boards interfaces/boardgames.interface';
+import { Component, inject, Input, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LoadingAnimationComponent } from '../loading-animation/loading-animation.component';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -10,8 +11,8 @@ import { BoardInput } from '../../interfaces/boards interfaces/BoardGamesInput.i
 import { FormService } from 'src/app/services/form-validator.service';
 import { toolBarConfig } from 'src/app/utils/toolbar-config';
 import { boardGameCategories } from './utils/categories-explanation';
-import { Boardgame, BoardgameUpload, CategoryGame, Section } from '../../interfaces';
-import Swal from 'sweetalert2';
+import { BoardgameUpload, CategoryGame, Section } from '../../interfaces';
+import   Swal from 'sweetalert2';
 import { Dificulty } from '../../interfaces/boards interfaces/dificulty.enum';
 import { Replayability } from '../../interfaces/boards interfaces/replayability.enum';
 
@@ -24,19 +25,23 @@ import { Replayability } from '../../interfaces/boards interfaces/replayability.
   styleUrls: ['./boardgames-form.component.scss']
 })
 export class BoardgamesFormComponent {
+
+  @Input() boardgameId!: string;
+
   private fb = inject(FormBuilder);
   private dashboardService = inject(DashboardService);
   private boardgamesService = inject(BoardgamesService);
   private fvService= inject(FormService);
   readonly categoryExplanation:string[] = boardGameCategories;
   readonly urlPattern = /^(https?:\/\/)?(www\.)?instagram\.com\/(p|reel|tv|stories)\/[A-Za-z0-9_-]+\/?$|^(https?:\/\/)?(www\.)?instagram\.com\/[A-Za-z0-9._-]+\/?$/;
+  public currentBoardgame!: Boardgame;
   public isExplanationOpen: boolean = false;
   public uploadingBoardG: boolean = false;
   public editorConfig!:EditorConfig;
   private selectedFiles: FileList | null = null;
   private cardCoverFile: FileList | null = null;
   public Editor = ClassicEditor;
-  public keywods: string[] = [];
+  public keywords: string[] = [];
   public charCount:number = 0;
   public imgSrc:(string | ArrayBuffer)[] = [];
   public cardCoverImgSrc:(string | ArrayBuffer)[] = [];
@@ -55,35 +60,63 @@ export class BoardgamesFormComponent {
     { name: 'cardCoverImgName', placeHolder: '', label: 'Seleccione la imagen de portada', type: 'file', maxLenght:null, selectOptions:[]},
     { name: 'img',              placeHolder: '', label: 'Seleccione las imágenes', type: 'file', maxLenght:null, selectOptions:[]},
     { name: 'gameReview',       placeHolder: '', label:'', type: 'textArea', maxLenght: null,  selectOptions:[]},
-    { name: 'publish',          placeHolder: ':', label: 'Publicar:', type: 'checkbox', maxLenght:null,  selectOptions:[]},
   ];
 
   public myForm = this.fb.group({
-    title:[,[Validators.required]],
-    categoryChips:[,[]],
-    minPlayers:[,[Validators.min(1)]],
-    maxPlayers:[,[Validators.min(1)]],
-    duration:  [,  [Validators.min(1)]],
-    subTitle:[,[]],
-    category:[CategoryGame.NONE,[Validators.required]],
-    dificulty:[Dificulty.NONE,[]],
-    replayability:[Replayability.NONE,[]],
-    howToPlayUrl:[,[Validators.pattern(this.fvService.urlRegEx)]],
-    reelInstagram:[,[Validators.pattern(this.fvService.instaUrlRegEx)]],
-    reelTikTok:[,[Validators.pattern(this.fvService.tikTokUrlRegEx)]],
-    cardCoverImgName:[,[]],
-    img:[,[]],
-    gameReview:[,[]],
-    publish:[false ,[]],
+    title:['',[Validators.required]],
+    categoryChips:[[''],],
+    minPlayers:[0, [Validators.min(1)]],
+    maxPlayers:[0,[Validators.min(1)]],
+    duration:  [0,  [Validators.min(1)]],
+    category:['',[Validators.required]],
+    dificulty:['',[]],
+    replayability:['',[]],
+    howToPlayUrl:['',[Validators.pattern(this.fvService.urlRegEx)]],
+    reelInstagram:['',[Validators.pattern(this.fvService.instaUrlRegEx)]],
+    reelTikTok:['',[Validators.pattern(this.fvService.tikTokUrlRegEx)]],
+    cardCoverImgName:['',[]],
+    img:[[''],[]],
+    gameReview:['',[]],
+    publish:[false],
   })
+
+  private fields:string[] = ['minPlayers', 'maxPlayers', 'duration']
   ngOnInit(): void {
     this.editorConfig = toolBarConfig;
     this.editorConfig.placeholder = 'Escribe la reseña de este juegazo!';
-    // TODO: para meter data en el editor se usa la propiedad 	this.editorConfig.initialData: 'data...'
+    this.setValueToMyForm(this.fields);
+    if(this.boardgameId){
+      const id = this.boardgameId;
+      this.boardgamesService.getBoard(id).subscribe( (boardGame) =>{
+        if(boardGame){
+          this.currentBoardgame = boardGame;
+          this.myForm.patchValue({
+            title: boardGame.title,
+            category: boardGame.categoryGame,
+            categoryChips:[],
+            minPlayers: boardGame.minPlayers,
+            maxPlayers: boardGame.maxPlayers,
+            duration: boardGame.duration,
+            dificulty: boardGame.dificulty,
+            replayability: boardGame.replayability,
+            howToPlayUrl: boardGame.howToPlayUrl,
+            reelInstagram: boardGame.reel[0].reelUrl,
+            reelTikTok: boardGame.reel[1].reelUrl,
+            gameReview: boardGame.gameReview,
+            publish: boardGame.publish
+          });
+        }
+        this.keywords = boardGame?.categoryChips!;
+        this.cardCoverImgSrc = this.boardgamesService.imgPathCreator(boardGame!, this.dashboardService.screenWidth, true);
+        this.imgSrc = this.boardgamesService.imgPathCreator(boardGame!, this.dashboardService.screenWidth, false);
+      })
+    }
   }
+
   ngOnDestroy(): void {
     this.cleanImg();
   }
+
   async onFileSelected(event: Event, formControlName:string) {
     const input = event.target as HTMLInputElement;
     this.selectedFiles = input.files;
@@ -97,17 +130,37 @@ export class BoardgamesFormComponent {
         const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
         if (validSize) {
           this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.',2000);
-          const fileControl = this.myForm.get('img');
+          const fileControl = this.myForm.get(formControlName);
           if (fileControl) {
             fileControl.reset();
-            this.cleanImg();
+            (formControlName === 'img')? this.imgSrc = [] : this.cardCoverImgSrc = [];
           }
           return;
         }
         try {
-          (formControlName === 'cardCoverImgName' )?
-          this.cardCoverImgSrc = await this.dashboardService.onFileSelected(event):
-          this.imgSrc = await this.dashboardService.onFileSelected(event);
+          const imagesSaved = this.boardgamesService.imgPathCreator(this.currentBoardgame, this.dashboardService.screenWidth, false);
+          const images = await this.dashboardService.onFileSelected(event);
+
+          if(formControlName === 'cardCoverImgName' ){
+            (this.cardCoverImgSrc.length === 0)?
+              this.cardCoverImgSrc = await this.dashboardService.onFileSelected(event):
+              this.dashboardService.notificationPopup("error", 'Solo puede exitir una imagen de portada',3000)
+          }else{
+            this.imgSrc = [];
+            imagesSaved.map(img=>{
+              if(!this.imgSrc.includes(img)){
+                this.imgSrc.push(img)
+              }
+            });
+            if(this.imgSrc.length < 4 && (images.length + this.imgSrc.length <= 4)){
+              images.map(img =>{
+                this.imgSrc.push(img);
+              })
+            }else{
+              this.dashboardService.notificationPopup("error", 'Maximo 4 imagenes',3000)
+              this.myForm.get('img')?.reset();
+            }
+          }
         } catch (error) {
           console.error('Error al cargar el archivo:', error);
 
@@ -145,6 +198,11 @@ export class BoardgamesFormComponent {
       this.charCount = this.dashboardService.countingChar(event)
     }
 
+    setValueToMyForm(fields: string[]){
+      fields.map(field =>{
+        this.myForm.get(field)?.setValue(null)
+      })
+    }
     changeFileName(fileList: FileList): FileList {
       const fileArray = Array.from(fileList);
 
@@ -169,17 +227,34 @@ export class BoardgamesFormComponent {
 
       if (!tag) return;
 
-      if(this.keywods.includes(tag.trim())){
+      if(this.keywords.includes(tag.trim())){
         alert('Ese tag ya esta ingresado, no sabes leer o sos parte del ojo del Hugo?')
         categoryControl.reset();
         return
       }
-      this.keywods.push(tag.toLowerCase().trim());
+      this.keywords.push(tag.toLowerCase().trim());
       categoryControl.reset();
     }
 
     deleteTag(deletedTag: String){
-      this.keywods = this.keywods.filter(tag => tag !== deletedTag);
+      this.keywords = this.keywords.filter(tag => tag !== deletedTag);
+    }
+
+    showDeleteBtn(imgName:  string | ArrayBuffer, currentBoardgame:Boardgame, i:number){
+
+      if (typeof imgName === 'string') {
+        if(imgName.includes(currentBoardgame.cardCoverImgName) &&
+        imgName.includes('cardCover')) {
+          return true;
+        };
+
+        if(imgName.includes(currentBoardgame.imgName[i]) &&
+        !imgName.includes('cardCover')) {
+          return true;
+        };
+      }
+
+      return false
     }
 
     scrollToTop() {
@@ -194,7 +269,7 @@ export class BoardgamesFormComponent {
         section:             Section.BOARDGAMES,
         title:               formValue.title!,
         categoryGame:        formValue.category!,
-        categoryChips:       this.keywods,
+        categoryChips:       this.keywords,
         minPlayers:          formValue.minPlayers ?? 1,
         maxPlayers:          formValue.maxPlayers ?? 1,
         duration:            formValue.duration ?? 0,
@@ -237,6 +312,7 @@ export class BoardgamesFormComponent {
         if (result.isConfirmed) {
           this.uploadingBoardG = true;
           const currentBoardGame = this.currentBoardGame;
+          console.log(currentBoardGame)
       this.boardgamesService.postNewBoardG(currentBoardGame).subscribe(
         resp=>{
           if(resp){
@@ -251,9 +327,10 @@ export class BoardgamesFormComponent {
             this.myForm.reset({
               category: CategoryGame.NONE,
               dificulty:Dificulty.NONE,
-              replayability:Replayability.NONE
+              replayability:Replayability.NONE,
+              publish: false
             });
-            this.keywods = [];
+            this.keywords = [];
             this.cleanImg();
           }else{
             this.uploadingBoardG = false

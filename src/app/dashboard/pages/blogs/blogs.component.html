@@ -3,6 +3,7 @@
   <components-nav-bar class="blogs__nav-bar" (category)="onCategorySelected($event)"[categories]="categories"/>
   <section class="blogs__section">
     <loading-animation *ngIf="isLoading" [isScrolling]="isScrolling"/>
+    <h4 class="blogs__section__current-category">{{currentCategory}}</h4>
     <span class="blogs__section__empty" *ngIf="blogs.length === 0; else blogsCards">No hay blogs <i class="fa-solid fa-dragon"></i></span>
     <ng-template #blogsCards>
       <div class="blogs__section__cards" >
