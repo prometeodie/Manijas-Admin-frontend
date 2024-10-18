@@ -154,6 +154,7 @@ export class DashboardService {
 
   deleteItemImg(path:string, section: string, ){
     if(!path) return;
+    console.log(path)
     const headers = this.getHeaders();
     return this.http.delete(`${this.url}/${section}/delete/img/upload/${section}/${path}`,{headers}).pipe(
       catchError((err)=>{return of(undefined)})

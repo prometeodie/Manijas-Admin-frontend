@@ -87,7 +87,7 @@ deleteItem(id:string){
       this.dashboardService.deleteItem(id, section).subscribe(
         resp =>{
           if(resp){
-            const path = `${this.objectTemplate.title}`;
+            const path = `${this.objectTemplate._id}`;
             this.dashboardService.notificationPopup('success','item eliminado', 1500)
             this.dashboardService.deleteItemImg(path,section)?.subscribe()
             this.delete.emit();

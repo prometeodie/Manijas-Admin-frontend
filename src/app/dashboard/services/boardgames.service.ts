@@ -59,12 +59,12 @@ export class BoardgamesService {
 
       if(screenSize < 800){
         return (cardCover)?
-        [`assets/upload/${boardGame!.section}/${boardGame!._id}/optimize/smallS-${boardGame!.cardCoverImgName}`]:
-        boardGame!.imgName.map( boardImg =>{ return `assets/upload/${boardGame!.section}/optimize/smallS-${boardGame!._id}/${boardImg}`})
+        [`upload/${boardGame!.section}/${boardGame!._id}/optimize/smallS-${boardGame!.cardCoverImgName}`]:
+        boardGame!.imgName.map( boardImg =>{ return `upload/${boardGame!.section}/optimize/smallS-${boardGame!._id}/${boardImg}`})
       }else{
          return (!cardCover)?
-          boardGame!.imgName.map( boardImg =>{ return `assets/upload/${boardGame!.section}/${boardGame!._id}/${boardImg}`}):
-          [`assets/upload/${boardGame!.section}/${boardGame!._id}/${boardGame!.cardCoverImgName}`]
+          boardGame!.imgName.map( boardImg =>{ return `upload/${boardGame!.section}/${boardGame!._id}/${boardImg}`}):
+          [`upload/${boardGame!.section}/${boardGame!._id}/${boardGame!.cardCoverImgName}`]
       }
     }
     return [];

@@ -85,32 +85,7 @@ export class BoardgamesFormComponent {
     this.editorConfig = toolBarConfig;
     this.editorConfig.placeholder = 'Escribe la reseña de este juegazo!';
     this.setValueToMyForm(this.fields);
-    if(this.boardgameId){
-      const id = this.boardgameId;
-      this.boardgamesService.getBoard(id).subscribe( (boardGame) =>{
-        if(boardGame){
-          this.currentBoardgame = boardGame;
-          this.myForm.patchValue({
-            title: boardGame.title,
-            category: boardGame.categoryGame,
-            categoryChips:[],
-            minPlayers: boardGame.minPlayers,
-            maxPlayers: boardGame.maxPlayers,
-            duration: boardGame.duration,
-            dificulty: boardGame.dificulty,
-            replayability: boardGame.replayability,
-            howToPlayUrl: boardGame.howToPlayUrl,
-            reelInstagram: boardGame.reel[0].reelUrl,
-            reelTikTok: boardGame.reel[1].reelUrl,
-            gameReview: boardGame.gameReview,
-            publish: boardGame.publish
-          });
-        }
-        this.keywords = boardGame?.categoryChips!;
-        this.cardCoverImgSrc = this.boardgamesService.imgPathCreator(boardGame!, this.dashboardService.screenWidth, true);
-        this.imgSrc = this.boardgamesService.imgPathCreator(boardGame!, this.dashboardService.screenWidth, false);
-      })
-    }
+    this.getBoard();
   }
 
   ngOnDestroy(): void {
@@ -168,6 +143,35 @@ export class BoardgamesFormComponent {
       }
     } else {
       console.log('No se seleccionaron archivos.');
+    }
+  }
+
+  getBoard(){
+    if(this.boardgameId){
+      const id = this.boardgameId;
+      this.boardgamesService.getBoard(id).subscribe( (boardGame) =>{
+        if(boardGame){
+          this.currentBoardgame = boardGame;
+          this.myForm.patchValue({
+            title: boardGame.title,
+            category: boardGame.categoryGame,
+            categoryChips:[],
+            minPlayers: boardGame.minPlayers,
+            maxPlayers: boardGame.maxPlayers,
+            duration: boardGame.duration,
+            dificulty: boardGame.dificulty,
+            replayability: boardGame.replayability,
+            howToPlayUrl: boardGame.howToPlayUrl,
+            reelInstagram: boardGame.reel[0].reelUrl,
+            reelTikTok: boardGame.reel[1].reelUrl,
+            gameReview: boardGame.gameReview,
+            publish: boardGame.publish
+          });
+        }
+        this.keywords = boardGame?.categoryChips!;
+        this.cardCoverImgSrc = this.boardgamesService.imgPathCreator(boardGame!, this.dashboardService.screenWidth, true);
+        this.imgSrc = this.boardgamesService.imgPathCreator(boardGame!, this.dashboardService.screenWidth, false);
+      })
     }
   }
 
@@ -240,6 +244,35 @@ export class BoardgamesFormComponent {
       this.keywords = this.keywords.filter(tag => tag !== deletedTag);
     }
 
+    deleteImg(imgN:string){
+
+      let path = '';
+      let optimizePath = '';
+
+      if(imgN.includes('cardCover'))
+        {
+          path = `${this.currentBoardgame._id}/cardCover/${imgN}`
+          optimizePath = `${this.currentBoardgame._id}/cardCover/optimize/smallS-${imgN}`
+        }else{
+          path = `${this.currentBoardgame._id}/${imgN}`;
+          optimizePath = `${this.currentBoardgame._id}/optimize/smallS-${imgN}`
+    }
+
+      this.dashboardService.deleteItemImg(path, Section.BOARDGAMES)?.subscribe(resp=>{
+        if(resp){
+          this.dashboardService.deleteItemImg(optimizePath, Section.BOARDGAMES)?.subscribe();
+          (imgN.includes('cardCover'))? this.currentBoardgame.cardCoverImgName = '' : this.currentBoardgame.imgName = this.currentBoardgame.imgName.filter(img => img != imgN )
+          const { cardCoverImgName,  imgName } = this.currentBoardgame;
+          this.boardgamesService.editBoard(this.currentBoardgame._id, {cardCoverImgName, imgName} ).subscribe(editResp =>{
+            if(editResp){
+              this.getBoard();
+              this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
+            }
+          })
+        }
+      });
+    }
+
     showDeleteBtn(imgName:  string | ArrayBuffer, currentBoardgame:Boardgame, i:number){
 
       if (typeof imgName === 'string') {
@@ -280,7 +313,6 @@ export class BoardgamesFormComponent {
         reel:                [{plataform: 'Instagram', reelUrl: formValue.reelInstagram ?? ''},{plataform: 'TikTok', reelUrl: formValue.reelTikTok ?? ''}],
         imgName: [],
         publish: formValue.publish ?? false,
-
       };
 
       return newBoardGame;
@@ -300,45 +332,71 @@ export class BoardgamesFormComponent {
     onSubmit(){
       this.myForm.markAllAsTouched();
       if(this.myForm.invalid) return;
-      Swal.fire({
-        title: 'Do you want to save a new Warehouse?',
-        text: "",
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, save it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.uploadingBoardG = true;
-          const currentBoardGame = this.currentBoardGame;
-          console.log(currentBoardGame)
-      this.boardgamesService.postNewBoardG(currentBoardGame).subscribe(
-        resp=>{
-          if(resp){
-              const _id = resp._id;
-              const formDataCardCover = this.dashboardService.formDataToUploadImgs(Section.BOARDGAMES, this.cardCoverFile!);
-              const formData = this.dashboardService.formDataToUploadImgs(Section.BOARDGAMES, this.selectedFiles!);
-            this.uploadFormData(formDataCardCover!, _id);
-            this.uploadFormData(formData!, _id);
-            this.uploadingBoardG = false
-            this.dashboardService.notificationPopup('success','Board Game agregado',2000)
-            this.imgSrc = [];
-            this.myForm.reset({
-              category: CategoryGame.NONE,
-              dificulty:Dificulty.NONE,
-              replayability:Replayability.NONE,
-              publish: false
-            });
-            this.keywords = [];
-            this.cleanImg();
-          }else{
-            this.uploadingBoardG = false
-            this.dashboardService.notificationPopup("error", 'Algo salio mal al Guardar el Board :(',3000)
+      if(!this.boardgameId){
+
+        Swal.fire({
+          title: 'Quieres guardar un nuevo Board game?',
+          text: "",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, save it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.uploadingBoardG = true;
+            const currentBoardGame = this.currentBoardGame;
+        this.boardgamesService.postNewBoardG(currentBoardGame).subscribe(
+          resp=>{
+            if(resp){
+                const _id = resp._id;
+                const formDataCardCover = this.dashboardService.formDataToUploadImgs(Section.BOARDGAMES, this.cardCoverFile!);
+                const formData = this.dashboardService.formDataToUploadImgs(Section.BOARDGAMES, this.selectedFiles!);
+              this.uploadFormData(formDataCardCover!, _id);
+              this.uploadFormData(formData!, _id);
+              this.uploadingBoardG = false
+              this.dashboardService.notificationPopup('success','Board Game agregado',2000)
+              this.imgSrc = [];
+              this.myForm.reset({
+                category: CategoryGame.NONE,
+                dificulty:Dificulty.NONE,
+                replayability:Replayability.NONE,
+                publish: false
+              });
+              this.keywords = [];
+              this.cleanImg();
+            }else{
+              this.uploadingBoardG = false
+              this.dashboardService.notificationPopup("error", 'Algo salio mal al Guardar el Board :(',3000)
+            }
           }
-        }
-      );
-        }
+        );
+          }
+        })
+      }else{
+        Swal.fire({
+          title: 'Quieres actualizar el Board game?',
+          text: "",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, save it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            const actualizedBoard = {
+              ...this.currentBoardGame, // Incluye las propiedades del objeto currentBoardgame
+              section: Section.BOARDGAMES, // Sobrescribe o añade la propiedad section dentro de actualizedBoard
+            };
+            console.log(actualizedBoard)
+            this.boardgamesService.editBoard(this.boardgameId, actualizedBoard as BoardgameUpload).subscribe(resp =>{
+              if(resp){
+                this.getBoard();
+                this.dashboardService.notificationPopup('success','Board Game actualizado correctamente',2000)
+              }
+            })
+          }
       })
     }
+  }
 }

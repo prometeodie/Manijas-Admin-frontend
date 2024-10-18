@@ -1,10 +1,9 @@
 
 // TAREAS PRIORITARIAS
 
-// TODO: acomodar q no se me borre las imagenes q ua habia, solucionar q salga el error con 4 imagenes justas, purgar cada vez q hay onfile selected this.iomgsrc
+// TODO: logica para actualizar fotos cuando esta editando el boardgme
 // TODO: conectar todos los forms con el backend
 // TODO: traer y cragar en el form si esta esditando
-// TODO: agregar el boton de borrar fotos
 // TODO: logica pra q el usuario verifique si se quiere ir o actualizar la pagina tieniendo cambios sin guardar
 // TODO: hacer un autosave cada tanto tiempo
 

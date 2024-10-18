@@ -45,14 +45,16 @@
     <div *ngIf="input.name === 'img'">
       <!-- CARD-COVER IMG -->
       <div *ngIf="cardCoverImgSrc.length === 1">
-        <div class="board-games__form__img-container board-games__form__img-container--card-cover" *ngFor="let cardCoverItem of cardCoverImgSrc; index as i">
+        <div class="board-games__form__img-container board-games__form__img-container--card-cover"
+        *ngFor="let cardCoverItem of cardCoverImgSrc; index as i"
+        (click)="deleteImg(currentBoardgame.cardCoverImgName)" >
           <img  [src]="cardCoverItem" [alt]="cardCoverItem"  class="board-games__form__img-container__img board-games__form__img-container__img--card-cover">
           <i class="fa-regular fa-trash-can board-games__form__img-container__delete-img" *ngIf="showDeleteBtn(cardCoverItem, currentBoardgame, i)"></i>
         </div>
       </div>
       <!-- REGULAR IMGS -->
       <div *ngIf="imgSrc.length > 0" class="board-games__form__img-container__images">
-        <div *ngFor="let image of imgSrc; index as i" class="board-games__form__img-container ">
+        <div *ngFor="let image of imgSrc; index as i" class="board-games__form__img-container"(click)="deleteImg(currentBoardgame.imgName[i])">
           <img  [src]="image" [alt]="image" class="board-games__form__img-container__img">
           <i class="fa-regular fa-trash-can board-games__form__img-container__delete-img" *ngIf="showDeleteBtn(image, currentBoardgame, i)"></i>
         </div>
