@@ -9,6 +9,7 @@ export interface Boardgame {
   categoryChips:       string[];
   minPlayers:          number | null | undefined;
   maxPlayers:          number;
+  minAge:          number;
   duration:            number;
   manijometroPool:     ManijometroPoolEntity[];
   manijometro:         number;

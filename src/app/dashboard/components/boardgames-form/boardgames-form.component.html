@@ -54,9 +54,13 @@
       </div>
       <!-- REGULAR IMGS -->
       <div *ngIf="imgSrc.length > 0" class="board-games__form__img-container__images">
-        <div *ngFor="let image of imgSrc; index as i" class="board-games__form__img-container"(click)="deleteImg(currentBoardgame.imgName[i])">
+        <div *ngFor="let image of imgSrc; index as i" class="board-games__form__img-container">
           <img  [src]="image" [alt]="image" class="board-games__form__img-container__img">
-          <i class="fa-regular fa-trash-can board-games__form__img-container__delete-img" *ngIf="showDeleteBtn(image, currentBoardgame, i)"></i>
+          <i class="fa-regular fa-trash-can board-games__form__img-container__delete-img" *ngIf="showDeleteBtn(image, currentBoardgame, i), else reset"
+          (click)="deleteImg(currentBoardgame.imgName[i])"></i>
+          <ng-template #reset>
+            <i class="fa-solid fa-recycle board-games__form__img-container__delete-img" (click)="resetSelectedImages()"> RESET</i>
+          </ng-template>
         </div>
       </div>
     </div>

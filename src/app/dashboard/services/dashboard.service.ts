@@ -78,7 +78,7 @@ export class DashboardService {
   }
 
   countingChar(event: any) {
-    const editorContent = event.editor.getData();  // Obtiene el contenido del editor
+    const editorContent = event.editor.getData();
     const textContent = this.stripHtml(editorContent);
     return textContent.length;
   }
@@ -129,8 +129,6 @@ export class DashboardService {
   loadImage(img:string | ArrayBuffer | null){
     this._imgSrc.set(img);
   }
-
-
 
   cleanImgSrc(){
     this._imgSrc.set(null);

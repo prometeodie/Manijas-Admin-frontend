@@ -7,6 +7,7 @@ export interface BoardgameUpload {
   categoryChips?:    string[];
   minPlayers?:       number,
   maxPlayers?:       number,
+  minAge?:           number,
   duration?:         number,
   gameReview?:       string,
   dificulty?:        string,

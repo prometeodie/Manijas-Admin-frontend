@@ -50,24 +50,31 @@ export class BoardgamesService {
   private dashboardService = inject(DashboardService);
   private http = inject(HttpClient);
 
-  imgPathCreator(boardGame: Boardgame, screenSize: number, cardCover:boolean){
+  imgPathCreator(boardGame: Boardgame, screenSize: number, cardCover: boolean) {
 
-    if(boardGame){
-      if (!boardGame.cardCoverImgName && cardCover  || boardGame.imgName.length === 0) {
-        return [];
-      }
+    if (!boardGame) return [];
 
-      if(screenSize < 800){
-        return (cardCover)?
-        [`upload/${boardGame!.section}/${boardGame!._id}/optimize/smallS-${boardGame!.cardCoverImgName}`]:
-        boardGame!.imgName.map( boardImg =>{ return `upload/${boardGame!.section}/optimize/smallS-${boardGame!._id}/${boardImg}`})
-      }else{
-         return (!cardCover)?
-          boardGame!.imgName.map( boardImg =>{ return `upload/${boardGame!.section}/${boardGame!._id}/${boardImg}`}):
-          [`upload/${boardGame!.section}/${boardGame!._id}/${boardGame!.cardCoverImgName}`]
-      }
+    if (cardCover && !boardGame.cardCoverImgName) {
+      return [];
     }
-    return [];
+
+    if (!cardCover && boardGame.imgName.length === 0) {
+      return [];
+    }
+
+    if (screenSize < 800) {
+      return cardCover
+        ? [`upload/${boardGame.section}/${boardGame._id}/optimize/smallS-${boardGame.cardCoverImgName}`]
+        : boardGame.imgName.map(
+            boardImg => `upload/${boardGame.section}/${boardGame._id}/optimize/smallS-${boardImg}`
+          );
+    } else {
+      return cardCover
+        ? [`upload/${boardGame.section}/${boardGame._id}/${boardGame.cardCoverImgName}`]
+        : boardGame.imgName.map(
+            boardImg => `upload/${boardGame.section}/${boardGame._id}/${boardImg}`
+          );
+    }
   }
 
 

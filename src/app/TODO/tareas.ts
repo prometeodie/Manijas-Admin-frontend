@@ -1,7 +1,6 @@
 
 // TAREAS PRIORITARIAS
 
-// TODO: logica para actualizar fotos cuando esta editando el boardgme
 // TODO: conectar todos los forms con el backend
 // TODO: traer y cragar en el form si esta esditando
 // TODO: logica pra q el usuario verifique si se quiere ir o actualizar la pagina tieniendo cambios sin guardar
