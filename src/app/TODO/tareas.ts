@@ -14,4 +14,7 @@
 // TODO: armar un controller para enviar segun el contenido la cantidad de caracteres promedios q tienen los textos de dicha seccion, porej sacar el promedio de caracteres en juegos y ponerle al usuario para q siga manteniendo un promedio de escritura
 // TODO: armar el guard para roles
 // TODO:  hacer un backup en un excel o word yte lo baje a la compu
-// TODO:agregar spinner
+// TODO:  armar seccion de los mensajes de cada uno
+// TODO:  drag and drop de nosotros para poder acomodar cual primero
+// TODO:  spiner
+
