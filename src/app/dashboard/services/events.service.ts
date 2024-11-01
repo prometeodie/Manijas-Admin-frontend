@@ -105,7 +105,7 @@ export class EventsService {
   getEvent(id:string){
     const headers = this.dashboardService.getHeaders();
 
-    return this.http.get<EventManija[]>(`${this.url}/${id}`, { headers}).pipe(
+    return this.http.get<EventManija>(`${this.url}/${id}`, { headers}).pipe(
       catchError((err)=>{return of(undefined)})
     )
   }

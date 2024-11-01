@@ -2,7 +2,7 @@
   <h1>{{title | titlecase}}</h1>
   <about-form class="create-edit__form" *ngIf="seccion === 'ABOUT'"/>
   <blogs-form class="create-edit__form" *ngIf="seccion === 'BLOGS'"/>
-  <event-form class="create-edit__form" *ngIf="seccion === 'EVENTS'"/>
+  <event-form class="create-edit__form" [eventId]="id" *ngIf="seccion === 'EVENTS'"/>
   <boardgames-form class="create-edit__form" [boardgameId]="id" *ngIf="seccion === 'BOARDGAMES'"/>
   <span class="create-edit__invalid" *ngIf="seccion === null">SECCIÓN INEXISENTE <i class="fa-brands fa-d-and-d"></i></span>
 </main>

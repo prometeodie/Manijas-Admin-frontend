@@ -71,8 +71,8 @@ export class EventsComponent implements OnInit,OnDestroy {
       imgPath: imgName,
       isInfoAList: false,
       info: {
-        eventDate: eventDate.toString(),
-        alternativeTxtEventDate,
+        eventDate: eventDate? eventDate.toString() : '',
+        alternativeTxtEventDate : '',
         startTime,
         finishTime,
         eventPlace

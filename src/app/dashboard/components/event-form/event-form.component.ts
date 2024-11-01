@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ImgPipePipe } from '../../pipes/img-pipe.pipe';
 import { EventManija } from '../../interfaces/event inteefaces/event.interface';
@@ -7,28 +7,32 @@ import { FormService } from 'src/app/services/form-validator.service';
 import { EventInput } from './interface/input.interface';
 import { EventsService } from '../../services/events.service';
 import { DashboardService } from '../../services/dashboard.service';
-import { EventCardSample } from '../../interfaces';
+import { EditEventManija, EventCardSample } from '../../interfaces';
 import   Swal from 'sweetalert2';
 import { Section } from '../../shared/enum/section.enum';
 import { LoadingAnimationComponent } from '../loading-animation/loading-animation.component';
+import { EventSampleCardComponent } from '../event-sample-card/event-sample-card.component';
+import { Router } from '@angular/router';
 
 
 @Component({
   selector: 'event-form',
   standalone: true,
-  imports: [CommonModule, ImgPipePipe, ReactiveFormsModule, LoadingAnimationComponent],
+  imports: [CommonModule, ImgPipePipe, ReactiveFormsModule, LoadingAnimationComponent,EventSampleCardComponent],
   templateUrl: './event-form.component.html',
   styleUrls: ['./event-form.component.scss']
 })
-export class EventFormComponent {
-
+export class EventFormComponent implements OnInit{
+  @Input() eventId!: string;
   @Output() newElementAdded = new EventEmitter<void>();
   private fb = inject(FormBuilder);
   private fvService = inject(FormService);
   private eventsService = inject(EventsService);
-  private selectedFile: File | null = null;
   private dashboardService = inject(DashboardService);
+  private router = inject(Router);
+  private selectedFile: File | null = null;
   private TIME_REGEX = /^([01][0-9]|2[0-3]):([0-5][0-9])$/;
+  public currentEvent!: EventManija;
   public uploadingEvent:boolean = false;
   public  autoDeleteChecked: boolean = true;
   public  showPopUpAutoDelete: boolean = false;
@@ -39,17 +43,17 @@ export class EventFormComponent {
   public eventInputs: EventInput[] = [
     { name: 'title', placeHolder: 'Titulo', label: '', type: 'text', showIfAutoDelete: null, maxLenght: 24 },
     { name: 'eventDate', placeHolder: 'Fecha', label: 'Selecciona una fecha', type: 'date', showIfAutoDelete: true, maxLenght: null },
-    { name: 'alternativeTxtEventDate', placeHolder: 'Fecha alternativa Ej(Todos los Domingos)', label: '', type: 'text', showIfAutoDelete: false, maxLenght: null },
-    { name: 'startTime', placeHolder: 'hh:mm a.m./p.m.', label: 'Horario de inicio', type: 'time', showIfAutoDelete: null, maxLenght: null },
-    { name: 'finishTime', placeHolder: 'hh:mm a.m./p.m.', label: 'Horario de finalización', type: 'time', showIfAutoDelete: null, maxLenght: null },
-    { name: 'eventPlace', placeHolder: 'Lugar', label: '', type: 'text', showIfAutoDelete: null, maxLenght: 50 },
-    { name: 'url', placeHolder: 'Url relacionado al evento', label: '', type: 'text', showIfAutoDelete: null, maxLenght: null },
+    { name: 'alternativeTxtEventDate', placeHolder: 'Ingrese texto alternativo', label: 'Fecha alternativa (Ej: Todos los Domingos)', type: 'text', showIfAutoDelete: false, maxLenght: null },
+    { name: 'startTime', placeHolder: '', label: 'Horario de inicio', type: 'time', showIfAutoDelete: null, maxLenght: null },
+    { name: 'finishTime', placeHolder: '', label: 'Horario de finalización', type: 'time', showIfAutoDelete: null, maxLenght: null },
+    { name: 'eventPlace', placeHolder: 'Ingrese un Lugar', label: 'Escriba el Lugar del evento', type: 'text', showIfAutoDelete: null, maxLenght: 50 },
+    { name: 'url', placeHolder: 'Url relacionado al evento', label: 'Url relacionado al evento (Ej: publicacion de Instagram)', type: 'text', showIfAutoDelete: null, maxLenght: null },
     { name: 'img', placeHolder: '', label: 'Seleccionar una imagen', type: 'file', showIfAutoDelete: null, maxLenght: null }
   ];
 
   public myForm = this.fb.group({
       title:                     ['',[Validators.required, Validators.maxLength(24)]],
-      eventDate:                 ['',{validators:[Validators.required, this.eventsService.isValidDate(), this.eventsService.futureDateValidator()]}],
+      eventDate:                 ['',{validators:[Validators.required,this.eventsService.isValidDate(), this.eventsService.futureDateValidator()]}],
       alternativeTxtEventDate:   ['',[]],
       startTime:                 ['',[Validators.required, Validators.pattern(this.TIME_REGEX)]],
       finishTime:                ['',[Validators.required, Validators.pattern(this.TIME_REGEX)]],
@@ -60,6 +64,10 @@ export class EventFormComponent {
       mustBeAutomaticallyDeleted:[true ,[Validators.required]],
       img:                       [],
     })
+
+    ngOnInit(): void {
+      this.getEvent();
+    }
 
     updateSelectedColor(event: Event) {
       const selectElement = event.target as HTMLSelectElement;
@@ -112,10 +120,44 @@ export class EventFormComponent {
               fileControl.reset();
               this.cleanImg()
             }
-          return;
+            return;
+          }
         }
       }
+
+      getEvent() {
+        if (!this.eventId) return;
+
+        this.eventsService.getEvent(this.eventId).subscribe((event) => {
+          if (!event) return;
+
+          this.currentEvent = event;
+          this.updateFormValues(event);
+          // this.updateImageSources(event);
+        });
+      }
+
+      private updateFormValues(event: EventManija) {
+        const eventDate = event.eventDate ? new Date(event.eventDate).toISOString().split('T')[0] : '';
+        this.myForm.patchValue({
+          title:event.title,
+          eventDate: eventDate,
+          alternativeTxtEventDate:event.alternativeTxtEventDate,
+          startTime:event.startTime,
+          finishTime:event.finishTime,
+          eventPlace:event.eventPlace,
+          eventColor: event.eventColor,
+          url:event.url,
+          publish: event.publish,
+          mustBeAutomaticallyDeleted: event.mustBeAutomaticallyDeleted
+      });
+      this.selectedColor = event.eventColor;
+      this.autoDeleteChecked = event.mustBeAutomaticallyDeleted;
     }
+
+    // private updateImageSources(event: EventManija) {
+    //   this.imgSrc = this.eventsService.imgPathCreator(boardGame, this.dashboardService.screenWidth, false);
+    // }
 
     onFieldChange(field: string, event: Event) {
       const input = event.target as HTMLInputElement;
@@ -123,9 +165,9 @@ export class EventFormComponent {
     }
 
    updateValidators() {
-      const date = this.myForm.get('date');
+      const date = this.myForm.get('eventDate');
       const alternativeTxtEventDate = this.myForm.get('alternativeTxtEventDate');
-        if (this.myForm.get('autoDelete')?.value){
+        if (this.myForm.get('mustBeAutomaticallyDeleted')?.value){
           date?.setValidators([Validators.required])
           alternativeTxtEventDate?.clearValidators();
         }else{
@@ -145,13 +187,13 @@ export class EventFormComponent {
       return `${this.fvService.showError(this.myForm,field)}`
     }
 
-    get currentEvent(): EventManija {
+    get newEvent(): EventManija {
       const formValue = this.myForm.value;
       const newEvent: EventManija = {
         section: 'EVENTS',
         title: formValue.title ?? '',
-        eventDate: formValue.eventDate ? new Date(formValue.eventDate).toISOString() : '',
-        alternativeTxtEventDate: formValue.alternativeTxtEventDate ?? ' ',
+        eventDate: formValue.eventDate ? new Date(formValue.eventDate).toISOString() : null,
+        alternativeTxtEventDate: formValue.alternativeTxtEventDate ?? null,
         startTime: formValue.startTime ?? '',
         finishTime: formValue.finishTime ?? '',
         eventPlace: formValue.eventPlace ?? '',
@@ -169,48 +211,59 @@ export class EventFormComponent {
       this.dashboardService.cleanImgSrc();
     }
 
-    onSubmit(){
+    private confirmAction(action: string) {
+      return this.dashboardService.confirmAction(action, 'Evento')
+    }
+
+    private resetForm() {
+      this.myForm.reset();
+      this.cleanImg();
+      // this.selectedFiles = null;
+    }
+
+
+    private createBoardGame() {
+      const newEvent = this.newEvent;
+      this.eventsService.postNewEvent(newEvent).subscribe((resp) => {
+        if (resp) {
+          // this.uploadFiles(resp._id);
+          this.resetForm();
+          this.router.navigateByUrl('lmdr/boardgames');
+        }
+        this.uploadingEvent = false;
+      });
+    }
+
+    private updateBoardGame() {
+      const actualizedEvent = { ...this.newEvent, section: Section.EVENTS };
+      this.eventsService.editEvent(this.eventId, actualizedEvent as EditEventManija).subscribe((resp) => {
+        if (resp) {
+          // this.uploadFiles(this.boardgameId);
+          this.getEvent();
+          this.myForm.get('cardCoverImgName')?.reset();
+          this.myForm.get('img')?.reset();
+          this.dashboardService.notificationPopup('success', 'Board Game actualizado correctamente', 2000);
+          this.router.navigateByUrl('lmdr/events')
+        } else {
+          this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Board :(', 3000);
+        }
+        this.uploadingEvent = false;
+      });
+    }
+
+
+    onSubmit() {
       this.myForm.markAllAsTouched();
-      if(this.myForm.invalid) return;
-      Swal.fire({
-        title: 'Do you want to save a new Warehouse?',
-        text: "",
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, save it!'
-      }).then((result) => {
+      if (this.myForm.invalid) return;
+
+      const action = this.eventId ? 'update' : 'create';
+      this.confirmAction(action).then((result) => {
         if (result.isConfirmed) {
           this.uploadingEvent = true;
-          const currentEvent = this.currentEvent;
-      this.eventsService.postNewEvent(currentEvent).subscribe(
-        resp=>{
-          if(resp){
-            const _id = resp._id;
-              const formData = this.dashboardService.formDataToUploadImg(Section.EVENTS, this.selectedFile!)
-            if(formData){
-                this.eventsService.postEventImage(_id!, formData).subscribe(imgResp=>{
-                  if(!imgResp){
-                    this.dashboardService.notificationPopup("error", 'El Evento fue guardado, pero algo salio mal al guardar la/s imagen/es revisa q su formato sea valido :(', 3000)
-                    this.uploadingEvent = false
-                  }
-                });
-              }
-            this.uploadingEvent = false
-            this.dashboardService.notificationPopup('success','Evento agregado',1500)
-            this.newElementAdded.emit();
-            this.imgSrc = [];
-            this.myForm.reset(this.eventsService.defaultFormValues);
-            this.cleanImg();
-          }else{
-            this.dashboardService.notificationPopup("error", 'Algo salio mal :(',2000)
-          }
+          action === 'create' ? this.createBoardGame() : this.updateBoardGame();
         }
-      );
-        }
-      })
-      this.eventsService.resetAllProperties()
+      });
     }
+
 }
 

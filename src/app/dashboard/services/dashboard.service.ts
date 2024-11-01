@@ -77,6 +77,19 @@ export class DashboardService {
     }
   }
 
+  public confirmAction(action: string, item:string) {
+    const title = action === 'create' ? `Quieres guardar un nuevo ${item}?` : `Quieres actualizar el ${item}?`;
+    return Swal.fire({
+      title,
+      text: "",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, save it!'
+    });
+  }
+
   countingChar(event: any) {
     const editorContent = event.editor.getData();
     const textContent = this.stripHtml(editorContent);

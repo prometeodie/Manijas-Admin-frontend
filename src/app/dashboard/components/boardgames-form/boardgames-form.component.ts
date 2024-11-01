@@ -15,6 +15,7 @@ import { BoardgameUpload, CategoryGame, Section } from '../../interfaces';
 import   Swal from 'sweetalert2';
 import { Dificulty } from '../../interfaces/boards interfaces/dificulty.enum';
 import { Replayability } from '../../interfaces/boards interfaces/replayability.enum';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'boardgames-form',
@@ -32,6 +33,7 @@ export class BoardgamesFormComponent {
   private dashboardService = inject(DashboardService);
   private boardgamesService = inject(BoardgamesService);
   private fvService= inject(FormService);
+  private router = inject(Router);
   readonly categoryExplanation:string[] = boardGameCategories;
   readonly urlPattern = /^(https?:\/\/)?(www\.)?instagram\.com\/(p|reel|tv|stories)\/[A-Za-z0-9_-]+\/?$|^(https?:\/\/)?(www\.)?instagram\.com\/[A-Za-z0-9._-]+\/?$/;
   public currentBoardgame!: Boardgame;
@@ -415,16 +417,7 @@ export class BoardgamesFormComponent {
   }
 
   private confirmAction(action: string) {
-    const title = action === 'create' ? 'Quieres guardar un nuevo Board game?' : 'Quieres actualizar el Board game?';
-    return Swal.fire({
-      title,
-      text: "",
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, save it!'
-    });
+    return this.dashboardService.confirmAction(action, 'Board game')
   }
 
   private createBoardGame() {
@@ -433,6 +426,7 @@ export class BoardgamesFormComponent {
       if (resp) {
         this.uploadFiles(resp._id);
         this.resetForm();
+        this.router.navigateByUrl('lmdr/boardgames');
       }
       this.uploadingBoardG = false;
     });
@@ -447,6 +441,7 @@ export class BoardgamesFormComponent {
         this.myForm.get('cardCoverImgName')?.reset();
         this.myForm.get('img')?.reset();
         this.dashboardService.notificationPopup('success', 'Board Game actualizado correctamente', 2000);
+        this.router.navigateByUrl('lmdr/boardgames');
       } else {
         this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Board :(', 3000);
       }
