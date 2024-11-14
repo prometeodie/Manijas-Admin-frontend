@@ -77,6 +77,15 @@ export class DashboardService {
     }
   }
 
+
+  imgPathCreator(imgName: string, screenSize: number, section:Section, id: string) {
+
+    if (imgName.length ===  0) return [];
+
+    return (screenSize < 800)? [`upload/${section}/${id}/optimize/smallS-${imgName}`]:
+                        [`upload/${section}/${id}/${imgName}`]
+  }
+
   public confirmAction(action: string, item:string) {
     const title = action === 'create' ? `Quieres guardar un nuevo ${item}?` : `Quieres actualizar el ${item}?`;
     return Swal.fire({
@@ -102,10 +111,10 @@ export class DashboardService {
     return div.textContent || div.innerText || '';
   }
 
-  returnOneImg(event: Event){
+  returnImgs(event: Event){
     const input = event.target as HTMLInputElement;
       if (input.files && input.files.length > 0) {
-        return input.files[0];
+        return input.files;
       }
       return null;
   }
@@ -138,6 +147,17 @@ export class DashboardService {
     return formData;
   }
 
+  formDataToUploadSingleImg(section: Section, imgFile: File | null) {
+    const formData = new FormData();
+    if (!imgFile) {
+      return;
+    }
+    formData.append('section', section);
+    formData.append('file', imgFile);
+
+    return formData;
+}
+
 
   loadImage(img:string | ArrayBuffer | null){
     this._imgSrc.set(img);
@@ -152,8 +172,42 @@ export class DashboardService {
     return input.checked;
   }
 
+  validateImageUploadLimit( id:string, imgNameLenght:number ){
+    if(id){
+      if (imgNameLenght !== 0){
+        this.notificationPopup("error", 'Solo puede existir una imagen', 3000);
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+
   saveCurrentUrl(route: string) {
     localStorage.setItem('lastUrl', route);
+  }
+
+  showDeleteBtn(imgName: string | ArrayBuffer, objectImgName:string, id:string){
+    if (!imgName || objectImgName.length === 0) {
+      return false;
+  }
+
+    if (id.length !== 0) {
+      if (typeof imgName === 'string') {
+          if (imgName.includes(objectImgName)) {
+              return true;
+          }
+      }
+  }
+
+  return false;
+  }
+
+  public getImagePaths(imgN: string, id: string) {
+    return {
+      path: `${id}/${imgN}`,
+      optimizePath: `${id}/optimize/smallS-${imgN}`
+    };
   }
 
   deleteItem(id:string, section: string){
@@ -165,7 +219,6 @@ export class DashboardService {
 
   deleteItemImg(path:string, section: string, ){
     if(!path) return;
-    console.log(path)
     const headers = this.getHeaders();
     return this.http.delete(`${this.url}/${section}/delete/img/upload/${section}/${path}`,{headers}).pipe(
       catchError((err)=>{return of(undefined)})

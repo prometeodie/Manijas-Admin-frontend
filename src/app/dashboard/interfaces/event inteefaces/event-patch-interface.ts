@@ -1,8 +1,8 @@
 export interface EditEventManija {
   _id?:                       string;
   title?:                      string;
-  eventDate?:                  string;
-  alternativeTxtEventDate?:    string;
+  eventDate?:                  string | null;
+  alternativeTxtEventDate?:    string | null;
   startTime?:                  string;
   finishTime?:                 string;
   eventPlace?:                 string;

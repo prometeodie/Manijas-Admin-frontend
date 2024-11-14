@@ -26,7 +26,7 @@ private dashboardService= inject(DashboardService);
 private aboutService= inject(AboutService);
 private fvService= inject(FormService);
 public editorConfig!:EditorConfig;
-private selectedFile: File | null = null;
+private selectedFile: FileList | null = null;
 public uploadingAboutItem: boolean = false;
 public Editor = ClassicEditor;
 public charCount:number = 0;
@@ -56,7 +56,7 @@ public myForm = this.fb.group({
     const input = event.target as HTMLInputElement;
     this.imgSrc = await this.dashboardService.onFileSelected(event);
     this.dashboardService.loadImage(this.imgSrc[0]);
-    this.selectedFile = this.dashboardService.returnOneImg(event);
+    this.selectedFile = this.dashboardService.returnImgs(event);
     if(input.files){
       const file = input.files[0];
       const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
@@ -121,7 +121,7 @@ public myForm = this.fb.group({
       resp=>{
         if(resp){
           const _id = resp._id;
-            const formData = this.dashboardService.formDataToUploadImg(Section.ABOUT, this.selectedFile!)
+            const formData = this.dashboardService.formDataToUploadImg(Section.ABOUT, this.selectedFile![0])
           if(formData){
               this.aboutService.postAboutItemsImage(_id!, formData).subscribe(imgResp=>{
                 if(!imgResp){

@@ -34,7 +34,7 @@
       padding-left: 1rem;
 
       &__item{
-        font-size: smaller;
+        font-size: xx-small;
         font-weight: 900;
         margin-bottom: 0.2rem;
       }
@@ -56,5 +56,13 @@
     &:hover{
       background-color: rgba(13, 14, 14, 0.192);
     }
+  }
+}
+
+// MEDIA QUERIES
+
+@media (min-width:600px) {
+  .events__card__content__info-ul__item{
+    font-size: smaller;
   }
 }

@@ -2,7 +2,7 @@
   export interface EventCardSample {
     id?:string
     title: string;
-    eventDate:  string
+    eventDate: string
     alternativeTxtEventDate: string;
     startTime: string
     finishTime: string

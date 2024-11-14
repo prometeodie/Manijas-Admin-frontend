@@ -29,7 +29,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
   private authService= inject(AuthService);
   private fvService= inject(FormService);
   public uploadingBlog: boolean = false;
-  private selectedFile: File | null = null;
+  private selectedFile: FileList | null = null;
   public options: string[] = ['LMDR'];
   public editorConfig!:EditorConfig;
   public Editor = ClassicEditor;
@@ -69,7 +69,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
   async onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
       this.imgSrc = await this.dashboardService.onFileSelected(event);
-      this.selectedFile = this.dashboardService.returnOneImg(event);
+      this.selectedFile = this.dashboardService.returnImgs(event);
       if(input.files){
         const file = input.files[0];
         const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
@@ -138,7 +138,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
         resp=>{
           if(resp){
             const _id = resp._id;
-              const formData = this.dashboardService.formDataToUploadImg(Section.BLOGS, this.selectedFile!)
+              const formData = this.dashboardService.formDataToUploadImg(Section.BLOGS, this.selectedFile![0])
             if(formData){
                 this.blogsService.postBlogImage(_id!, formData).subscribe(imgResp=>{
                   if(!imgResp){

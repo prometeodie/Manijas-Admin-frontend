@@ -27,7 +27,8 @@
 }
 
 .events__form__btn,
-.events__form__img-container__mark{
+.events__form__img-container__mark,
+.events__form__img-container__delete-img{
   cursor: pointer;
 }
 
@@ -60,20 +61,12 @@
   border-radius: 3px;
 }
 
-h3{
-  border-bottom: 1px solid;
-  font-weight: 300;
-  text-align: center;
-  width: 90%;
-  max-width: 36rem;
-}
-
 .events{
   border-radius: 5px;
-  margin-bottom: 2rem;
+  margin: 0  0.5rem 2rem ;
   padding: 1.5rem;
   background-color: $secondary-element-color;
-
+  position: relative;
   &__form{
 
     &__input{
@@ -147,12 +140,37 @@ h3{
         background-color:$inputs-bc;
         padding: 1rem;
 
+
         &__img{
           object-fit: scale-down;
           width: 100%;
+          max-width: 32rem;
         }
+
+        &__delete-img{
+          position: absolute;
+          display: none;
+          top: 0;
+          left: 0;
+          background-color: rgba(0, 0, 0, 0.65);
+          width: 100%;
+          height: 100%;
+          align-content: center;
+          text-align: center;
+          font-size: 2.5rem;
+          color: $main-card-delete-button-color;
+        }
+
+        &:hover &__delete-img{
+          display: block;
+
+        }
+
       }
     }
 
+    &__sample-card{
+      width: 100%;
+      margin-top: 1rem;
+    }
   }
-

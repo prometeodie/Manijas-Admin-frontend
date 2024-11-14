@@ -9,7 +9,7 @@
       </ng-template>
 
       <ul class="events__card__content__info-ul">
-        <li class="events__card__content__info-ul__item" *ngIf="!eventSample()!.mustBeAutomaticallyDeleted; else alternativetxt">Dia/s: {{eventSample()!.eventDate}}</li>
+        <li class="events__card__content__info-ul__item" *ngIf="eventSample()!.mustBeAutomaticallyDeleted; else alternativetxt">Dia/s: {{ eventSample()?.eventDate ? (eventSample()?.eventDate | date: 'dd-MM-yyyy' : 'UTC') : '--/--/----' }}</li>
         <ng-template #alternativetxt>
           <li class="events__card__content__info-ul__item">Dia/s: {{eventSample()!.alternativeTxtEventDate}}</li>
         </ng-template>

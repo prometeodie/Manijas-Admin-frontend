@@ -71,7 +71,7 @@
         <!-- SELECT SECTION (CATEGORY-REPLAYABILITY-DIFICULTY) -->
         <div class="board-games__form__input-label__input__characters-container">
         <div *ngIf="input.type === 'select'">
-          <label for="options">{{this.input.placeHolder}}</label>
+          <label for="options">{{input.placeHolder}}</label>
           <select id="options" [formControlName]="input.name" class="board-games__form__input-label__select">
             <option value="" disabled>Elija una opción</option>
             <option *ngFor="let option of input.selectOptions" class="board-games__form__input-label__select__options">

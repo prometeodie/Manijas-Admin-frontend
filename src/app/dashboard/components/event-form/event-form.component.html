@@ -8,46 +8,50 @@
       <ng-container *ngIf="shouldShowInput(eventInput)">
         <label *ngIf="eventInput.label.length > 0">{{eventInput.label}}</label>
         <input
-          class="events__form__input"
-          [placeholder]="eventInput.placeHolder"
-          [formControlName]="eventInput.name"
-          [type]="eventInput.type"
-          accept="image/*"
-          [maxlength]="eventInput.maxLenght"
-          (input)="!(eventInput.type === 'file')? onFieldChange(eventInput.name, $event): null"
-          (change)="eventInput.type === 'file' ? onFileSelected($event) : null">
+        class="events__form__input"
+        [placeholder]="eventInput.placeHolder"
+        [formControlName]="eventInput.name"
+        [type]="eventInput.type"
+        accept="image/*"
+        [maxlength]="eventInput.maxLenght"
+        (input)="!(eventInput.type === 'file')? onFieldChange(eventInput.name, $event): null"
+        (change)="eventInput.type === 'file' ? onFileSelected($event) : null">
         <span class="events__form__input__error-menssage"
-              *ngIf="isValidField(eventInput.name)">{{showError(eventInput.name)}}
-        </span>
-      </ng-container>
-    </div>
-    <!-- image-->
-    <div class="events__form__img-container" *ngIf="imgSrc[0]">
-      <img  [src]="imgSrc[0]" alt="event-Img" class="events__form__img-container__img">
-      <i class="fa-solid fa-circle-xmark events__form__img-container__mark"></i>
-    </div>
-    <!-- select color-->
-    <div>
-      <label for="opciones">Selecciona un color </label>
-      <select id="opciones" name="opciones" class="events__form__input events__form__input--selector"
-                                            formControlName="eventColor"
-                                            (change)="updateSelectedColor($event); onFieldChange('eventColor', $event)"
-                                            [ngStyle]="{'background-color': selectedColor}">
-        <option class="events__form__input events__form__input--option" *ngFor="let color of colors" [value]="color" [ngStyle]="{'background-color': color}"></option>
-      </select>
-    </div>
-    <!-- check-box autoDelete -->
-    <span class="events__form__input__check-box-cont">Borrar automaticamente
-      <input type="checkbox" formControlName="mustBeAutomaticallyDeleted" class="events__form__input events__form__input--margin-l events__form__input__check-box-cont__cb"
-                                                          (change)="onAutoDeleteChange($event)">
-      <p class="events__form__input__check-box-cont__pop-up" *ngIf="showPopUpAutoDelete">
-        Debes poner un texto alternativo en fecha (Ej:Todos los Domingos) ya que este evento no se borrar de forma automatica
-        <i class="fa-solid fa-circle-xmark events__form__input__check-box-cont__pop-up__mark" (click)="closePopUp()"></i></p>
+        *ngIf="isValidField(eventInput.name)">{{showError(eventInput.name)}}
       </span>
-      <!-- check-box publish -->
-    <span class="events__form__input__check-box-cont">Publicar <input type="checkbox" formControlName="publish" (change)="onPublicCheckChange($event)" class="events__form__input events__form__input--margin-l"></span>
-    <button type="submit" class="events__form__btn">{{saveOrPublish}}</button>
-  </form>
+    </ng-container>
+  </div>
+  <!-- image-->
+  <div class="events__form__img-container" *ngIf="imgSrc[0]">
+    <img  [src]="imgSrc[0]" [alt]="imgSrc[0].slice(0,25)" class="events__form__img-container__img">
+    <i class="fa-regular fa-trash-can events__form__img-container__delete-img" *ngIf="showDeleteBtn(imgSrc[0],currentEvent,eventId), else resetImg"
+    (click)="deleteImg(currentEvent.imgName!)"></i>
+    <ng-template #resetImg>
+      <i class="fa-solid fa-recycle events__form__img-container__delete-img" (click)="cleanImg()"> RESET</i>
+    </ng-template>
+  </div>
+  <!-- select color-->
+  <div>
+    <label for="opciones">Selecciona un color </label>
+    <select id="opciones" name="opciones" class="events__form__input events__form__input--selector"
+    formControlName="eventColor"
+    (change)="updateSelectedColor($event); onFieldChange('eventColor', $event)"
+    [ngStyle]="{'background-color': selectedColor}">
+    <option class="events__form__input events__form__input--option" *ngFor="let color of colors" [value]="color" [ngStyle]="{'background-color': color}"></option>
+  </select>
+</div>
+<!-- check-box autoDelete -->
+<span class="events__form__input__check-box-cont">Borrar automaticamente
+  <input type="checkbox" formControlName="mustBeAutomaticallyDeleted" class="events__form__input events__form__input--margin-l events__form__input__check-box-cont__cb"
+  (change)="onAutoDeleteChange($event)">
+  <p class="events__form__input__check-box-cont__pop-up" *ngIf="showPopUpAutoDelete">
+    Debes poner un texto alternativo en fecha (Ej:Todos los Domingos) ya que este evento no se borrar de forma automatica
+    <i class="fa-solid fa-circle-xmark events__form__input__check-box-cont__pop-up__mark" (click)="closePopUp()"></i></p>
+  </span>
+  <!-- check-box publish -->
+  <span class="events__form__input__check-box-cont">Publicar <input type="checkbox" formControlName="publish" (change)="onPublicCheckChange($event)" class="events__form__input events__form__input--margin-l"></span>
+  <button type="submit" class="events__form__btn">{{saveOrPublish}}</button>
+</form>
+<event-sample-card *ngIf="existEvent" class="events__sample-card"/>
 </div>
 
-<!-- <event-sample-card class="events__section__sample-card"/> -->

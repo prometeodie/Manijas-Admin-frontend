@@ -14,13 +14,13 @@ export class EventsService {
 
   private eventPlaceHolder = {
     title: 'Example Title',
-    eventDate:  '--/--/----',
+    eventDate:  '',
     alternativeTxtEventDate: 'Ej: Todos los Domingos',
     startTime: '--:--',
     finishTime: '--:--',
     eventPlace:'no where',
     eventColor:'#ff3296',
-    mustBeAutomaticallyDeleted: false,
+    mustBeAutomaticallyDeleted: true,
     url: '',
   }
 
@@ -110,7 +110,7 @@ export class EventsService {
     )
   }
 
-  postNewEvent(newEvent: EventManija){
+  postNewEvent(newEvent: EditEventManija){
     const headers = this.dashboardService.getHeaders();
     return this.http.post<EventManija>(`${this.url}/upload`, newEvent, { headers}).pipe(
       catchError((err)=>{return of(undefined)})

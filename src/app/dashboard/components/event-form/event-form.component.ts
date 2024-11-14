@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ImgPipePipe } from '../../pipes/img-pipe.pipe';
 import { EventManija } from '../../interfaces/event inteefaces/event.interface';
@@ -18,11 +18,12 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'event-form',
   standalone: true,
-  imports: [CommonModule, ImgPipePipe, ReactiveFormsModule, LoadingAnimationComponent,EventSampleCardComponent],
+  imports: [CommonModule, ReactiveFormsModule, LoadingAnimationComponent, EventSampleCardComponent],
   templateUrl: './event-form.component.html',
   styleUrls: ['./event-form.component.scss']
 })
-export class EventFormComponent implements OnInit{
+export class EventFormComponent implements OnInit, OnDestroy{
+
   @Input() eventId!: string;
   @Output() newElementAdded = new EventEmitter<void>();
   private fb = inject(FormBuilder);
@@ -30,13 +31,14 @@ export class EventFormComponent implements OnInit{
   private eventsService = inject(EventsService);
   private dashboardService = inject(DashboardService);
   private router = inject(Router);
-  private selectedFile: File | null = null;
+  private selectedFile: FileList | null = null;
   private TIME_REGEX = /^([01][0-9]|2[0-3]):([0-5][0-9])$/;
   public currentEvent!: EventManija;
   public uploadingEvent:boolean = false;
   public  autoDeleteChecked: boolean = true;
   public  showPopUpAutoDelete: boolean = false;
   public imgSrc:(string | ArrayBuffer)[] = [];
+  public existEvent: boolean = false;
   public colors: string[] = ['#ff3296', '#ff4b4b', '#872e6e', '#00ff64', '#0064ff', '#0096ff', '#18dcff', '#00ffc8', '#00d59c', '#32ff96', '#c832ff', '#ff64c8', '#ffdc00']
   public selectedColor: string = this.colors[0];
   public saveOrPublish:string = 'Guardar';
@@ -69,6 +71,10 @@ export class EventFormComponent implements OnInit{
       this.getEvent();
     }
 
+    ngOnDestroy(): void {
+      this.eventsService.resetAllProperties()
+    }
+
     updateSelectedColor(event: Event) {
       const selectElement = event.target as HTMLSelectElement;
       this.selectedColor = selectElement.value;
@@ -78,7 +84,7 @@ export class EventFormComponent implements OnInit{
       const input = event.target as HTMLInputElement;
       this.autoDeleteChecked = event.target.checked;
       this.showPopUpAutoDelete = !event.target.checked;
-      this.eventsService.updateEventData({ mustBeAutomaticallyDeleted: !input.checked });
+      this.eventsService.updateEventData({ mustBeAutomaticallyDeleted: input.checked });
       this.updateValidators();
       if(event.target.checked){
         this.myForm.get('alternativeTxtEventDate')?.reset()
@@ -88,6 +94,21 @@ export class EventFormComponent implements OnInit{
         this.eventsService.resetpropertie(event.target.checked)
       }
     }
+
+    updateValidators() {
+      const date = this.myForm.get('eventDate');
+      const alternativeTxtEventDate = this.myForm.get('alternativeTxtEventDate');
+        if (this.myForm.get('mustBeAutomaticallyDeleted')?.value){
+          date?.setValidators([Validators.required])
+          alternativeTxtEventDate?.clearValidators();
+        }else{
+          date?.clearValidators();
+          alternativeTxtEventDate?.setValidators([Validators.required])
+        }
+        date?.updateValueAndValidity();
+        alternativeTxtEventDate?.updateValueAndValidity();
+      }
+
 
     onPublicCheckChange(event:Event){
        (this.dashboardService.onPublicCheckChange(event))? this.saveOrPublish = 'Publicar': this.saveOrPublish = ' Guardar';
@@ -105,11 +126,19 @@ export class EventFormComponent implements OnInit{
       this.showPopUpAutoDelete = false
     }
 
+    // select image
     async onFileSelected(event: Event) {
+      if(this.currentEvent && this.currentEvent._id){
+        const thereisImg = this.dashboardService.validateImageUploadLimit(this.currentEvent._id, this.currentEvent.imgName.length);
+        if(thereisImg){
+          this.myForm.get('img')?.reset();
+          return;
+        }
+      }
       const input = event.target as HTMLInputElement;
       this.imgSrc = await this.dashboardService.onFileSelected(event);
       this.dashboardService.loadImage(this.imgSrc[0]);
-      this.selectedFile = this.dashboardService.returnOneImg(event);
+      this.selectedFile = this.dashboardService.returnImgs(event);
       if(input.files){
         const file = input.files[0];
         const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
@@ -125,16 +154,49 @@ export class EventFormComponent implements OnInit{
         }
       }
 
+      private updateImageSources(event: EventManija) {
+        this.imgSrc = this.dashboardService.imgPathCreator(event.imgName,this.dashboardService.screenWidth, Section.EVENTS, this.eventId,  );
+      }
+
+      // get and fullfill form data
       getEvent() {
+        this.existEvent = false;
+
         if (!this.eventId) return;
 
         this.eventsService.getEvent(this.eventId).subscribe((event) => {
           if (!event) return;
-
+          this.existEvent = true;
           this.currentEvent = event;
           this.updateFormValues(event);
-          // this.updateImageSources(event);
+          this.updateImageSources(event);
+          this.fullfillSampleCard(this.currentEvent as EventCardSample);
         });
+      }
+
+      fullfillSampleCard(event: EventCardSample){
+        if(event){
+          this.eventsService.updateEventData(event);
+        }
+        return;
+      }
+
+      get newEvent(): EditEventManija {
+        const formValue = this.myForm.value;
+        const newEvent: EditEventManija = {
+          section: 'EVENTS',
+          title: formValue.title ?? '',
+          eventDate: formValue.eventDate ? new Date(formValue.eventDate).toISOString() : null,
+          alternativeTxtEventDate: formValue.alternativeTxtEventDate ?? null,
+          startTime: formValue.startTime ?? '',
+          finishTime: formValue.finishTime ?? '',
+          eventPlace: formValue.eventPlace ?? '',
+          eventColor: formValue.eventColor ?? '',
+          url: formValue.url ?? '',
+          publish: formValue.publish ?? false,
+          mustBeAutomaticallyDeleted: formValue.mustBeAutomaticallyDeleted ?? false,
+        };
+        return newEvent;
       }
 
       private updateFormValues(event: EventManija) {
@@ -155,29 +217,10 @@ export class EventFormComponent implements OnInit{
       this.autoDeleteChecked = event.mustBeAutomaticallyDeleted;
     }
 
-    // private updateImageSources(event: EventManija) {
-    //   this.imgSrc = this.eventsService.imgPathCreator(boardGame, this.dashboardService.screenWidth, false);
-    // }
-
     onFieldChange(field: string, event: Event) {
       const input = event.target as HTMLInputElement;
       this.eventsService.updateEventData({ [field as keyof EventCardSample]: input.value });
     }
-
-   updateValidators() {
-      const date = this.myForm.get('eventDate');
-      const alternativeTxtEventDate = this.myForm.get('alternativeTxtEventDate');
-        if (this.myForm.get('mustBeAutomaticallyDeleted')?.value){
-          date?.setValidators([Validators.required])
-          alternativeTxtEventDate?.clearValidators();
-        }else{
-          date?.clearValidators();
-          alternativeTxtEventDate?.setValidators([Validators.required])
-        }
-        date?.updateValueAndValidity();
-        alternativeTxtEventDate?.updateValueAndValidity();
-      }
-
 
     isValidField(field: string):boolean | null{
         return this.fvService.isValidField(this.myForm,field);
@@ -187,80 +230,156 @@ export class EventFormComponent implements OnInit{
       return `${this.fvService.showError(this.myForm,field)}`
     }
 
-    get newEvent(): EventManija {
-      const formValue = this.myForm.value;
-      const newEvent: EventManija = {
-        section: 'EVENTS',
-        title: formValue.title ?? '',
-        eventDate: formValue.eventDate ? new Date(formValue.eventDate).toISOString() : null,
-        alternativeTxtEventDate: formValue.alternativeTxtEventDate ?? null,
-        startTime: formValue.startTime ?? '',
-        finishTime: formValue.finishTime ?? '',
-        eventPlace: formValue.eventPlace ?? '',
-        eventColor: formValue.eventColor ?? '',
-        url: formValue.url ?? '',
-        publish: formValue.publish ?? false,
-        mustBeAutomaticallyDeleted: formValue.mustBeAutomaticallyDeleted ?? false,
-        imgName: ''
-      };
-      return newEvent;
-    }
+    // Clean image and resert form
 
     cleanImg(){
       this.imgSrc = [];
+      this.myForm.get('img')?.reset();
       this.dashboardService.cleanImgSrc();
-    }
-
-    private confirmAction(action: string) {
-      return this.dashboardService.confirmAction(action, 'Evento')
     }
 
     private resetForm() {
       this.myForm.reset();
       this.cleanImg();
-      // this.selectedFiles = null;
+      this.myForm.get('mustBeAutomaticallyDeleted')?.setValue(true)
+      this.selectedFile = null;
     }
 
-
-    private createBoardGame() {
+    // Create and Update form
+    private createEvent() {
       const newEvent = this.newEvent;
       this.eventsService.postNewEvent(newEvent).subscribe((resp) => {
         if (resp) {
-          // this.uploadFiles(resp._id);
+          this.uploadFile(resp._id!);
+          this.dashboardService.notificationPopup('success','Evento agregado',2000)
           this.resetForm();
-          this.router.navigateByUrl('lmdr/boardgames');
+          this.router.navigateByUrl('lmdr/events');
+          this.newElementAdded.emit();
+        }else{
+          this.dashboardService.notificationPopup('error','algo ocurrio al guardar el evento',2000)
         }
         this.uploadingEvent = false;
       });
     }
 
-    private updateBoardGame() {
+    private updateEvent() {
       const actualizedEvent = { ...this.newEvent, section: Section.EVENTS };
       this.eventsService.editEvent(this.eventId, actualizedEvent as EditEventManija).subscribe((resp) => {
         if (resp) {
-          // this.uploadFiles(this.boardgameId);
+          if(this.selectedFile !== null){
+            this.uploadFile(this.currentEvent._id!);
+            this.myForm.get('img')?.reset();
+          }
+          this.dashboardService.notificationPopup('success', 'Evento actualizado correctamente', 2000);
           this.getEvent();
-          this.myForm.get('cardCoverImgName')?.reset();
-          this.myForm.get('img')?.reset();
-          this.dashboardService.notificationPopup('success', 'Board Game actualizado correctamente', 2000);
-          this.router.navigateByUrl('lmdr/events')
         } else {
-          this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Board :(', 3000);
+          this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Evento :(', 3000);
         }
         this.uploadingEvent = false;
       });
     }
 
+    uploadFormData(formData: FormData, _id: string){
+      if(formData){
+        this.eventsService.postEventImage(_id!, formData).subscribe(imgResp=>{
+
+          if(!imgResp){
+            this.uploadingEvent = false
+            this.dashboardService.notificationPopup("error", 'El Evento fue guardado, pero algo salio mal al guardar la/s imagen/es revisa q su formato sea valido :(',3000)
+          }
+          this.dashboardService.notificationPopup('success','Evento agregado',2000)
+          this.resetForm()
+          this.getEvent();
+        });
+      }
+    }
+
+    private uploadFile(eventId: string) {
+      if (this.selectedFile == null) {
+        console.log("No file selected, upload image canceled.");
+        return;
+      }
+      this.uploadImg(eventId, Section.EVENTS, this.selectedFile);
+    }
+
+    uploadImg(id: string , section:Section, selectedFiles: FileList){
+
+      if(id && selectedFiles){
+        const formData = this.dashboardService.formDataToUploadSingleImg(section, selectedFiles![0]);
+        if (formData && formData.has('file')) {
+          this.uploadFormData(formData!, id);
+        }
+        this.dashboardService.notificationPopup('success','Evento agregado',2000)
+      return false;
+    }
+    else{
+      this.dashboardService.notificationPopup("error", 'Algo salio mal al Guardar el Evento :(',3000);
+      return false;
+      }
+  }
+
+    //DELETE IMG SECTION
+
+    showDeleteBtn(imgName: string | ArrayBuffer, event:EventManija, id:string){
+      if(!event) return false;
+      return this.dashboardService.showDeleteBtn(imgName, event.imgName, id)
+    }
+
+    private confirmDelete() {
+      return Swal.fire({
+        title: 'Quieres eliminar la imagen?',
+        text: "",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, save it!'
+      });
+    }
+
+    public getImagePaths(imgN: string, id: string) {
+      return this.dashboardService.getImagePaths(imgN, id)
+    }
+
+    private cleanEventImgName() {
+      this.eventsService.editEvent(this.currentEvent._id!, { imgName:'' }).subscribe((editResp) => {
+        if (editResp) {
+          this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
+          this.resetForm();
+          this.getEvent();
+        }
+      });
+    }
+
+    deleteImg(imgN: string) {
+      this.confirmDelete().then((result) => {
+        if (!result.isConfirmed) return;
+
+        const { path, optimizePath } = this.getImagePaths(imgN, this.currentEvent._id!);
+        this.dashboardService.deleteItemImg(path, Section.EVENTS)?.subscribe((resp) => {
+          this.cleanEventImgName();
+          if (resp) {
+            this.dashboardService.deleteItemImg(optimizePath, Section.EVENTS)?.subscribe();
+          }else{
+            this.dashboardService.notificationPopup('error', 'Algo ocurrio al eliminar la imagen', 2000);
+          }
+        });
+      });
+    }
+
+    ///Submit form
+    private confirmAction(action: string) {
+      return this.dashboardService.confirmAction(action, 'Evento')
+    }
 
     onSubmit() {
       this.myForm.markAllAsTouched();
       if (this.myForm.invalid) return;
-
-      const action = this.eventId ? 'update' : 'create';
+      const action = this.currentEvent ? 'update' : 'create';
       this.confirmAction(action).then((result) => {
         if (result.isConfirmed) {
           this.uploadingEvent = true;
-          action === 'create' ? this.createBoardGame() : this.updateBoardGame();
+          action === 'create' ? this.createEvent() : this.updateEvent();
         }
       });
     }
