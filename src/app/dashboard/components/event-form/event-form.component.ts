@@ -128,6 +128,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
 
     // select image
     async onFileSelected(event: Event) {
+
       if(this.currentEvent && this.currentEvent._id){
         const thereisImg = this.dashboardService.validateImageUploadLimit(this.currentEvent._id, this.currentEvent.imgName.length);
         if(thereisImg){
@@ -155,7 +156,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
       }
 
       private updateImageSources(event: EventManija) {
-        this.imgSrc = this.dashboardService.imgPathCreator(event.imgName,this.dashboardService.screenWidth, Section.EVENTS, this.eventId,  );
+        this.imgSrc = this.dashboardService.imgPathCreator(event.imgName,this.dashboardService.screenWidth, Section.EVENTS, this.eventId);
       }
 
       // get and fullfill form data
@@ -184,7 +185,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
       get newEvent(): EditEventManija {
         const formValue = this.myForm.value;
         const newEvent: EditEventManija = {
-          section: 'EVENTS',
+          section: Section.EVENTS,
           title: formValue.title ?? '',
           eventDate: formValue.eventDate ? new Date(formValue.eventDate).toISOString() : null,
           alternativeTxtEventDate: formValue.alternativeTxtEventDate ?? null,
@@ -194,6 +195,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
           eventColor: formValue.eventColor ?? '',
           url: formValue.url ?? '',
           publish: formValue.publish ?? false,
+          imgName:'',
           mustBeAutomaticallyDeleted: formValue.mustBeAutomaticallyDeleted ?? false,
         };
         return newEvent;

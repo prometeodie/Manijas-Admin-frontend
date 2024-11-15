@@ -372,6 +372,8 @@ export class BoardgamesFormComponent {
         dificulty:           formValue.dificulty ?? Dificulty.NONE,
         replayability:       formValue.replayability ?? Replayability.NONE,
         howToPlayUrl:        formValue.howToPlayUrl ?? '',
+        imgName:[],
+        cardCoverImgName:'',
         reel:                [{plataform: 'Instagram', reelUrl: formValue.reelInstagram ?? ''},{plataform: 'TikTok', reelUrl: formValue.reelTikTok ?? ''}],
         publish: formValue.publish ?? false,
       };

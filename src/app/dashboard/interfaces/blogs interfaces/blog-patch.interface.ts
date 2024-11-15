@@ -6,7 +6,7 @@ export interface EditBlog {
   subTitle?:    string;
   writedBy?:    string;
   blogContent?: string;
-  category?:    BlogsCategories[];
+  category?:    string;
   section?:     string;
   imgName?:     string;
   publish?:     boolean;

@@ -49,7 +49,7 @@ export class BlogsService {
     )
   }
 
-  postNewBlog(newBlog: Blog){
+  postNewBlog(newBlog: EditBlog){
     const headers = this.dashboardService.getHeaders();
     return this.http.post<Blog>(`${this.url}/upload`, newBlog, { headers}).pipe(
       catchError((err)=>{return of(undefined)})

@@ -1,6 +1,7 @@
 <loading-animation *ngIf="uploadingBlog"/>
 <div class="blog">
   <h2>Blog</h2>
+  <!-- form -->
   <form class="blog__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
     <div class="blog__form__input-label" *ngFor="let input of aboutInputs">
       <label class="blog__form__input-label__label" *ngIf="input.label.length > 0">{{input.label}}</label>
@@ -16,34 +17,42 @@
               <span class="blog__form__input-label__error-menssage"
               *ngIf="isValidField(input.name)">{{showError(input.name)}}
               </span>
+              <!-- image -->
               <div class="blog__form__img-container" *ngIf="imgSrc[0] && input.name === 'img'">
-                <img  [src]="imgSrc[0]" alt="event-Img" class="blog__form__img-container__img">
+                <img  [src]="imgSrc[0]" [alt]="imgSrc[0].slice(0,25)" class="blog__form__img-container__img">
+                <i class="fa-regular fa-trash-can blog__form__img-container__delete-img" *ngIf="showDeleteBtn(imgSrc[0],currentBlog,blogId), else resetImg"
+                (click)="deleteImg(currentBlog.imgName!)"></i>
+                <ng-template #resetImg>
+                  <i class="fa-solid fa-recycle blog__form__img-container__delete-img" (click)="cleanImg()"> RESET</i>
+                </ng-template>
               </div>
-      <ng-template #textArea>
-        <div class="blog__form__input-label__input__characters-container">
-          <div *ngIf="input.type === 'textArea'">
-            <ckeditor
-              [formControlName]="input.name"
-              [editor]="Editor"
-              [config]="editorConfig"
-              (change)="countingChar($event)"
-              name="editor">
-            </ckeditor>
-            <span>Caracteres: {{charCount}}</span>
-            <span> / Promedio de caracteres en los "Blogs": 150</span>
-          </div>
-            <div *ngIf="input.type === 'select'">
-              <label for="options">{{this.input.placeHolder}}</label>
-              <select id="options" [formControlName]="input.name" class="blog__form__input-label__select">
-                <option value="" disabled>Elija una opción</option>
-                <option *ngFor="let option of input.selectOptions" class="blog__form__input-label__select__options">
-                  {{ option }}
-                </option>
-              </select>
-          </div>
-        </div>
-      </ng-template>
+              <!-- editor -->
+              <ng-template #textArea>
+                <div class="blog__form__input-label__input__characters-container">
+                  <div *ngIf="input.type === 'textArea'">
+                    <ckeditor
+                      [formControlName]="input.name"
+                      [editor]="Editor"
+                      [config]="editorConfig"
+                      (change)="countingChar($event)"
+                      name="editor">
+                    </ckeditor>
+                    <span>Caracteres: {{charCount}}</span>
+                    <span> / Promedio de caracteres en los "Blogs": 150</span>
+                  </div>
+                    <div *ngIf="input.type === 'select'">
+                      <label for="options">{{input.placeHolder}}</label>
+                      <select id="options" [formControlName]="input.name" class="blog__form__input-label__select">
+                        <option value="" disabled>Elija una opción</option>
+                        <option *ngFor="let option of input.selectOptions" class="blog__form__input-label__select__options">
+                          {{ option }}
+                        </option>
+                      </select>
+                  </div>
+                </div>
+              </ng-template>
     </div>
+    <!-- checkbok and submit btn -->
     <label class="blog__form__input-label__label" >Publicar:</label>
     <input type="checkbox" formControlName="publish" class="blog__form__input-label__input--cb">
     <button type="submit" class="blog__form__btn">Guardar</button>
