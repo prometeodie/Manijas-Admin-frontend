@@ -1,6 +1,6 @@
 <main class="create-edit">
   <h1>{{title | titlecase}}</h1>
-  <about-form class="create-edit__form" *ngIf="seccion === 'ABOUT'"/>
+  <about-form class="create-edit__form" [aboutItemId]="id" *ngIf="seccion === 'ABOUT'"/>
   <blogs-form class="create-edit__form" [blogId]="id" *ngIf="seccion === 'BLOGS'"/>
   <event-form class="create-edit__form" [eventId]="id" *ngIf="seccion === 'EVENTS'"/>
   <boardgames-form class="create-edit__form" [boardgameId]="id" *ngIf="seccion === 'BOARDGAMES'"/>

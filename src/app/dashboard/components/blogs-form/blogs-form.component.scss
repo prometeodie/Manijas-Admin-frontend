@@ -14,6 +14,11 @@
   width: 100%;
 }
 
+.blog,
+.blog__form__img-container{
+  position: relative;
+}
+
 .blog__form__input-label__input,
 .blog__form__btn{
   background-color:$inputs-bc;
@@ -103,7 +108,6 @@ h3{
       justify-content: center;
       padding: 1rem;
       margin-bottom: 0.5rem;
-      position: relative;
 
       &__img{
         max-width: 18rem;
@@ -148,6 +152,20 @@ h3{
       &:active{
         transform: scale(0.9);
       }
+    }
+  }
+
+  &__unsave-icon{
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+    font-size: xx-large;
+
+    &--mark{
+      position: absolute;
+      right: -5px;
+      font-size: 0.8rem;
+      bottom: 19px;
     }
   }
 }

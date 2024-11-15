@@ -219,11 +219,6 @@ export class BoardgamesFormComponent {
       this.scrollToTop();
     }
 
-    cleanImg(){
-      this.imgSrc = [];
-      this.cardCoverImgSrc = [];
-    }
-
     resetSelectedImages(inputName:string){
       if(inputName === 'cardCoverImgName'){
         this.myForm.get('cardCoverImgName')?.reset();
@@ -276,46 +271,6 @@ export class BoardgamesFormComponent {
       this.keywords = this.keywords.filter(tag => tag !== deletedTag);
     }
 
-    deleteImg(imgN: string) {
-      this.confirmDelete().then((result) => {
-        if (!result.isConfirmed) return;
-
-        const { path, optimizePath } = this.getImagePaths(imgN);
-        this.dashboardService.deleteItemImg(path, Section.BOARDGAMES)?.subscribe((resp) => {
-          if (resp) {
-            this.dashboardService.deleteItemImg(optimizePath, Section.BOARDGAMES)?.subscribe();
-            this.updateBoardgameImages(imgN);
-          }
-        });
-      });
-    }
-
-    private confirmDelete() {
-      return Swal.fire({
-        title: 'Quieres eliminar la imagen?',
-        text: "",
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, save it!'
-      });
-    }
-
-    private getImagePaths(imgN: string) {
-      const basePath = `${this.currentBoardgame._id}`;
-      if (imgN.includes('cardCover')) {
-        return {
-          path: `${basePath}/cardCover/${imgN}`,
-          optimizePath: `${basePath}/cardCover/optimize/smallS-${imgN}`
-        };
-      }
-      return {
-        path: `${basePath}/${imgN}`,
-        optimizePath: `${basePath}/optimize/smallS-${imgN}`
-      };
-    }
-
     private updateBoardgameImages(imgN: string) {
       if (imgN.includes('cardCover')) {
         this.currentBoardgame.cardCoverImgName = '';
@@ -333,28 +288,9 @@ export class BoardgamesFormComponent {
       });
     }
 
-    showDeleteBtn(imgName:  string | ArrayBuffer, currentBoardgame:Boardgame, i:number){
-      if(this.boardgameId){
-        if (typeof imgName === 'string') {
-          if(imgName.includes(currentBoardgame.cardCoverImgName) &&
-          imgName.includes('cardCover')) {
-            return true;
-          };
-
-          if(imgName.includes(currentBoardgame.imgName[i]) &&
-          !imgName.includes('cardCover')) {
-            return true;
-          };
-        }
-      }
-
-      return false
-    }
-
     scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
 
     get newBoardGame(): BoardgameUpload {
       const formValue = this.myForm.value;
@@ -381,46 +317,48 @@ export class BoardgamesFormComponent {
       return newBoardGame;
     }
 
-    uploadFormData(formData: FormData, _id: string){
-      if(formData){
-        this.boardgamesService.postBoardGImage(_id!, formData).subscribe(imgResp=>{
+// Create and Update form
 
-          if(!imgResp){
-            this.uploadingBoardG = false
-            this.dashboardService.notificationPopup("error", 'El Board Game fue guardado, pero algo salio mal al guardar la/s imagen/es revisa q su formato sea valido :(',3000)
-          }
-          this.resetForm()
-          this.getBoard();
-        });
-      }
-    }
-
-    uploadimages(id: string , section:Section, selectedFiles: FileList){
-
-      if(id && selectedFiles){
-        const formData = this.dashboardService.formDataToUploadImgs(section, selectedFiles!);
-      this.uploadFormData(formData!, id);
-      this.dashboardService.notificationPopup('success','Board Game agregado',2000)
-      return false;
-    }
-    else{
-      this.dashboardService.notificationPopup("error", 'Algo salio mal al Guardar el Board :(',3000);
-      return false;
-      }
+  cleanImg(){
+    this.imgSrc = [];
+    this.cardCoverImgSrc = [];
   }
+  uploadFormData(formData: FormData, _id: string){
+    if(formData){
+      this.boardgamesService.postBoardGImage(_id!, formData).subscribe(imgResp=>{
 
-  private uploadFiles(boardgameId: string) {
-    if (this.cardCoverFile) {
-      this.uploadimages(boardgameId, Section.BOARDGAMES, this.cardCoverFile);
-    }
-    if (this.selectedFiles) {
-      this.uploadimages(boardgameId, Section.BOARDGAMES, this.selectedFiles);
+        if(!imgResp){
+          this.uploadingBoardG = false
+          this.dashboardService.notificationPopup("error", 'El Board Game fue guardado, pero algo salio mal al guardar la/s imagen/es revisa q su formato sea valido :(',3000)
+        }
+        this.resetForm()
+        this.getBoard();
+      });
     }
   }
 
-  private confirmAction(action: string) {
-    return this.dashboardService.confirmAction(action, 'Board game')
+  uploadimages(id: string , section:Section, selectedFiles: FileList){
+
+    if(id && selectedFiles){
+      const formData = this.dashboardService.formDataToUploadImgs(section, selectedFiles!);
+    this.uploadFormData(formData!, id);
+    this.dashboardService.notificationPopup('success','Board Game agregado',2000)
+    return false;
   }
+  else{
+    this.dashboardService.notificationPopup("error", 'Algo salio mal al Guardar el Board :(',3000);
+    return false;
+    }
+}
+
+private uploadFiles(boardgameId: string) {
+  if (this.cardCoverFile) {
+    this.uploadimages(boardgameId, Section.BOARDGAMES, this.cardCoverFile);
+  }
+  if (this.selectedFiles) {
+    this.uploadimages(boardgameId, Section.BOARDGAMES, this.selectedFiles);
+  }
+}
 
   private createBoardGame() {
     const newBoardGame = this.newBoardGame;
@@ -462,6 +400,64 @@ export class BoardgamesFormComponent {
     this.cleanImg();
     this.selectedFiles = null;
     this.cardCoverFile = null;
+  }
+
+  //DELETE IMG SECTION
+
+  showDeleteBtn(imgName:  string | ArrayBuffer, currentBoardgame:Boardgame, i:number){
+    if(this.boardgameId){
+      if (typeof imgName === 'string') {
+        if(imgName.includes(currentBoardgame.cardCoverImgName) &&
+        imgName.includes('cardCover')) {
+          return true;
+        };
+
+        if(imgName.includes(currentBoardgame.imgName[i]) &&
+        !imgName.includes('cardCover')) {
+          return true;
+        };
+      }
+    }
+
+    return false
+  }
+
+  private confirmDelete() {
+    return this.dashboardService.confirmDelete();
+  }
+
+  private getImagePaths(imgN: string) {
+    const basePath = `${this.currentBoardgame._id}`;
+    if (imgN.includes('cardCover')) {
+      return {
+        path: `${basePath}/cardCover/${imgN}`,
+        optimizePath: `${basePath}/cardCover/optimize/smallS-${imgN}`
+      };
+    }
+    return {
+      path: `${basePath}/${imgN}`,
+      optimizePath: `${basePath}/optimize/smallS-${imgN}`
+    };
+  }
+
+  deleteImg(imgN: string) {
+    this.confirmDelete().then((result) => {
+      if (!result.isConfirmed) return;
+
+      const { path, optimizePath } = this.getImagePaths(imgN);
+      this.dashboardService.deleteItemImg(path, Section.BOARDGAMES)?.subscribe((resp) => {
+        if (resp) {
+          this.dashboardService.deleteItemImg(optimizePath, Section.BOARDGAMES)?.subscribe();
+          this.updateBoardgameImages(imgN);
+        }
+      });
+    });
+  }
+
+  //Submit form
+
+  private confirmAction(action: string) {
+    return this.dashboardService.confirmAction(action, 'Board game')
   }
 
   onSubmit() {

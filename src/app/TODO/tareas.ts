@@ -1,9 +1,6 @@
 
 // TAREAS PRIORITARIAS
 
-// TODO: completar el sample con la informacion  del evento, acomodarlo para q sea funcional y se adpate a mobile;
-// TODO: conectar todos los forms con el backend
-// TODO: traer y cragar en el form si esta esditando
 // TODO: logica pra q el usuario verifique si se quiere ir o actualizar la pagina tieniendo cambios sin guardar
 // TODO: hacer un autosave cada tanto tiempo
 

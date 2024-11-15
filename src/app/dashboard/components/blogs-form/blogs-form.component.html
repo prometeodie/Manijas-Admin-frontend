@@ -1,6 +1,10 @@
 <loading-animation *ngIf="uploadingBlog"/>
 <div class="blog">
   <h2>Blog</h2>
+  <div class="blog__unsave-icon" *ngIf="!myForm.pristine">
+    <i class="fa-regular fa-floppy-disk"></i>
+    <i class="fa-solid fa-circle-xmark blog__unsave-icon--mark "></i>
+  </div>
   <!-- form -->
   <form class="blog__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
     <div class="blog__form__input-label" *ngFor="let input of aboutInputs">

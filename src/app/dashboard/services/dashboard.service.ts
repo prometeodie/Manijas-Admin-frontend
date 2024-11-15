@@ -99,6 +99,18 @@ export class DashboardService {
     });
   }
 
+  public confirmDelete() {
+    return Swal.fire({
+      title: 'Quieres eliminar la imagen?',
+      text: "",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, save it!'
+    });
+  }
+
   countingChar(event: any) {
     const editorContent = event.editor.getData();
     const textContent = this.stripHtml(editorContent);

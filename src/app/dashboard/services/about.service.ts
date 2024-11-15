@@ -35,7 +35,7 @@ export class AboutService {
       )
     }
 
-    postNewAboutItem(AboutItem: AboutItem){
+    postNewAboutItem(AboutItem: EditAboutItem){
       const headers = this.dashboardService.getHeaders();
       return this.http.post<AboutItem>(`${this.url}/upload`, AboutItem, { headers}).pipe(
         catchError((err)=>{return of(undefined)})

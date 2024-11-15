@@ -1,6 +1,11 @@
 <loading-animation *ngIf="uploadingAboutItem"/>
  <div class="about">
   <h2>Fragmento de historia Manija</h2>
+  <div class="about__unsave-icon" *ngIf="!myForm.pristine">
+    <i class="fa-regular fa-floppy-disk"></i>
+    <i class="fa-solid fa-circle-xmark about__unsave-icon--mark "></i>
+  </div>
+  <!-- form -->
   <form class="about__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
     <div class="about__form__input-label" *ngFor="let input of aboutInputs">
       <label class="about__form__input-label__label" *ngIf="input.label.length > 0">{{input.label}}</label>
@@ -12,8 +17,14 @@
               [placeholder]="input.placeHolder"
               *ngIf="input.type !== 'textArea'; else textArea"
               (change)="input.type === 'file' ? onFileSelected($event) : null">
+              <!-- image -->
               <div class="about__form__img-container" *ngIf="imgSrc[0] && input.name === 'img'">
                 <img  [src]="imgSrc[0]" alt="event-Img" class="about__form__img-container__img">
+                <i class="fa-regular fa-trash-can about__form__img-container__delete-img" *ngIf="showDeleteBtn(imgSrc[0],currentAboutItem,aboutItemId), else resetImg"
+                (click)="deleteImg(currentAboutItem.imgName!)"></i>
+                <ng-template #resetImg>
+                  <i class="fa-solid fa-recycle about__form__img-container__delete-img" (click)="cleanImg()"> RESET</i>
+                </ng-template>
               </div>
       <ng-template #textArea>
         <div class="about__form__input-label__input__characters-container">
@@ -31,6 +42,7 @@
         </div>
       </ng-template>
     </div>
+    <!-- checkbox and submit btn -->
     <label class="about__form__input-label__label" >Publicar:</label>
     <input type="checkbox" formControlName="publish" class="about__form__input-label__input--cb" >
     <button type="submit" class="about__form__btn">Guardar</button>

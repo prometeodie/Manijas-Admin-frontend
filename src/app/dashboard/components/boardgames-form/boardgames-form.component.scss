@@ -261,6 +261,20 @@ h3{
       list-style-type: none;
     }
   }
+
+  &__unsave-icon{
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+    font-size: xx-large;
+
+    &--mark{
+      position: absolute;
+      right: -5px;
+      font-size: 0.8rem;
+      bottom: 19px;
+    }
+  }
 }
 
 // SCROLL BAR

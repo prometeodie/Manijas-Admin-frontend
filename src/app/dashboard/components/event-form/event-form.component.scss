@@ -21,6 +21,7 @@
   align-items: center;
 }
 
+.events,
 .events__form__img-container,
 .events__form__input__check-box-cont{
   position: relative;
@@ -66,7 +67,7 @@
   margin: 0  0.5rem 2rem ;
   padding: 1.5rem;
   background-color: $secondary-element-color;
-  position: relative;
+
   &__form{
 
     &__input{
@@ -172,5 +173,19 @@
     &__sample-card{
       width: 100%;
       margin-top: 1rem;
+    }
+
+    &__unsave-icon{
+      position: absolute;
+      right: 0.5rem;
+      top: 0.5rem;
+      font-size: xx-large;
+
+      &--mark{
+        position: absolute;
+        right: -5px;
+        font-size: 0.8rem;
+        bottom: 19px;
+      }
     }
   }

@@ -246,16 +246,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
   }
 
   private confirmDelete() {
-    return Swal.fire({
-      title: 'Quieres eliminar la imagen?',
-      text: "",
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, save it!'
-    });
-
+    return this.dashboardService.confirmDelete();
   }
 
   public getImagePaths(imgN: string, id: string) {
