@@ -14,12 +14,13 @@ import { Blog, EditBlog, Section } from '../../interfaces';
 import { BlogsCategories } from '../../interfaces/blogs interfaces/blog-categories.enum';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { UnsaveComponent } from '../unsave/unsave.component';
 
 @Component({
   selector: 'blogs-form',
   standalone: true,
   encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule, LoadingAnimationComponent, ReactiveFormsModule, CKEditorModule],
+  imports: [CommonModule, LoadingAnimationComponent, ReactiveFormsModule, CKEditorModule, UnsaveComponent],
   templateUrl: './blogs-form.component.html',
   styleUrls: ['./blogs-form.component.scss']
 })
@@ -193,6 +194,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
           }
           this.dashboardService.notificationPopup('success', 'Blog actualizado correctamente', 2000);
           this.getBlog();
+          this.resetForm()
         } else {
           this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Blog :(', 3000);
         }

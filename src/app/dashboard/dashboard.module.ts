@@ -25,6 +25,7 @@ import { MessagesComponent } from './pages/messages/messages.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { NewBtnComponent } from './components/new-btn/new-btn.component';
 import { SearchBarComponent } from './components/search-bar/search-bar.component';
+import { UnsaveComponent } from './components/unsave/unsave.component';
 
 
 @NgModule({
@@ -56,6 +57,7 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
     NavBarComponent,
     NewBtnComponent,
     SearchBarComponent,
+    UnsaveComponent
   ]
 })
 export class DashboardModule { }

@@ -1,10 +1,7 @@
 <loading-animation *ngIf="uploadingBoardG"/>
 <div class="board-games" [ngClass]="{'board-games__no-scroll': isExplanationOpen}">
   <h2>Board Games</h2>
-  <div class="board-games__unsave-icon" *ngIf="!myForm.pristine">
-    <i class="fa-regular fa-floppy-disk"></i>
-    <i class="fa-solid fa-circle-xmark board-games__unsave-icon--mark "></i>
-  </div>
+  <unsave class="board-games__unsave-icon" [hasUnsavedChanges]="!myForm.pristine"/>
   <form class="board-games__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
     <div class="board-games__form__input-label" *ngFor="let input of BoardgamesInputs">
       <!-- LABEL -->

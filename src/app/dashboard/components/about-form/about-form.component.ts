@@ -11,12 +11,13 @@ import { toolBarConfig } from 'src/app/utils/toolbar-config';
 import Swal from 'sweetalert2';
 import { AboutService } from '../../services/about.service';
 import { Router } from '@angular/router';
+import { UnsaveComponent } from '../unsave/unsave.component';
 
 @Component({
   selector: 'about-form',
   standalone: true,
   encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule, LoadingAnimationComponent, ReactiveFormsModule, CKEditorModule],
+  imports: [CommonModule, LoadingAnimationComponent, ReactiveFormsModule, CKEditorModule, UnsaveComponent],
   templateUrl: './about-form.component.html',
   styleUrls: ['./about-form.component.scss']
 })

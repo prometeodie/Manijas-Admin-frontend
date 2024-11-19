@@ -12,23 +12,23 @@ import { FormService } from 'src/app/services/form-validator.service';
 import { toolBarConfig } from 'src/app/utils/toolbar-config';
 import { boardGameCategories } from './utils/categories-explanation';
 import { BoardgameUpload, CategoryGame, Section } from '../../interfaces';
-import   Swal from 'sweetalert2';
 import { Dificulty } from '../../interfaces/boards interfaces/dificulty.enum';
 import { Replayability } from '../../interfaces/boards interfaces/replayability.enum';
 import { Router } from '@angular/router';
+import { UnsaveComponent } from "../unsave/unsave.component";
+
 
 @Component({
   selector: 'boardgames-form',
   standalone: true,
   encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule, LoadingAnimationComponent, ReactiveFormsModule, CKEditorModule],
+  imports: [CommonModule, LoadingAnimationComponent, ReactiveFormsModule, CKEditorModule, UnsaveComponent],
   templateUrl: './boardgames-form.component.html',
   styleUrls: ['./boardgames-form.component.scss']
 })
 export class BoardgamesFormComponent {
 
   @Input() boardgameId!: string;
-
   private fb = inject(FormBuilder);
   private dashboardService = inject(DashboardService);
   private boardgamesService = inject(BoardgamesService);
@@ -94,6 +94,7 @@ export class BoardgamesFormComponent {
   ngOnDestroy(): void {
     this.cleanImg();
   }
+
   async onFileSelected(event: Event, formControlName: string): Promise<FileList | void> {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) {
@@ -380,8 +381,8 @@ private uploadFiles(boardgameId: string) {
         this.getBoard();
         this.myForm.get('cardCoverImgName')?.reset();
         this.myForm.get('img')?.reset();
+        this.resetForm()
         this.dashboardService.notificationPopup('success', 'Board Game actualizado correctamente', 2000);
-        this.router.navigateByUrl('lmdr/boardgames');
       } else {
         this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Board :(', 3000);
       }

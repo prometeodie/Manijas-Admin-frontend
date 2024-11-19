@@ -1,10 +1,7 @@
 <loading-animation *ngIf="uploadingAboutItem"/>
  <div class="about">
   <h2>Fragmento de historia Manija</h2>
-  <div class="about__unsave-icon" *ngIf="!myForm.pristine">
-    <i class="fa-regular fa-floppy-disk"></i>
-    <i class="fa-solid fa-circle-xmark about__unsave-icon--mark "></i>
-  </div>
+  <unsave class="about__unsave-icon" [hasUnsavedChanges]="!myForm.pristine"/>
   <!-- form -->
   <form class="about__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
     <div class="about__form__input-label" *ngFor="let input of aboutInputs">

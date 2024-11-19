@@ -1,0 +1,14 @@
+@import '../../../scss/variables.scss';
+
+.unsave-icon{
+  font-size: xx-large;
+
+  &--mark{
+    position: absolute;
+    right: -5px;
+    font-size: 1rem;
+    bottom: -2px;
+    background: $secondary-element-color;
+    border-radius: 50px;
+  }
+}

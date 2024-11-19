@@ -10,6 +10,7 @@ import { EventsComponent } from './pages/events/events.component';
 import { CreateEditComponent } from './pages/create-edit/create-edit.component';
 import { AboutComponent } from './pages/about/about.component';
 import { ControlPanelComponent } from './pages/control-panel/control-panel.component';
+import { unsavedChangesGuard } from './guard/unsaved-changes.guard';
 
 const routes: Routes = [
   {
@@ -25,8 +26,8 @@ const routes: Routes = [
       {path:'messages', component:MessagesComponent},
       {path:'message/:id', component:MessageComponent},
       {path:'events', component:EventsComponent},
-      {path:'create-edit/:section/:id', component:CreateEditComponent},
-      {path:'create-edit/:section', component:CreateEditComponent},
+      {path:'create-edit/:section/:id', canDeactivate: [unsavedChangesGuard], component:CreateEditComponent},
+      {path:'create-edit/:section',canDeactivate: [unsavedChangesGuard], component:CreateEditComponent},
       {path:'**', redirectTo:'boardgames'}
     ]
   }

@@ -3,6 +3,9 @@
 
 // TODO: logica pra q el usuario verifique si se quiere ir o actualizar la pagina tieniendo cambios sin guardar
 // TODO: hacer un autosave cada tanto tiempo
+// TODO: panel de control para crear y editar nuevos usuarios
+// TODO: manijometro
+// TODO: usuaio cambie pass
 
 // TAREAS SECUNDARIAS
 

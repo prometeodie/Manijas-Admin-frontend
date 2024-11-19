@@ -18,6 +18,8 @@ export class DashboardService {
   public router = inject(Router);
   private _imgSrc = signal<string | ArrayBuffer | null>(null);
   public imgSrc = computed(( )=> this._imgSrc());
+  private _hasBeenChanged = signal<boolean>(false);
+  public hasBeenChanged = computed(( )=> this._hasBeenChanged());
   public screenWidth:number = 0;
 
   constructor(){
@@ -193,6 +195,14 @@ export class DashboardService {
       return false;
     }
     return false;
+  }
+
+  setHasBeenChanged(value:boolean){
+    this._hasBeenChanged.set(value);
+  }
+
+  isSameData(obj1:string, obj2:string){
+    return (obj1 === obj2)? true : false;
   }
 
   saveCurrentUrl(route: string) {

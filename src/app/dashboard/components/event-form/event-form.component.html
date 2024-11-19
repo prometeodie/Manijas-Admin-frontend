@@ -3,10 +3,7 @@
 <loading-animation *ngIf="uploadingEvent"/>
 <div class="events">
   <h2>Evento</h2>
-  <div class="events__unsave-icon" *ngIf="!myForm.pristine">
-    <i class="fa-regular fa-floppy-disk"></i>
-    <i class="fa-solid fa-circle-xmark events__unsave-icon--mark "></i>
-  </div>
+  <unsave class="events__unsave-icon" [hasUnsavedChanges]="!myForm.pristine"/>
   <form class="events__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
     <div *ngFor="let eventInput of eventInputs">
       <ng-container *ngIf="shouldShowInput(eventInput)">

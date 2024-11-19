@@ -13,12 +13,13 @@ import { Section } from '../../shared/enum/section.enum';
 import { LoadingAnimationComponent } from '../loading-animation/loading-animation.component';
 import { EventSampleCardComponent } from '../event-sample-card/event-sample-card.component';
 import { Router } from '@angular/router';
+import { UnsaveComponent } from '../unsave/unsave.component';
 
 
 @Component({
   selector: 'event-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, LoadingAnimationComponent, EventSampleCardComponent],
+  imports: [CommonModule, ReactiveFormsModule, LoadingAnimationComponent, EventSampleCardComponent, UnsaveComponent],
   templateUrl: './event-form.component.html',
   styleUrls: ['./event-form.component.scss']
 })
@@ -274,6 +275,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
           }
           this.dashboardService.notificationPopup('success', 'Evento actualizado correctamente', 2000);
           this.getEvent();
+          this.resetForm();
         } else {
           this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Evento :(', 3000);
         }

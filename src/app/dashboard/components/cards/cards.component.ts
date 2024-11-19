@@ -10,14 +10,14 @@ import { AuthService } from '../../../auth/services/auth.service';
 @Component({
   selector: 'app-cards',
   standalone: true,
-  imports: [CommonModule, ImgPipePipe, RouterModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './cards.component.html',
   styleUrls: ['./cards.component.scss']
 })
 export class CardsComponent implements OnInit {
 
   @Input() objectTemplate!: CardTemplate;
-  @Output() delete = new EventEmitter<void>(); //TODO: this Output emmits an event, when the card is deleted successfuly the father lisen to this event and actualize the cards list
+  @Output() delete = new EventEmitter<void>();
 private dashboardService = inject(DashboardService);
 private authService = inject(AuthService);
  public isTheBoardVoted: boolean = false;
