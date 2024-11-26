@@ -19,7 +19,7 @@
               *ngIf="isValidField(input.name)">{{showError(input.name)}}
               </span>
               <!-- image -->
-              <div class="blog__form__img-container" *ngIf="imgSrc[0] && input.name === 'img'">
+              <div class="blog__form__img-container" *ngIf="imgSrc[0] && input.name === 'imgName'">
                 <img  [src]="imgSrc[0]" [alt]="imgSrc[0].slice(0,25)" class="blog__form__img-container__img">
                 <i class="fa-regular fa-trash-can blog__form__img-container__delete-img" *ngIf="showDeleteBtn(imgSrc[0],currentBlog,blogId), else resetImg"
                 (click)="deleteImg(currentBlog.imgName!)"></i>

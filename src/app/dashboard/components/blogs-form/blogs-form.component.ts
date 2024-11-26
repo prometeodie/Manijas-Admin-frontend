@@ -46,7 +46,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
     { name: 'blogContent', placeHolder: '', label:'', type: 'textArea', maxLenght: null,  selectOptions:[]},
     { name: 'category',    placeHolder: 'Selecciona una categoria:', label:'', type: 'select', maxLenght: null,  selectOptions: this.blogsService.blogsCategories},
     { name: 'writedBy',    placeHolder: 'Seleccione el autor de este Blog:', label:'', type: 'select', maxLenght: null,  selectOptions: this.options},
-    { name: 'img',         placeHolder: '', label: 'Seleccionar una imagen', type: 'file', maxLenght:null, selectOptions:[]},
+    { name: 'imgName',         placeHolder: '', label: 'Seleccionar una imagen', type: 'file', maxLenght:null, selectOptions:[]},
   ];
 
   public myForm = this.fb.group({
@@ -56,7 +56,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
     category:    [BlogsCategories.NONE,[Validators.required]],
     writedBy:    ['',[Validators.required]],
     publish:     [false ,[]],
-    img:         [],
+    imgName:         [''],
   })
 
   ngOnInit(): void {
@@ -65,6 +65,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
     this.editorConfig.placeholder = 'Ingresa el contenido del blog!';
     this.options.unshift(this.authService.currentUser()!.name);
     this.options.unshift(this.authService.currentUser()!.nickname);
+    this.hasFormChanged();
   }
 
   ngOnDestroy(): void {
@@ -76,7 +77,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
     if(this.currentBlog && this.currentBlog._id){
           const thereisImg = this.dashboardService.validateImageUploadLimit(this.currentBlog._id, this.currentBlog.imgName.length);
           if(thereisImg){
-            this.myForm.get('img')?.reset();
+            this.myForm.get('imgName')?.reset();
             return;
           }
         }
@@ -89,7 +90,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
         const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
         if(validSize){
           this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.',2000)
-            const fileControl = this.myForm.get('img');
+            const fileControl = this.myForm.get('imgName');
             if (fileControl) {
               fileControl.reset();
               this.cleanImg()
@@ -127,6 +128,19 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
       this.charCount = this.dashboardService.countingChar(event)
     }
 
+    hasFormChanged(){
+      this.myForm.valueChanges.subscribe((formValue) => {
+        const { title, subTitle,blogContent,category,writedBy, publish,imgName } = this.currentBlog;
+        if(this.myForm.get('imgName')?.pristine){
+          formValue.imgName = this.currentBlog.imgName;
+        }
+        const originalFormData = JSON.stringify({ title, subTitle,blogContent,category,writedBy, publish,imgName });
+        const newFormData = JSON.stringify({...formValue});
+        (originalFormData === newFormData)?
+       this.myForm.markAsPristine() : null;
+      });
+    }
+
     get newBlog(): EditBlog {
       const formValue = this.myForm.value;
 
@@ -158,7 +172,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
 
     cleanImg(){
       this.imgSrc = [];
-      this.myForm.get('img')?.reset();
+      this.myForm.get('imgName')?.reset();
     }
 
     private resetForm() {
@@ -185,12 +199,19 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
     }
 
     private updateBlog() {
-      const actualizedBlog = { ...this.newBlog, section: Section.BLOGS };
+
+        const { imgName, ...rest} = this.newBlog;
+
+        const actualizedBlog = {
+          ...rest,
+          section: Section.BLOGS,
+        };
+
       this.blogsService.editBlog(this.blogId, actualizedBlog as EditBlog).subscribe((resp) => {
         if (resp) {
           if(this.selectedFile !== null){
             this.uploadFile(this.currentBlog._id!);
-            this.myForm.get('img')?.reset();
+            this.myForm.get('imgName')?.reset();
           }
           this.dashboardService.notificationPopup('success', 'Blog actualizado correctamente', 2000);
           this.getBlog();

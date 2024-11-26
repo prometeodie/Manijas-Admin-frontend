@@ -1,0 +1,79 @@
+
+@import '../../../scss/variables.scss';
+
+.message__section__ul__li{
+  display: flex;
+}
+
+.message__section,
+.message__section__trash{
+  width: 100%;
+}
+
+.message{
+  position: relative;
+  justify-content: center;
+
+  &__new-btn{
+    position: fixed;
+    right: 0.8rem;
+    bottom: 0.8rem;
+    z-index: 999;
+  }
+
+  &__section {
+    margin-top: 3rem;
+    background-color: $main-element-color;
+    padding: 0.5rem;
+    max-width: 46rem;
+
+    &__ul{
+      list-style: none;
+      padding: 0;
+
+      &__li{
+        padding: 1rem 0.5rem;
+        background-color: rgba(153, 153, 153, 0.2);
+        margin-bottom: 0.3rem;
+        flex-direction: column;
+
+        &__paragraph{
+          text-align: center;
+          overflow-wrap: break-word;
+        }
+      }
+    }
+
+    &__trash{
+      color: $main-card-delete-button-color;
+      font-size: x-large;
+      cursor: pointer;
+      transition: all 1s ease;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 0.5rem;
+      background: aliceblue;
+      border-radius: 5px;
+      background-color: #14091773;
+
+      &:hover{
+        color: #e63f42;
+        background-color:#382d3b73 ;
+      }
+    }
+  }
+}
+
+
+// MEDIA QUERIES
+
+
+@media (min-width:900px) {
+  .message{
+    display: flex;
+    justify-content: center;
+    &__section{
+      margin-top: 6rem;
+    }
+  }
+}

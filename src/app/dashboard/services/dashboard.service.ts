@@ -42,8 +42,12 @@ export class DashboardService {
       icon,
       title,
       showConfirmButton: false,
-      timer: 2300
+      timer: timer
     });
+  }
+
+  getObjectKeys(obj: any) {
+    return Object.keys(obj);
   }
 
   async onFileSelected(event: Event): Promise<(string | ArrayBuffer)[]> {
@@ -84,6 +88,10 @@ export class DashboardService {
 
     if (imgName.length ===  0) return [];
 
+    if (section === Section.ABOUT){
+      return (screenSize < 800)? [`upload/${section}/optimize/smallS-${imgName}`]:
+                          [`upload/${section}/${imgName}`]
+    }
     return (screenSize < 800)? [`upload/${section}/${id}/optimize/smallS-${imgName}`]:
                         [`upload/${section}/${id}/${imgName}`]
   }
@@ -199,10 +207,6 @@ export class DashboardService {
 
   setHasBeenChanged(value:boolean){
     this._hasBeenChanged.set(value);
-  }
-
-  isSameData(obj1:string, obj2:string){
-    return (obj1 === obj2)? true : false;
   }
 
   saveCurrentUrl(route: string) {

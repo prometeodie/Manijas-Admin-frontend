@@ -34,6 +34,14 @@ export class MessagesService {
     )
   }
 
+  getMessageById(id: string){
+    const headers = this.dashboardService.getHeaders();
+
+    return this.http.get<Message>(`${this.url}/${id}`, { headers }).pipe(
+      catchError((err)=>{return of(undefined)})
+    )
+  }
+
   messageHasBeenReaded(id: string){
     const headers = this.dashboardService.getHeaders();
     const messageSatus: MessageStatus = {hasBeenReaded: true};

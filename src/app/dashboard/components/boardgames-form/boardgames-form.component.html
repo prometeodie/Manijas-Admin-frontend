@@ -10,7 +10,7 @@
       <ul *ngIf="input.name === 'categoryChips'" class="board-games__form__key-words">
         <li *ngFor="let word of keywords" class="board-games__form__key-words__word">
           {{word | titlecase}}
-          <i class="fa-solid fa-xmark board-games__form__key-words__word__close-mark" (click)="deleteTag(word)"></i>
+          <i class="fa-solid fa-xmark board-games__form__key-words__word__close-mark" (click)="deleteTagAndCheckDifferences(word)"></i>
         </li>
         <li *ngIf="keywords.length  === 0">Aun no hay Tags para este Board <i class="fa-brands fa-d-and-d"></i></li>
       </ul>
@@ -22,7 +22,7 @@
       [type]="input.type"
       [placeholder]="input.placeHolder"
       *ngIf="input.type !== 'textArea' && input.type !== 'select'; else textArea"
-      [attr.multiple]="input.name === 'img' ? true : null"
+      [attr.multiple]="input.name === 'imgName' ? true : null"
       accept="image/*"
       (change)="input.type === 'file' ? onFileSelected($event, input.name) : null">
       <span class="board-games__form__input-label__error-menssage"
@@ -43,7 +43,7 @@
       <span>/ Promedio de caracteres en las "reseñas": 150</span>
     </div>
     <!-- IMAGES -->
-    <div *ngIf="input.name === 'img'">
+    <div *ngIf="input.name === 'imgName'">
       <!-- CARD-COVER IMG -->
       <div *ngIf="cardCoverImgSrc.length === 1">
         <div class="board-games__form__img-container board-games__form__img-container--card-cover"
@@ -63,7 +63,7 @@
           <i class="fa-regular fa-trash-can board-games__form__img-container__delete-img" *ngIf="showDeleteBtn(image, currentBoardgame, i), else reset"
           (click)="deleteImg(currentBoardgame.imgName[i])"></i>
           <ng-template #reset>
-            <i class="fa-solid fa-recycle board-games__form__img-container__delete-img" (click)="resetSelectedImages('img')"> RESET</i>
+            <i class="fa-solid fa-recycle board-games__form__img-container__delete-img" (click)="resetSelectedImages('imgName')"> RESET</i>
           </ng-template>
         </div>
       </div>
@@ -90,6 +90,7 @@
     <!-- PUBLISH CHECKBOX -->
     <label class="board-games__form__input-label__label">publicar: </label>
     <input class="board-games__form__input-label__input board-games__form__input-label__input--cb" formControlName="publish" type="checkbox">
+    {{this.myForm.get('publish')?.value}}
     <!-- BTN -->
     <button type="submit" class="board-games__form__btn">Guardar</button>
     <!-- CATEGORIES EXPOLANATION -->

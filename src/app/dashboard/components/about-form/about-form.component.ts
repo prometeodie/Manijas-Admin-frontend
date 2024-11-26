@@ -38,21 +38,21 @@ public charCount:number = 0;
 public imgSrc:(string | ArrayBuffer)[] = [];
 public aboutInputs: AboutInput[] = [
     { name: 'text', placeHolder: 'Escribir un fragmento de la historia Manija', label:'', type: 'textArea', maxLenght: 24 },
-    { name: 'img', placeHolder: '', label: 'Seleccionar una imagen', type: 'file', maxLenght:null},
+    { name: 'imgName', placeHolder: '', label: 'Seleccionar una imagen', type: 'file', maxLenght:null},
   ];
 
 public myForm = this.fb.group({
     text:                   ['',[Validators.required]],
     publish:                   [false ,[]],
-    img:                       [],
+    imgName:                       [''],
   })
 
   ngOnInit(): void {
     this.getBlog();
     this.editorConfig = toolBarConfig;
     this.editorConfig.placeholder = 'Ingresa un fragmento de la historia Manija!';
-
- }
+    this.hasFormChanged();
+  }
 
   ngOnDestroy(): void {
     this.cleanImg();
@@ -63,7 +63,7 @@ public myForm = this.fb.group({
     if(this.currentAboutItem && this.currentAboutItem._id){
       const thereisImg = this.dashboardService.validateImageUploadLimit(this.currentAboutItem._id, this.currentAboutItem.imgName.length);
       if(thereisImg){
-        this.myForm.get('img')?.reset();
+        this.myForm.get('imgName')?.reset();
         return;
       }
     }
@@ -77,7 +77,7 @@ public myForm = this.fb.group({
       const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
       if(validSize){
         this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.',2000)
-          const fileControl = this.myForm.get('img');
+          const fileControl = this.myForm.get('imgName');
           if (fileControl) {
             fileControl.reset();
             this.cleanImg()
@@ -114,10 +114,24 @@ public myForm = this.fb.group({
   cleanImg(){
     this.imgSrc = [];
     this.dashboardService.cleanImgSrc();
+    this.myForm.get('imgName')?.reset();
   }
 
   countingChar(event: any){
     this.charCount = this.dashboardService.countingChar(event)
+  }
+
+  hasFormChanged(){
+    this.myForm.valueChanges.subscribe((formValue) => {
+      const { text, imgName, publish } = this.currentAboutItem;
+      if(this.myForm.get('imgName')?.pristine){
+        formValue.imgName = this.currentAboutItem.imgName;
+      }
+      const originalFormData = JSON.stringify({ text, publish,imgName });
+      const newFormData = JSON.stringify({...formValue});
+      (originalFormData === newFormData)?
+     this.myForm.markAsPristine() : null;
+    });
   }
 
   get newAboutItem(): EditAboutItem {
@@ -132,11 +146,10 @@ public myForm = this.fb.group({
     return newAboutItem;
   }
 
-  private updateFormValues(AboutItem: AboutItem) {
+  private updateFormValues(aboutItem: AboutItem) {
     this.myForm.patchValue({
-      text:        AboutItem.text,
+      text:        aboutItem.text,
       publish:     true
-
   });
 }
   private resetForm() {
@@ -145,7 +158,7 @@ public myForm = this.fb.group({
     this.selectedFile = null;
 }
    // Create and Update form
-   private createBlog() {
+   private createAboutItem() {
     const newAboutItem = this.newAboutItem;
     this.aboutService.postNewAboutItem(newAboutItem).subscribe((resp) => {
       if (resp) {
@@ -160,13 +173,19 @@ public myForm = this.fb.group({
     });
   }
 
-  private updateBlog() {
-    const actualizedAboutItem = { ...this.newAboutItem, section: Section.ABOUT };
+  private updateAboutItem() {
+    const { imgName, ...rest} = this.newAboutItem;
+
+    const actualizedAboutItem = {
+      ...rest,
+      section: Section.ABOUT,
+    };
+
     this.aboutService.editAboutItem(this.aboutItemId, actualizedAboutItem as EditAboutItem).subscribe((resp) => {
       if (resp) {
         if(this.selectedFile !== null){
           this.uploadFile(this.currentAboutItem._id!);
-          this.myForm.get('img')?.reset();
+          this.myForm.get('imgName')?.reset();
         }
         this.dashboardService.notificationPopup('success', 'Item actualizado correctamente', 2000);
         this.getBlog();
@@ -263,51 +282,8 @@ deleteImg(imgN: string) {
     this.confirmAction(action).then((result) => {
       if (result.isConfirmed) {
         this.uploadingAboutItem = true;
-        action === 'create' ? this.createBlog() : this.updateBlog();
+        action === 'create' ? this.createAboutItem() : this.updateAboutItem();
       }
     });
   }
-
-  // onSubmit(){
-  //   this.myForm.markAllAsTouched();
-  //   if(this.myForm.invalid) return;
-  //   Swal.fire({
-  //     title: 'Do you want to save a new Warehouse?',
-  //     text: "",
-  //     icon: 'question',
-  //     showCancelButton: true,
-  //     confirmButtonColor: '#3085d6',
-  //     cancelButtonColor: '#d33',
-  //     confirmButtonText: 'Yes, save it!'
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       this.uploadingAboutItem = true;
-  //       const currentAboutItem = this.currentAboutItem;
-  //   this.aboutService.postNewAboutItem(currentAboutItem).subscribe(
-  //     resp=>{
-  //       if(resp){
-  //         const _id = resp._id;
-  //           const formData = this.dashboardService.formDataToUploadImg(Section.ABOUT, this.selectedFile![0])
-  //         if(formData){
-  //             this.aboutService.postAboutItemsImage(_id!, formData).subscribe(imgResp=>{
-  //               if(!imgResp){
-  //                 this.uploadingAboutItem = false
-  //                 this.dashboardService.notificationPopup("error",'El fragmento de historia fue guardado, pero algo salio mal al guardar la/s imagen/es revisa q su formato sea valido :(',3000)
-  //               }
-  //             });
-  //           }
-  //         this.uploadingAboutItem = false
-  //         this.dashboardService.notificationPopup('success','Evento agregado', 2000)
-  //         this.imgSrc = [];
-  //         this.myForm.reset();
-  //         this.cleanImg();
-  //       }else{
-  //         this.uploadingAboutItem = false
-  //         this.dashboardService.notificationPopup("error", 'Algo salio mal :(', 2000)
-  //       }
-  //     }
-  //   );
-  //     }
-  //   })
-  // }
 }

@@ -15,8 +15,8 @@
               *ngIf="input.type !== 'textArea'; else textArea"
               (change)="input.type === 'file' ? onFileSelected($event) : null">
               <!-- image -->
-              <div class="about__form__img-container" *ngIf="imgSrc[0] && input.name === 'img'">
-                <img  [src]="imgSrc[0]" alt="event-Img" class="about__form__img-container__img">
+              <div class="about__form__img-container" *ngIf="imgSrc[0] && input.name === 'imgName'">
+                <img  [src]="imgSrc[0]" [alt]="imgSrc[0].slice(0,25)" class="about__form__img-container__img">
                 <i class="fa-regular fa-trash-can about__form__img-container__delete-img" *ngIf="showDeleteBtn(imgSrc[0],currentAboutItem,aboutItemId), else resetImg"
                 (click)="deleteImg(currentAboutItem.imgName!)"></i>
                 <ng-template #resetImg>

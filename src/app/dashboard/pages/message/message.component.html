@@ -1,1 +1,10 @@
-<p>message works!</p>
+<main class="message">
+  <h1>Mensaje:</h1>
+  <section class="message__section">
+    <loading-animation *ngIf="loadingMessage"/>
+    <ul class="message__section__ul">
+      <li class="message__section__ul__li" *ngFor="let item of messageItems"><strong>{{(item === 'fullName')? 'De' : item | titlecase}}:</strong> <p class="message__section__ul__li__paragraph">{{message[item]}}</p></li>
+    </ul>
+    <i class="fa-solid fa-trash message__section__trash" (click)="deleteMessage(message._id)"> Borrar Mensaje</i>
+  </section>
+</main>

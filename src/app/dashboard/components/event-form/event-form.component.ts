@@ -1,6 +1,5 @@
 import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ImgPipePipe } from '../../pipes/img-pipe.pipe';
+import { CommonModule, formatDate } from '@angular/common';
 import { EventManija } from '../../interfaces/event inteefaces/event.interface';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormService } from 'src/app/services/form-validator.service';
@@ -8,7 +7,6 @@ import { EventInput } from './interface/input.interface';
 import { EventsService } from '../../services/events.service';
 import { DashboardService } from '../../services/dashboard.service';
 import { EditEventManija, EventCardSample } from '../../interfaces';
-import   Swal from 'sweetalert2';
 import { Section } from '../../shared/enum/section.enum';
 import { LoadingAnimationComponent } from '../loading-animation/loading-animation.component';
 import { EventSampleCardComponent } from '../event-sample-card/event-sample-card.component';
@@ -51,7 +49,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
     { name: 'finishTime', placeHolder: '', label: 'Horario de finalización', type: 'time', showIfAutoDelete: null, maxLenght: null },
     { name: 'eventPlace', placeHolder: 'Ingrese un Lugar', label: 'Escriba el Lugar del evento', type: 'text', showIfAutoDelete: null, maxLenght: 50 },
     { name: 'url', placeHolder: 'Url relacionado al evento', label: 'Url relacionado al evento (Ej: publicacion de Instagram)', type: 'text', showIfAutoDelete: null, maxLenght: null },
-    { name: 'img', placeHolder: '', label: 'Seleccionar una imagen', type: 'file', showIfAutoDelete: null, maxLenght: null }
+    { name: 'imgName', placeHolder: '', label: 'Seleccionar una imagen', type: 'file', showIfAutoDelete: null, maxLenght: null }
   ];
 
   public myForm = this.fb.group({
@@ -65,11 +63,12 @@ export class EventFormComponent implements OnInit, OnDestroy{
       url:                       ['',[Validators.pattern(this.fvService.urlRegEx)]],
       publish:                   [false],
       mustBeAutomaticallyDeleted:[true ,[Validators.required]],
-      img:                       [],
+      imgName:                       [''],
     })
 
     ngOnInit(): void {
       this.getEvent();
+      this.hasFormChanged();
     }
 
     ngOnDestroy(): void {
@@ -133,7 +132,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
       if(this.currentEvent && this.currentEvent._id){
         const thereisImg = this.dashboardService.validateImageUploadLimit(this.currentEvent._id, this.currentEvent.imgName.length);
         if(thereisImg){
-          this.myForm.get('img')?.reset();
+          this.myForm.get('imgName')?.reset();
           return;
         }
       }
@@ -146,7 +145,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
         const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
         if(validSize){
           this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.', 2000)
-            const fileControl = this.myForm.get('img');
+            const fileControl = this.myForm.get('imgName');
             if (fileControl) {
               fileControl.reset();
               this.cleanImg()
@@ -202,6 +201,21 @@ export class EventFormComponent implements OnInit, OnDestroy{
         return newEvent;
       }
 
+      hasFormChanged(){
+        this.myForm.valueChanges.subscribe((formValue) => {
+          const { title, eventDate,alternativeTxtEventDate,startTime,finishTime, eventPlace, eventColor, url, publish, mustBeAutomaticallyDeleted, imgName } = this.currentEvent;
+          if(this.myForm.get('imgName')?.pristine){
+            formValue.imgName = this.currentEvent.imgName;
+          };
+
+          const originalFormData = JSON.stringify({ title, eventDate:eventDate?.toString().split('T')[0],alternativeTxtEventDate,startTime,finishTime, eventPlace, eventColor, url, publish, mustBeAutomaticallyDeleted, imgName });
+          const newFormData = JSON.stringify({...formValue});
+          (originalFormData === newFormData)?
+          this.myForm.markAsPristine() : null;
+        });
+      }
+
+
       private updateFormValues(event: EventManija) {
         const eventDate = event.eventDate ? new Date(event.eventDate).toISOString().split('T')[0] : '';
         this.myForm.patchValue({
@@ -237,7 +251,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
 
     cleanImg(){
       this.imgSrc = [];
-      this.myForm.get('img')?.reset();
+      this.myForm.get('imgName')?.reset();
       this.dashboardService.cleanImgSrc();
     }
 
@@ -266,12 +280,18 @@ export class EventFormComponent implements OnInit, OnDestroy{
     }
 
     private updateEvent() {
-      const actualizedEvent = { ...this.newEvent, section: Section.EVENTS };
+      const { imgName, ...rest} = this.newEvent;
+
+      const actualizedEvent = {
+        ...rest,
+        section: Section.EVENTS,
+      };
+
       this.eventsService.editEvent(this.eventId, actualizedEvent as EditEventManija).subscribe((resp) => {
         if (resp) {
           if(this.selectedFile !== null){
             this.uploadFile(this.currentEvent._id!);
-            this.myForm.get('img')?.reset();
+            this.myForm.get('imgName')?.reset();
           }
           this.dashboardService.notificationPopup('success', 'Evento actualizado correctamente', 2000);
           this.getEvent();
