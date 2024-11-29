@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule, formatDate } from '@angular/common';
-import { EventManija } from '../../interfaces/event inteefaces/event.interface';
+import { EventManija } from '../../interfaces/event interfaces/event.interface';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormService } from 'src/app/services/form-validator.service';
 import { EventInput } from './interface/input.interface';

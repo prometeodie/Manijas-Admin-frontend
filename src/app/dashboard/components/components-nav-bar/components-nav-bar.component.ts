@@ -1,6 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BlogsCategories } from '../../interfaces/blogs interfaces/blog-categories.enum';
 
 @Component({
   selector: 'components-nav-bar',
@@ -12,8 +11,10 @@ import { BlogsCategories } from '../../interfaces/blogs interfaces/blog-categori
 export class ComponentsNavBarComponent {
   @Input() categories!: string[];
   @Output() category = new EventEmitter<string>();
+  public categorySelected:string = 'all';
 
   emitCategory(category: string){
+    this.categorySelected = category;
     this.category.emit(category);
   }
 }

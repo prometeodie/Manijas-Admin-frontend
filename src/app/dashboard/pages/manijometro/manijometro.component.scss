@@ -1,0 +1,145 @@
+@import '../../../scss/variables.scss';
+
+h1{
+  padding-left: 0.5rem;
+}
+.manijometro__section,
+.manijometro__section__empty,
+.manijometro__section__cards__card__cover,
+.manijometro__section__cards__card__ul,
+.manijometro__section__cards__card__img{
+  width: 100%;
+}
+.manijometro__section__cards,
+.manijometro__section__cards__card__cover{
+  justify-content: center;
+}
+
+.manijometro__section__status__item,
+.manijometro__section__cards__card,
+.manijometro__section__cards__card__cover{
+  transition: all 1s ease;
+}
+
+.manijometro__section__cards__card,
+.manijometro__section__cards__card__img{
+  border-radius: 10px;
+}
+
+.manijometro__section__empty,
+.manijometro__section__cards__card__img,
+.manijometro__nav-bar{
+  display: block;
+}
+
+.manijometro__section__status,
+.manijometro__section__cards__card__ul,
+.manijometro__section__empty{
+  text-align: center;
+}
+
+.manijometro__section__cards__card,
+.manijometro__section__cards__card__ul__li,
+.manijometro__section__status{
+  overflow: hidden;
+}
+
+.manijometro{
+  position: relative;
+
+  &__section {
+    margin-top: 1.5rem;
+    background-color: $main-element-color;
+    padding: 1rem 0;
+
+    &__cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+
+      &__card{
+        position: relative;
+        width: 45%;
+        max-width: 7.5rem;
+        background-color: #f0ffff;
+        color: #000;
+        cursor: pointer;
+
+        &:hover &__cover{
+          display: flex;
+        }
+
+        &__img{
+          height: 7rem;
+          object-fit: cover;
+        }
+
+        &__ul{
+          list-style: none;
+          padding: 0.3rem;
+
+
+
+          &__li{
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+            &--title{
+              font-size: smaller;
+              text-overflow: ellipsis;
+            }
+
+            &--position{
+              font-size: 3rem;
+              padding: 1.4rem 0;
+            }
+          }
+        }
+
+        &__cover{
+          display: none;
+          position: absolute;
+          top: 0;
+          height: 100%;
+          background: #00000082;
+          flex-direction: column;
+          align-items: center;
+          color: $main-card-manijoimetro-button-color;
+          font-size: xx-large;
+          gap: 1rem;
+        }
+      }
+    }
+
+    &__empty{
+      font-weight: 100;
+      font-size: 1.8rem;
+
+    }
+
+    &__status{
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgb(199 197 197 / 29%);
+      margin: 0.4rem;
+
+
+      &__item{
+        padding: 1rem;
+        cursor: pointer;
+
+        &:hover{
+          background-color: rgba(240, 248, 255, 0.164);
+        }
+
+        &--selected{
+          background-color: rgba(240, 248, 255, 0.164);
+        }
+      }
+    }
+  }
+
+  &__nav-bar{
+    top: 4rem;
+    z-index: 999;
+  }
+}

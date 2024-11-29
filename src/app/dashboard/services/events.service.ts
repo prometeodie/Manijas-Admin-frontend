@@ -1,6 +1,6 @@
 import {  computed, inject, Injectable, signal } from '@angular/core';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { EventCardSample } from '../interfaces/event inteefaces/event-card-sample.interface';
+import { EventCardSample } from '../interfaces/event interfaces/event-card-sample.interface';
 import { DashboardService } from './dashboard.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/assets/environments/environment';
