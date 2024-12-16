@@ -10,7 +10,7 @@
     <span class="manijometro__section__empty" *ngIf="filteredBoardgames.length === 0; else items">No hay nada para mostrar <i class="fa-solid fa-dragon"></i></span>
     <ng-template #items>
       <div class="manijometro__section__cards">
-        <div *ngFor="let mItem of filteredBoardgames" class="manijometro__section__cards__card" (click)="voteBoardGame(mItem.id)">
+        <div *ngFor="let mItem of filteredBoardgames" class="manijometro__section__cards__card" (click)="voteBoardGame(mItem._id)">
           <img src="../.././../../assets/570805.jpg" [alt]="mItem.title" class="manijometro__section__cards__card__img">
           <ul class="manijometro__section__cards__card__ul">
             <li class="manijometro__section__cards__card__ul__li manijometro__section__cards__card__ul__li--title"><strong>{{mItem.title}}</strong></li>
@@ -18,7 +18,10 @@
           </ul>
           <div class="manijometro__section__cards__card__cover">
             <i class="fa-solid fa-trophy"></i>
-            <strong>VOTAR</strong>
+            <strong *ngIf="!votedGames; else changeVote">VOTAR</strong>
+            <ng-template #changeVote>
+              <strong>CAMBIAR VOTO</strong>
+            </ng-template>
           </div>
         </div>
       </div>

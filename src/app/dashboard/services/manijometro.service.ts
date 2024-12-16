@@ -26,4 +26,15 @@ private dashboardService= inject(DashboardService);
       })
     );
   }
+
+  getOneManijometro(id:string){
+    const headers = this.dashboardService.getHeaders();
+
+    return this.http.get<Manijometro>(`${this.url}/game-manijometro/${id}`, { headers }).pipe(
+      catchError((err) => {
+        console.error('Error fetching blogs:', err);
+        return of(undefined);
+      })
+    );
+  }
 }

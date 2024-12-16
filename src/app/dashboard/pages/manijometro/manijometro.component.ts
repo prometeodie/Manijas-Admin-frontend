@@ -88,7 +88,7 @@ export class ManijometroComponent implements OnInit{
   }
 
   voteBoardGame(gameId: string){
-    this.router.navigateByUrl('lmdr/boaadgames');
+    this.router.navigateByUrl(`lmdr/manijometro/${gameId}`);
   }
 }
 

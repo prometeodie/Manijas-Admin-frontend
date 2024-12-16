@@ -1,0 +1,22 @@
+<main class="game-manijometro">
+  <div class="game-manijometro__title-img">
+    <h2 class="game-manijometro__title-img__title" *ngIf="manijometro; else notInformation">{{manijometro.title}}</h2>
+    <img src="../../../../assets/images.jpeg" class="game-manijometro__title-img__img" alt="">
+  </div>
+  <ng-template #notInformation>
+    No se pudo recuperar información del manijometro
+  </ng-template>
+
+  <section class="game-manijometro__section">
+    <loading-animation *ngIf="isLoading"/>
+
+    <form [formGroup]="myForm" class="game-manijometro__section__form">
+      <div class="game-manijometro__section__form__container" *ngFor="let input of inputs">
+        <label class="game-manijometro__section__form__container__label">{{input}}</label>
+        <input type="number" class="game-manijometro__section__form__container__input" [formControlName]="input">
+      </div>
+      <button class="game-manijometro__section__form__container__btn" (click)="onSubmit()">Votar</button>
+    </form>
+  </section>
+</main>
+

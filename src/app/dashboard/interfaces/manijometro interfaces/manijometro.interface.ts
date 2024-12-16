@@ -1,5 +1,5 @@
 export interface Manijometro {
-  id:               string;
+  _id:               string;
   title:            string;
   manijometroPool:  ManijometroPool[];
   manijometroPosition:      number;

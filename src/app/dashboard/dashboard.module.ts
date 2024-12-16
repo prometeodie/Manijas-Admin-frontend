@@ -26,6 +26,8 @@ import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { NewBtnComponent } from './components/new-btn/new-btn.component';
 import { SearchBarComponent } from './components/search-bar/search-bar.component';
 import { UnsaveComponent } from './components/unsave/unsave.component';
+import { GameManijometroComponent } from './pages/game-manijometro/game-manijometro.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -40,11 +42,13 @@ import { UnsaveComponent } from './components/unsave/unsave.component';
     CreateEditComponent,
     MessageComponent,
     HeaderComponent,
-    ControlPanelComponent
+    ControlPanelComponent,
+    GameManijometroComponent
   ],
   imports: [
     HttpClientModule,
     CommonModule,
+    ReactiveFormsModule,
     AboutFormComponent,
     BlogsFormComponent,
     BoardgamesFormComponent,

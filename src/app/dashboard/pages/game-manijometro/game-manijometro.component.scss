@@ -1,0 +1,95 @@
+@import '../../../scss/variables.scss';
+
+
+h2{
+  padding-left: 0.5rem;
+}
+
+.game-manijometro,
+.game-manijometro__title-img,
+.game-manijometro__section__form,
+.game-manijometro__section__form__container{
+  display: flex;
+}
+
+.game-manijometro,
+.game-manijometro__section{
+  width: 100%;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.game-manijometro,
+.game-manijometro__section__form__container{
+  justify-content: center;
+}
+
+.game-manijometro__section__form,
+.game-manijometro__section__form__container{
+  flex-direction: column;
+}
+
+.game-manijometro__section__form__container__input,
+.game-manijometro__section__form__container__btn{
+  background-color:$inputs-bc;
+  border: none;
+}
+
+.game-manijometro__section__form__container__btn,
+.game-manijometro__section__form__container__input{
+  color: $text-color-inputs;
+}
+
+.game-manijometro{
+  position: relative;
+  margin-top: 3rem;
+
+  &__title-img{
+    align-items: center;
+    gap: 0.5rem;
+    position: absolute;
+
+    &__title{
+      text-decoration: underline;
+    }
+
+    &__img{
+      width: 4rem;
+    }
+  }
+
+  &__section{
+    margin-top: 5rem;
+    background-color: $main-element-color;
+    padding: 1rem 0;
+    max-width: 57rem;
+
+    &__form{
+      align-items: center;
+      gap: 0.8rem;
+
+      &__container__input{
+        font-weight: 200;
+        padding: 0.5rem;
+        border: none;
+        outline: none;
+      }
+
+      &__container__btn{
+        width: 9rem;
+        padding: 1rem;
+        transition: all 0.5s ease;
+        cursor: pointer;
+
+        &:hover{
+              opacity: 0.6;
+            }
+          }
+
+      }
+  }
+}

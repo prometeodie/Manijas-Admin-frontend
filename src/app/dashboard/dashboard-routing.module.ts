@@ -11,6 +11,7 @@ import { CreateEditComponent } from './pages/create-edit/create-edit.component';
 import { AboutComponent } from './pages/about/about.component';
 import { ControlPanelComponent } from './pages/control-panel/control-panel.component';
 import { unsavedChangesGuard } from './guard/unsaved-changes.guard';
+import { GameManijometroComponent } from './pages/game-manijometro/game-manijometro.component';
 
 const routes: Routes = [
   {
@@ -20,7 +21,7 @@ const routes: Routes = [
       {path:'boardgames', component:BoardgamesComponent},
       {path:'blogs', component:BlogsComponent},
       {path:'us', component:AboutComponent},
-      {path:'manijometro/:id', component:ManijometroComponent},
+      {path:'manijometro/:id', component:GameManijometroComponent},
       {path:'manijometro', component:ManijometroComponent},
       {path:'control-panel', component:ControlPanelComponent},
       {path:'messages', component:MessagesComponent},
