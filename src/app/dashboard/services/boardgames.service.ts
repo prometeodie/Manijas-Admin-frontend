@@ -116,7 +116,7 @@ export class BoardgamesService {
     )
   }
 
-  postBoardGImage(id:string, formData: FormData){
+postBoardGImage(id:string, formData: FormData){
     const headers = this.dashboardService.getHeaders();
     return this.http.post<Boardgame>(`${this.url}/uploadImg/${id}`, formData, { headers}).pipe(
       catchError((err)=>{return of(undefined)})

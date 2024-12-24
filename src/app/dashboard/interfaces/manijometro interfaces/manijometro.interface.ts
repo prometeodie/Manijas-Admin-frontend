@@ -13,9 +13,8 @@ export interface ManijometroPool {
 }
 
 export interface ManijometroValuesPool {
-  value1: number;
-  value2: number;
-  value3: number;
-  value4: number;
-  value5: number;
+  priceQuality:number;
+  gameplay:number;
+  replayability:number;
+  gameSystemExplanation:number;
 }

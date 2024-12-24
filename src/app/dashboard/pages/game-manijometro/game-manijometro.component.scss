@@ -7,6 +7,7 @@ h2{
 
 .game-manijometro,
 .game-manijometro__title-img,
+.game-manijometro__section,
 .game-manijometro__section__form,
 .game-manijometro__section__form__container{
   display: flex;
@@ -57,9 +58,10 @@ input[type="number"]::-webkit-outer-spin-button {
       text-decoration: underline;
     }
 
-    &__img{
+    &__img--small{
       width: 4rem;
     }
+
   }
 
   &__section{
@@ -67,6 +69,8 @@ input[type="number"]::-webkit-outer-spin-button {
     background-color: $main-element-color;
     padding: 1rem 0;
     max-width: 57rem;
+    flex-direction: column-reverse;
+    align-items: center;
 
     &__form{
       align-items: center;
@@ -74,9 +78,15 @@ input[type="number"]::-webkit-outer-spin-button {
 
       &__container__input{
         font-weight: 200;
+        width: 15rem;
         padding: 0.5rem;
         border: none;
         outline: none;
+
+        &__error{
+          color: $form-error-color;
+          font-size: x-small;
+        }
       }
 
       &__container__btn{
@@ -86,10 +96,41 @@ input[type="number"]::-webkit-outer-spin-button {
         cursor: pointer;
 
         &:hover{
-              opacity: 0.6;
-            }
-          }
-
+          opacity: 0.6;
+        }
       }
+
+    }
+    &__info-img{
+      &__ul{
+        list-style: none;
+        padding: 0;
+        margin-bottom: 1rem;
+        font-size: larger;
+
+        &__li{
+          margin-bottom: 0.6rem;
+        }
+      }
+
+      &__img{
+        display: none;
+      }
+    }
   }
+}
+
+@media (min-width:700px) {
+  .game-manijometro__section{
+    flex-direction: row;
+    justify-content: space-around;
+  }
+  .game-manijometro__section__info-img__img{
+    display: block;
+    object-fit: contain;
+  }
+
+.game-manijometro__title-img__img--small{
+      display: none;
+    }
 }

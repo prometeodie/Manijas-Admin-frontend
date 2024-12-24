@@ -1,7 +1,7 @@
 
 // TAREAS PRIORITARIAS
 
-// TODO: manijometro
+// TODO: acomodar q cuando el tamanoi de la pantalla permitra la imagen se vez al lado del form y si es movile al lado del titulo
 // TODO: panel de control para crear y editar nuevos usuarios
 // TODO: usuaio cambie pass
 // TODO: armar el guard para roles

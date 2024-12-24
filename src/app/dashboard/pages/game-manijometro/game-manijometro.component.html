@@ -1,7 +1,7 @@
 <main class="game-manijometro">
   <div class="game-manijometro__title-img">
     <h2 class="game-manijometro__title-img__title" *ngIf="manijometro; else notInformation">{{manijometro.title}}</h2>
-    <img src="../../../../assets/images.jpeg" class="game-manijometro__title-img__img" alt="">
+    <img src="../../../../assets/images.jpeg" class="game-manijometro__title-img__img--small" alt="">
   </div>
   <ng-template #notInformation>
     No se pudo recuperar información del manijometro
@@ -12,11 +12,25 @@
 
     <form [formGroup]="myForm" class="game-manijometro__section__form">
       <div class="game-manijometro__section__form__container" *ngFor="let input of inputs">
-        <label class="game-manijometro__section__form__container__label">{{input}}</label>
+        <label class="game-manijometro__section__form__container__label"><strong>{{splitByUppercase(input) | titlecase}}</strong></label>
         <input type="number" class="game-manijometro__section__form__container__input" [formControlName]="input">
+        <span class="game-manijometro__section__form__container__input__error"
+        *ngIf="isValidField(input)">{{showError(input)}}</span>
       </div>
-      <button class="game-manijometro__section__form__container__btn" (click)="onSubmit()">Votar</button>
+      <button class="game-manijometro__section__form__container__btn" (click)="onSubmit()" [disabled]="myForm.errors">Votar</button>
     </form>
+    <div class="game-manijometro__section__info-img">
+      <ul class="game-manijometro__section__info-img__ul">
+        <li class="game-manijometro__section__info-img__ul__li">
+          <label>Posición del Manijometro: </label>
+          <strong *ngIf="manijometro">#{{manijometro.manijometroPosition}}</strong> </li>
+        <li class="game-manijometro__section__info-img__ul__li">
+          <label>Promedio de tu votación: </label>
+          <strong>{{getAverage()}}</strong>
+        </li>
+      </ul>
+      <img src="../../../../assets/images.jpeg" class="game-manijometro__section__info-img__img" alt="">
+    </div>
   </section>
 </main>
 
