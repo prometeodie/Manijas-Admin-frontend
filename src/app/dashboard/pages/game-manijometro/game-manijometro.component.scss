@@ -49,6 +49,12 @@ input[type="number"]::-webkit-outer-spin-button {
   position: relative;
   margin-top: 3rem;
 
+  &__unsave-icon{
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+  }
+
   &__title-img{
     align-items: center;
     gap: 0.5rem;
@@ -103,6 +109,7 @@ input[type="number"]::-webkit-outer-spin-button {
     }
     &__info-img{
       &__ul{
+        width: 16rem;
         list-style: none;
         padding: 0;
         margin-bottom: 1rem;

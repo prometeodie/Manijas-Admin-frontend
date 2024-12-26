@@ -21,7 +21,7 @@ const routes: Routes = [
       {path:'boardgames', component:BoardgamesComponent},
       {path:'blogs', component:BlogsComponent},
       {path:'us', component:AboutComponent},
-      {path:'manijometro/:id', component:GameManijometroComponent},
+      {path:'manijometro/:id',canDeactivate: [unsavedChangesGuard], component:GameManijometroComponent},
       {path:'manijometro', component:ManijometroComponent},
       {path:'control-panel', component:ControlPanelComponent},
       {path:'messages', component:MessagesComponent},

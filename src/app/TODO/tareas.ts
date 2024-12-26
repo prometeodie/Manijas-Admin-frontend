@@ -1,9 +1,7 @@
 
 // TAREAS PRIORITARIAS
 
-// TODO: acomodar q cuando el tamanoi de la pantalla permitra la imagen se vez al lado del form y si es movile al lado del titulo
-// TODO: panel de control para crear y editar nuevos usuarios
-// TODO: usuaio cambie pass
+// TODO: panel de control para crear y editar nuevos usuarios Y Q EL USUARIO PUEDA CAMBIAR SU CONTRASENA
 // TODO: armar el guard para roles
 // TODO:  hacer un backup en un excel o word yte lo baje a la compu
 // TODO:  drag and drop de nosotros para poder acomodar cual primero

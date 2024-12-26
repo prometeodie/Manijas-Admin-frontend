@@ -1,1 +1,15 @@
-<p>control-panel works!</p>
+<main class="control-panel">
+  <h1>Panel de Control</h1>
+
+  <section class="control-panel__section">
+    <div class="control-panel__section__btn">
+      <ul class="control-panel__section__btn__ul">
+        <li *ngFor="let btn of btns" class="control-panel__section__btn__ul__li">{{btn | titlecase}}</li>
+      </ul>
+    </div>
+    <div>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae illum enim numquam repudiandae libero cupiditate suscipit quis debitis placeat qui veniam quasi delectus officia tenetur voluptas beatae natus sequi accusamus, alias unde asperiores eligendi iste porro. Commodi asperiores recusandae aliquid magni, voluptas corporis qui totam quis laudantium sunt, est nam voluptatibus natus laborum aliquam quas expedita ex quaerat eveniet officiis necessitatibus voluptates a cum aut. Vel, illum fugiat commodi earum autem recusandae maxime voluptas asperiores quisquam facilis sed et est?</p>
+    </div>
+  </section>
+</main>
+

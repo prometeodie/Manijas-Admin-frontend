@@ -129,6 +129,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
     }
 
     hasFormChanged(){
+      if(!this.currentBlog) return this.myForm.markAsDirty();
       this.myForm.valueChanges.subscribe((formValue) => {
         const { title, subTitle,blogContent,category,writedBy, publish,imgName } = this.currentBlog;
         if(this.myForm.get('imgName')?.pristine){

@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./control-panel.component.scss']
 })
 export class ControlPanelComponent {
-
+  readonly btns = ['cambiar contraseña', 'Cargar nuevo Usuario', 'Modificar Usuario'];
 }

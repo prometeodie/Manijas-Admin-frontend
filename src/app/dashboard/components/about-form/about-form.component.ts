@@ -123,6 +123,7 @@ public myForm = this.fb.group({
 
   hasFormChanged(){
     this.myForm.valueChanges.subscribe((formValue) => {
+      if(!this.currentAboutItem) return this.myForm.markAsDirty();
       const { text, imgName, publish } = this.currentAboutItem;
       if(this.myForm.get('imgName')?.pristine){
         formValue.imgName = this.currentAboutItem.imgName;

@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ManijometroService } from '../../services/manijometro.service';
 import { AuthService } from 'src/app/auth/services/auth.service';
-import { Manijometro, ManijometroPool } from '../../interfaces';
+import { Manijometro, ManijometroPool, ManijometroValuesPool } from '../../interfaces';
 import { DashboardService } from '../../services/dashboard.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -56,6 +56,7 @@ export class GameManijometroComponent implements OnInit {
       }
     )
     this.userId = this.authService.currentUser()!._id;
+    this.hasFormChanged();
   }
 
   private confirmAction(action: string) {
@@ -87,11 +88,29 @@ export class GameManijometroComponent implements OnInit {
     }
   }
 
+  hasFormChanged(){
+    this.myForm.valueChanges.subscribe((formValue) => {
+      const userPool = this.manijometro.manijometroPool.find(pool => pool.userId === this.userId);
+      const {priceQuality, gameplay, replayability, gameSystemExplanation} = userPool!.manijometroValuesPool as ManijometroValuesPool;
+      const originalFormData = JSON.stringify({priceQuality, gameplay, replayability, gameSystemExplanation});
+      const newFormData = JSON.stringify({...formValue});
+      (originalFormData === newFormData)?
+     this.myForm.markAsPristine() : null;
+    });
+  }
+
+  canDeactivate():boolean{
+    if (this.dashboardService.hasBeenChanged()) {
+      return confirm('Tienes cambios sin guardar. ¿Seguro que deseas salir?');
+    }
+    return true;
+  }
+
   getAverage(): number {
     const values = this.myForm.getRawValue();
     const sum = Object.values(values).reduce((acc, curr) => acc! + curr!, 0);
     const average = sum! / Object.keys(values).length;
-    return average;
+    return (average > 100)? 100 : average;
   }
 
   isValidField(field: string):boolean | null{
@@ -118,6 +137,7 @@ export class GameManijometroComponent implements OnInit {
        this.manijometroServices.patchOneManijometro(this.manijometro._id,formValues).subscribe(resp =>{
         if(resp){
           this.dashboardService.notificationPopup('success','El manijometro se actualizo correctamente', 1500);
+          this.myForm.markAsPristine();
           this.isLoading = false;
         }
        })
