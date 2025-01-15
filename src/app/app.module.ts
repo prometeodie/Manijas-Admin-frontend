@@ -8,10 +8,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoadingAnimationComponent } from './dashboard/components/loading-animation/loading-animation.component';
 
 
-
 @NgModule({
   declarations: [
-    AppComponent,
+    AppComponent
   ],
   imports: [
     BrowserModule,

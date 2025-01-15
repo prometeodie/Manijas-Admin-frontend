@@ -10,7 +10,7 @@ import { LoadingAnimationComponent } from '../dashboard/components/loading-anima
 
 @NgModule({
   declarations: [
-    LoginComponent
+    LoginComponent,
   ],
   imports: [
     CommonModule,

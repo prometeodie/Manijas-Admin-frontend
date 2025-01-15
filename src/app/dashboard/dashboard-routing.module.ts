@@ -12,6 +12,10 @@ import { AboutComponent } from './pages/about/about.component';
 import { ControlPanelComponent } from './pages/control-panel/control-panel.component';
 import { unsavedChangesGuard } from './guard/unsaved-changes.guard';
 import { GameManijometroComponent } from './pages/game-manijometro/game-manijometro.component';
+import { RoleGuard } from './guard/role.guard';
+import { NotAuthorizedComponent } from './pages/not-authorized/not-authorized.component';
+
+
 
 const routes: Routes = [
   {
@@ -27,8 +31,9 @@ const routes: Routes = [
       {path:'messages', component:MessagesComponent},
       {path:'message/:id', component:MessageComponent},
       {path:'events', component:EventsComponent},
-      {path:'create-edit/:section/:id', canDeactivate: [unsavedChangesGuard], component:CreateEditComponent},
-      {path:'create-edit/:section',canDeactivate: [unsavedChangesGuard], component:CreateEditComponent},
+      {path:'not-authorized', component:NotAuthorizedComponent},
+      {path:'create-edit/:section/:id', canDeactivate: [unsavedChangesGuard], canActivate: [RoleGuard], component:CreateEditComponent},
+      {path:'create-edit/:section',canDeactivate: [unsavedChangesGuard], canActivate: [RoleGuard], component:CreateEditComponent},
       {path:'**', redirectTo:'boardgames'}
     ]
   }

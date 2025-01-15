@@ -1,0 +1,26 @@
+
+<main class="new-user">
+  <loading-animation *ngIf="uploadingUser"/>
+  <form action="" class="new-user__form" [formGroup]="myForm" (ngSubmit)="onSubmit()">
+    <div *ngFor="let input of inputs; let i = index" class="new-user__form__input-container">
+      <span class="new-user__form__inputs-container__error-menssage"
+      *ngIf="isValidField(input.controlName)">{{showError(input.controlName)}}
+      </span>
+      <div class="new-user__form__inputs-container">
+        <input class="new-user__form__inputs-container__inputs"
+        [autocomplete]="input.controlName"
+        [type]="input.typeInput"
+        [formControlName]="input.controlName"
+        [placeholder]="input.placeholder"
+        *ngIf="input.controlName !== 'roles';else selectRole"/>
+        <i class="fa-solid fa-eye log-in__text new-user__form__inputs-container__inputs__icon" *ngIf="input.controlName === 'password' || input.controlName === 'repeatPassword'" (click)="togglePassword(i)"></i>
+      </div>
+      <ng-template #selectRole>
+        <select formControlName="roles" class="new-user__form__inputs-container__inputs new-user__form__inputs-container__inputs--select">
+          <option [value]="rol" *ngFor="let rol of roles" class="new-user__form__inputs-container__inputs__option">{{rol | titlecase}}</option>
+        </select>
+      </ng-template>
+    </div>
+    <button class="new-user__form__btn" type="submit">{{actionTitle}}</button>
+  </form>
+</main>

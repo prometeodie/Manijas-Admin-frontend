@@ -1,0 +1,82 @@
+@import '../../../scss/variables.scss';
+
+
+.user-card__container,
+.user-card__container__header,
+.user-card__container__body__email-pop-up__pop-up,
+.user-card__container__footer{
+  width: 100%;
+}
+
+.user-card,
+.user-card__container__footer {
+  display: flex;
+}
+
+.user-card__container__footer__trash,
+.user-card__container__footer__pen {
+  cursor: pointer;
+}
+
+.user-card__container__header__name,
+.user-card__container__body__email-pop-up__email{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.user-card {
+  min-width: 18rem;
+  max-width: 18rem;
+  background-color: $secondary-element-color;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  align-items: center;
+  justify-content: space-between;
+
+  &__container {
+
+    &__body {
+      position: relative;
+      margin-top: 10px;
+
+      &__email-pop-up {
+        position: relative;
+
+        &:hover &__pop-up{
+          display: block;
+        }
+
+        &__pop-up {
+          display: none;
+          background: #000000bf;
+          padding: 0.3rem;
+          position: absolute;
+          top: 0;
+          left: 0;
+          font-size: smaller;
+          word-break: break-word;
+          text-align: center;
+        }
+      }
+    }
+
+    &__footer {
+      gap: 1rem;
+      font-size: large;
+      padding-left: 0.8rem;
+      justify-content: flex-end;
+
+      &__trash {
+        color: $main-card-delete-button-color;
+      }
+
+      &__pen {
+        color: $main-card-edit-button-color;
+      }
+    }
+  }
+}

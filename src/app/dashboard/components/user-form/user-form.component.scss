@@ -1,0 +1,89 @@
+@import '../../../scss/variables.scss';
+
+.new-user,
+.new-user__form__inputs-container__inputs--select{
+  width: 100%;
+}
+
+.new-user,
+.new-user__form{
+  display: flex;
+}
+
+.new-user__form{
+  flex-direction: column;
+}
+
+.new-user__form__btn,
+.new-user__form__inputs-container__inputs{
+  cursor: pointer;
+}
+
+.new-user__form__inputs-container,
+.new-user__form__btn{
+  background-color:$inputs-bc;
+}
+
+.new-user{
+width: 100%;
+justify-content: center;
+background-color: $main-element-color;
+padding: 2rem 0;
+  &__form{
+    width: 14rem;
+
+    &__inputs-container{
+      position: relative;
+      margin-bottom: 1rem;
+
+      &__inputs{
+        width: 14rem;
+        padding: 0.5rem;
+        border: none;
+        outline: none;
+        color: aliceblue;
+        background-color: transparent;
+
+        &__option{
+          background-color: #2e2c2c;
+        }
+
+        &__icon{
+            position: absolute;
+            right: 0.5rem;
+            top: 0.5rem;
+         }
+      }
+
+
+      &__error-menssage{
+        background-color: $main-element-color ;
+        font-size: 0.7rem;
+        color:$form-error-color;
+        font-weight: 700;
+      }
+    }
+
+    &__btn{
+      border-radius: 10px;
+      border: 1px solid #AFA3A3;
+      margin-top: 0.5rem;
+      font-weight: 500;
+      padding: 1rem;
+      text-align: center;
+      transition: background-color 0.5s ease;
+      border: none;
+      font-weight: 200;
+      color: $text-color-inputs;
+
+      &:hover{
+        background-color:#bbacac7c ;
+      }
+
+      &:active{
+        transform: scale(0.9);
+      }
+    }
+  }
+
+}

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { AbstractControl, FormGroup, ValidatorFn } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -7,14 +7,37 @@ import { FormGroup } from '@angular/forms';
 export class FormService {
 
   readonly urlRegEx = /^(https?:\/\/)?([\w\-]+(\.[\w\-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
+  readonly emailPattern = "^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$";
+  readonly passwordPattern = '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,20}$';
   readonly instaUrlRegEx = /^(https?:\/\/)?(www\.)?instagram\.com\/(p|reel|tv|stories)\/[A-Za-z0-9_-]+\/?$|^(https?:\/\/)?(www\.)?instagram\.com\/[A-Za-z0-9._-]+\/?$/;
   readonly tikTokUrlRegEx = /^(https?:\/\/)?(www\.)?(tiktok\.com)\/(@[a-zA-Z0-9._-]+\/video\/\d+|t\/[a-zA-Z0-9._-]+|embed\/[a-zA-Z0-9._-]+|v|video\/\d+)(\/)?(\?.*)?$/;
+  readonly passwordPatternMessage = `Al menos una letra minúscula y una mayúscula,
+                   Al menos un número,
+                   Minimo 8 caracteres,
+                   Maximo 20 caracteres,
+                   Al menos un caracter especial: !@#$%^&*.`;
+
 
   constructor() { }
 
   isValidField(myForm: FormGroup,field: string):boolean | null{
     return myForm.get(field)!.errors &&
            myForm.get(field)!.touched
+  }
+
+  passwordMatchValidator(passwordField: string, confirmPasswordField: string): ValidatorFn {
+    return (form: AbstractControl) => {
+      const password = form.get(passwordField)?.value;
+      const confirmPassword = form.get(confirmPasswordField)?.value;
+
+      if (password !== confirmPassword) {
+        form.get(confirmPasswordField)?.setErrors({ passwordMismatch: true });
+      } else {
+        form.get(confirmPasswordField)?.setErrors(null);
+      }
+
+      return null;
+    };
   }
 
 
@@ -24,9 +47,10 @@ export class FormService {
 
     const invalidPatternMessages: { [key: string]: string } = {
         email: 'Example.1@example.com, Caracteres validos: ._%@-',
-        password: `Al menos una letra minúscula y una mayúscula,
-                   Al menos un número,
-                   Al menos un caracter especial: !@#$%^&*.`,
+        password: this.passwordPatternMessage,
+        currentPassword: this.passwordPatternMessage,
+        newPassword: this.passwordPatternMessage,
+        repeatNewPassword: this.passwordPatternMessage,
         startTime: 'Debe introducir una hora válida',
         howToPlayUrl:'Debe introducir un link valido',
         url:'Debe introducir un link valido',
@@ -35,15 +59,17 @@ export class FormService {
       };
 
     const errorMenssages:any = {
-      required: 'This field is required',
-      minlength:`Minimo de Caracteres ${errors['minlength']?.requiredLength}`,
+      duplicated: 'Este email ya esta registrado',
+      fileSizeExceeded:'El tamaño de la imagen no debe superar los 3MB',
+      invalidDate:'Formato de Fecha no valido',
+      max:`Valor maximo permitido ${errors['max']?.max}`,
       maxlength:`Maximo de Caracteres ${errors['maxlength']?.requiredLength}`,
       min:`Valor minimo permitido ${errors['min']?.min}`,
-      max:`Valor maximo permitido ${errors['max']?.max}`,
-      pattern:`${invalidPatternMessages[field]}`,
-      invalidDate:'Formato de Fecha no valido',
+      minlength:`Minimo de Caracteres ${errors['minlength']?.requiredLength}`,
+      passwordMismatch:'Las contraseñas no coinciden',
       pastDate:'La fecha debe ser menor a la actual o podes volver al pasado gil?',
-      fileSizeExceeded:'El tamaño de la imagen no debe superar los 3MB',
+      pattern:`${invalidPatternMessages[field]}`,
+      required: 'Este campo es requerido'
     }
 
     for (const key of Object.keys(errors)) {

@@ -1,6 +1,8 @@
 
 // TAREAS PRIORITARIAS
 
+// TODO: crear servicio los cambios de contrasena,etc
+// TODO: ver por q aparece el simbolode cambios en blogsarreglar el problema del manijometro y ver si evento tiene uno con otro usuario
 // TODO: panel de control para crear y editar nuevos usuarios Y Q EL USUARIO PUEDA CAMBIAR SU CONTRASENA
 // TODO: armar el guard para roles
 // TODO:  hacer un backup en un excel o word yte lo baje a la compu

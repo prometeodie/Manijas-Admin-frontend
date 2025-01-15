@@ -8,7 +8,7 @@
     <h3 class="card__section__title"> {{objectTemplate.title}}</h3>
     <div >
       <ul class="card__section__ul-info"  *ngIf="isEventCategory; else paragraph" >
-        <li class="card__section__ul-info__li-info">- {{objectTemplate.info!.eventDate | date}} </li>
+        <li class="card__section__ul-info__li-info">- {{objectTemplate.info!.eventDate | date: 'dd-MM-yyyy' : 'UTC'}} </li>
         <li class="card__section__ul-info__li-info">- {{objectTemplate.info!.startTime}} a {{objectTemplate.info!.finishTime}} hs </li>
         <li class="card__section__ul-info__li-info">- {{objectTemplate.info!.eventPlace}} </li>
         <li class="card__section__ul-info__li-popup">{{objectTemplate.info!.eventPlace}}</li>

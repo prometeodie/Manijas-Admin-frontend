@@ -12,16 +12,17 @@ import Swal from 'sweetalert2';
 })
 export class LoginComponent {
 
-  public emailPattern: string = "^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$";
-  public passwordPattern: string ="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,20}$";
-  public existLoginError: boolean = false;
-  public chekingCredentials: boolean = false;
 
   public typeOfInput = 'password';
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private fvService = inject(FormService);
+
+  public emailPattern: string = this.fvService.emailPattern;
+  public passwordPattern = this.fvService.passwordPattern;
+  public existLoginError: boolean = false;
+  public chekingCredentials: boolean = false;
 
   public myForm = this.fb.group({
     email:['franco.d.r1992@gmail.com',[Validators.required, Validators.pattern(this.emailPattern)]],

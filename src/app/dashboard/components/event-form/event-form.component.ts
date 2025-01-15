@@ -162,8 +162,9 @@ export class EventFormComponent implements OnInit, OnDestroy{
       // get and fullfill form data
       getEvent() {
         this.existEvent = false;
-
+        console.log(this.eventId)
         if (!this.eventId) return;
+        console.log('asdasd')
 
         this.eventsService.getEvent(this.eventId).subscribe((event) => {
           if (!event) return;
@@ -259,6 +260,8 @@ export class EventFormComponent implements OnInit, OnDestroy{
       this.myForm.reset();
       this.cleanImg();
       this.myForm.get('mustBeAutomaticallyDeleted')?.setValue(true)
+      this.selectedColor = this.colors[0];
+      this.eventsService.resetAllProperties();
       this.selectedFile = null;
     }
 

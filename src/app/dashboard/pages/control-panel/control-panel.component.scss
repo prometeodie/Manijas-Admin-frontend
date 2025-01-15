@@ -4,6 +4,11 @@ h1{
   padding-left: 0.5rem;
 }
 
+.control-panel__section__btn__ul,
+.control-panel__section__cards__ul{
+  display: flex;
+  list-style: none;
+}
 .control-panel{
   &__section {
     width: 100%;
@@ -12,8 +17,6 @@ h1{
     padding: 1rem;
 
     &__btn__ul{
-      list-style: none;
-      display: flex;
       gap: 1rem;
       padding: 0.6rem 0.3rem;
       margin-bottom: 1.4rem;
@@ -27,5 +30,19 @@ h1{
         }
       }
     }
+
+    &__cards__ul{
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 0;
+    }
+  }
+
+  &__new{
+    position: fixed;
+    right: 0.8rem;
+    bottom: 0.8rem;
+    z-index: 999;
   }
 }

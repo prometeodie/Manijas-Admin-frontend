@@ -1,15 +1,26 @@
 <main class="control-panel">
   <h1>Panel de Control</h1>
-
+  <loading-animation *ngIf="loading"/>
   <section class="control-panel__section">
     <div class="control-panel__section__btn">
       <ul class="control-panel__section__btn__ul">
-        <li *ngFor="let btn of btns" class="control-panel__section__btn__ul__li">{{btn | titlecase}}</li>
+        <div *ngFor="let btn of btns">
+          <li *ngIf="FilterBtns(btn)" class="control-panel__section__btn__ul__li" (click)="getAllUsers(btn)">{{btn | titlecase}}</li>
+        </div>
       </ul>
     </div>
     <div>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae illum enim numquam repudiandae libero cupiditate suscipit quis debitis placeat qui veniam quasi delectus officia tenetur voluptas beatae natus sequi accusamus, alias unde asperiores eligendi iste porro. Commodi asperiores recusandae aliquid magni, voluptas corporis qui totam quis laudantium sunt, est nam voluptatibus natus laborum aliquam quas expedita ex quaerat eveniet officiis necessitatibus voluptates a cum aut. Vel, illum fugiat commodi earum autem recusandae maxime voluptas asperiores quisquam facilis sed et est?</p>
+      <update-password *ngIf="selectedBtn === 'cambiar contraseña'"/>
+       <section class="control-panel__section__cards" *ngIf="selectedBtn === 'Modificar Usuario'">
+        <h3>Lista de Usuarios</h3>
+        <ul class="control-panel__section__cards__ul">
+          <li *ngFor="let user of users" class="control-panel__section__cards__ul__li">
+            <user-card [user]="user" (delete)="onCardDelete()"/>
+          </li>
+        </ul>
+       </section>
     </div>
   </section>
 </main>
+<new-btn class="control-panel__new" [path]="newUserPath" *ngIf="currenUserRol === masterRole"/>
 

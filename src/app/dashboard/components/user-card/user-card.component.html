@@ -1,0 +1,20 @@
+<main class="user-card">
+  <loading-animation *ngIf="loading"/>
+  <div class="user-card__container">
+    <div class="user-card__container__header">
+      <h3 class="user-card__container__header__name">{{user.name}} {{user.surname}}</h3>
+    </div>
+    <div class="user-card__container__body">
+      <div class="user-card__container__body__email-pop-up">
+        <p class="user-card__container__body__email-pop-up__email"><strong>E-mail: </strong>{{user.email}}</p>
+        <span class="user-card__container__body__email-pop-up__pop-up">{{user.email}}</span>
+      </div>
+      <p><strong>Nickname: </strong>{{user.nickname}}</p>
+      <p><strong>Role/s: </strong>{{user.roles}}</p>
+    </div>
+    <div class="user-card__container__footer">
+      <i class="fa-solid fa-trash user-card__container__footer__trash" (click)="deleteUser()"></i>
+      <i class="fa-solid fa-pen user-card__container__footer__pen" [routerLink]="userEditRoute"></i>
+    </div>
+  </div>
+</main>

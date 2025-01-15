@@ -28,6 +28,10 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
 import { UnsaveComponent } from './components/unsave/unsave.component';
 import { GameManijometroComponent } from './pages/game-manijometro/game-manijometro.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { UpdatePasswordComponent } from './components/update-password/update-password.component';
+import { UserFormComponent } from "./components/user-form/user-form.component";
+import { UserCardComponent } from './components/user-card/user-card.component';
+import { NotAuthorizedComponent } from './pages/not-authorized/not-authorized.component';
 
 
 @NgModule({
@@ -43,7 +47,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     MessageComponent,
     HeaderComponent,
     ControlPanelComponent,
-    GameManijometroComponent
+    GameManijometroComponent,
+    NotAuthorizedComponent
   ],
   imports: [
     HttpClientModule,
@@ -61,7 +66,10 @@ import { ReactiveFormsModule } from '@angular/forms';
     NavBarComponent,
     NewBtnComponent,
     SearchBarComponent,
-    UnsaveComponent
-  ]
+    UnsaveComponent,
+    UpdatePasswordComponent,
+    UserFormComponent,
+    UserCardComponent
+]
 })
 export class DashboardModule { }
