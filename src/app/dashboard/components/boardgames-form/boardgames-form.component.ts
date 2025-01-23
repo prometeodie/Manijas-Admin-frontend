@@ -353,33 +353,9 @@ export class BoardgamesFormComponent {
       (tags.length !== 0)? this.myForm.markAsDirty() : this.myForm.markAsPristine();
     }
 
-     areObjectsDifferent(obj1:any, obj2:any) {
-      const propertiesToCompare = this.dashboardService.getObjectKeys(obj2).filter(key=>{return key != 'categoryChips'});
-      for (const prop of propertiesToCompare) {
-        let value1 = obj1[prop];
-        let value2 = obj2[prop];
-
-        if (value1 !== null && value1 !== undefined && value2 !== null && value2 !== undefined) {
-          if (typeof value1 === 'number') {
-            value2 = parseFloat(value2);
-          } else if (typeof value1 === 'boolean') {
-            value2 = value2 === true;
-          }
-        }
-
-        if (Array.isArray(value1) && Array.isArray(value2)) {
-          if (value1.length !== value2.length || !value1.every((v, i) => v === value2[i])) {
-            return true;
-          }
-        }
-
-        else if (value1 !== value2) {
-          return true;
-        }
-      }
-
-      return false;
-  }
+     areObjectsDifferent(itemValue:any, formValue:any) {
+      return this.dashboardService.areObjectsDifferent(itemValue,formValue);
+    }
 
     get newBoardGame(): BoardgameUpload {
       const formValue = this.myForm.value;
@@ -455,6 +431,7 @@ private createBoardGame() {
     if (resp) {
       this.uploadFiles(resp._id);
       this.resetForm();
+      this.dashboardService.downloadObjectData(this.currentBoardgame);
       this.router.navigateByUrl('lmdr/boardgames');
       this.dashboardService.notificationPopup('success', 'Board Game creado correctamente', 2000);
     } else {
@@ -476,6 +453,7 @@ private createBoardGame() {
       if (resp) {
         this.uploadFiles(this.boardgameId);
         this.getBoard();
+        this.dashboardService.downloadObjectData(this.currentBoardgame);
         this.myForm.get('cardCoverImgName')?.reset();
         this.myForm.get('imgName')?.reset();
         this.resetForm()

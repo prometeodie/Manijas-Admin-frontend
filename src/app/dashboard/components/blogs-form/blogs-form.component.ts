@@ -33,6 +33,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
   private fvService= inject(FormService);
   private router = inject(Router);
   private selectedFile: FileList | null = null;
+  public initialFormValues!: EditBlog;
   public currentBlog!:Blog;
   public uploadingBlog: boolean = false;
   public options: string[] = ['LMDR'];
@@ -65,6 +66,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
     this.editorConfig.placeholder = 'Ingresa el contenido del blog!';
     this.options.unshift(this.authService.currentUser()!.name);
     this.options.unshift(this.authService.currentUser()!.nickname);
+    this.initialFormValues = this.myForm.value as EditBlog;
     this.hasFormChanged();
   }
 
@@ -129,17 +131,24 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
     }
 
     hasFormChanged(){
-      if(!this.currentBlog) return this.myForm.markAsDirty();
       this.myForm.valueChanges.subscribe((formValue) => {
-        const { title, subTitle,blogContent,category,writedBy, publish,imgName } = this.currentBlog;
-        if(this.myForm.get('imgName')?.pristine){
-          formValue.imgName = this.currentBlog.imgName;
+        if(this.blogId){
+          const updatedBlog = {
+            ...this.currentBlog};
+          if(this.myForm.get('imgName')?.pristine){
+            formValue.imgName = this.currentBlog.imgName;
+          };
+          const hasObjectsDifferences = this.areObjectsDifferent(updatedBlog,{...formValue});
+          (!hasObjectsDifferences)? this.myForm.markAsPristine() : this.myForm.markAsDirty();
+        }else{
+          const hasObjectsDifferences = this.areObjectsDifferent(this.initialFormValues,{...formValue});
+          (!hasObjectsDifferences)? this.myForm.markAsPristine() : this.myForm.markAsDirty();
         }
-        const originalFormData = JSON.stringify({ title, subTitle,blogContent,category,writedBy, publish,imgName });
-        const newFormData = JSON.stringify({...formValue});
-        (originalFormData === newFormData)?
-       this.myForm.markAsPristine() : null;
       });
+    }
+
+    areObjectsDifferent(itemValue:any, formValue:any) {
+      return this.dashboardService.areObjectsDifferent(itemValue,formValue);
     }
 
     get newBlog(): EditBlog {
@@ -173,13 +182,15 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
 
     cleanImg(){
       this.imgSrc = [];
-      this.myForm.get('imgName')?.reset();
+      this.myForm.get('imgName')?.reset('');
+      this.hasFormChanged();
     }
 
     private resetForm() {
       this.myForm.reset();
       this.cleanImg();
       this.myForm.reset({ writedBy: "", category:BlogsCategories.NONE });
+      this.myForm.markAsPristine();
       this.selectedFile = null;
     }
 
@@ -189,9 +200,9 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
       this.blogsService.postNewBlog(newBlog).subscribe((resp) => {
         if (resp) {
           this.uploadFile(resp._id!);
+          this.dashboardService.downloadObjectData(this.currentBlog);
           this.dashboardService.notificationPopup('success','Blog agregado',2000)
           this.resetForm();
-          this.router.navigateByUrl('lmdr/blogs');
         }else{
           this.dashboardService.notificationPopup('error','algo ocurrio al guardar el Blog',2000)
         }
@@ -216,6 +227,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
           }
           this.dashboardService.notificationPopup('success', 'Blog actualizado correctamente', 2000);
           this.getBlog();
+          this.dashboardService.downloadObjectData(this.currentBlog);
           this.resetForm()
         } else {
           this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Blog :(', 3000);

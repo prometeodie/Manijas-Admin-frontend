@@ -18,14 +18,17 @@
       <p class="card__section__p-info">{{truncateText(objectTemplate.text!, 125)}}</p>
     </ng-template>
     <ul class="card__section__menu">
-      <li class="card__section__menu__btn card__section__menu__btn--edit" [routerLink]="routeToEditItem" (click)="saveCurrentUrl(routeToEditItem)" ><i class="fa-solid fa-pen"></i></li>
-      <li class="card__section__menu__btn card__section__menu__btn--delete" (click)="deleteItem(objectTemplate._id)"><i class="fa-solid fa-trash"></i></li>
-      <li class="card__section__menu__btn card__section__menu__btn--manijometro" *ngIf="objectTemplate.section === 'BOARDGAMES'"
-          [ngClass]=" {'card__section__menu__btn--voted':hasVoted}"
-          [routerLink]="routeToVoteBoard"
-          (click)="saveCurrentUrl(routeToVoteBoard)"
-          (mouseenter)="isBoardVoted(hasVoted)"
-          (mouseleave)="isBoardVoted(hasVoted)"><i class="fa-solid fa-trophy"></i></li>
+      <li class="card__section__menu__li">
+        <div class="card__section__menu__btn card__section__menu__btn--edit" [routerLink]="routeToEditItem" (click)="saveCurrentUrl(routeToEditItem)" ><i class="fa-solid fa-pen"></i></div>
+        <div class="card__section__menu__btn card__section__menu__btn--delete" (click)="deleteItem(objectTemplate._id)"><i class="fa-solid fa-trash"></i></div>
+        <div class="card__section__menu__btn card__section__menu__btn--manijometro" *ngIf="objectTemplate.section === 'BOARDGAMES'"
+            [ngClass]=" {'card__section__menu__btn--voted':hasVoted}"
+            [routerLink]="routeToVoteBoard"
+            (click)="saveCurrentUrl(routeToVoteBoard)"
+            (mouseenter)="isBoardVoted(hasVoted)"
+            (mouseleave)="isBoardVoted(hasVoted)"><i class="fa-solid fa-trophy"></i></div>
+      </li>
+      <li *ngIf="objectTemplate.section === 'BOARDGAMES'"> <div class="card__section__menu__btn card__section__menu__btn--delete" (click)="deleteItem(objectTemplate._id)"><i class="fa-solid fa-trash"></i></div> </li>
     </ul>
     <p class="card__section__warning" *ngIf="isTheBoardVoted">Ya has votado este juego, click para cambiar tu voto</p>
   </section>

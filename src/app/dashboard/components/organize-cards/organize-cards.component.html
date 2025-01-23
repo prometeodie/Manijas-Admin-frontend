@@ -1,0 +1,22 @@
+<main class="organize">
+  <loading-animation *ngIf="loading"/>
+  <i class="fa-solid fa-xmark organize__mark" (click)="closeOrganize()"></i>
+  <ul class="organize__ul"
+      cdkDropList
+      [cdkDropListData]="aboutItems"
+      (cdkDropListDropped)="drop($event)">
+    <li *ngFor="let item of aboutItems"
+        class="organize__ul__li"
+        cdkDrag>
+      <img src="../../../../assets/images.jpeg"
+           [alt]="item.text"
+           class="organize__ul__li__img">
+      <strong class="organize__ul__li__text">{{ item.text }}</strong>
+      <i class="fa-solid fa-grip-vertical organize__ul__li__grab" cdkDragHandle></i>
+    </li>
+  </ul>
+  <div class="organize__done">
+    <span class="organize__done__btn" (click)="saveChanges()">Done</span>
+  </div>
+</main>
+

@@ -7,6 +7,7 @@ import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { catchError, of } from 'rxjs';
 import { Section } from '../shared/enum/section.enum';
 import { Router } from '@angular/router';
+import { Blog, Boardgame, BoardgameUpload, EditBlog } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -45,9 +46,48 @@ export class DashboardService {
       timer: timer
     });
   }
+  public confirmAction(action: string, item:string) {
+    const title = action === 'create' ? `Quieres guardar un nuevo ${item}?` : `Quieres actualizar el ${item}?`;
+    return Swal.fire({
+      title,
+      text: "",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, save it!'
+    });
+  }
+
+  public confirmDelete() {
+    return Swal.fire({
+      title: 'Quieres eliminar la imagen?',
+      text: "",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, save it!'
+    });
+  }
 
   getObjectKeys(obj: any) {
     return Object.keys(obj);
+  }
+
+  downloadObjectData(item: Boardgame | Blog){
+    const itemDataStringify = JSON.stringify(item, null, 2);
+    const currentDate  = new Date().toISOString().split('T')[0];
+
+    const blob = new Blob([itemDataStringify], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${item.title}-${currentDate}-backup.json`;
+    a.click();
+
+    window.URL.revokeObjectURL(url);
   }
 
   async onFileSelected(event: Event): Promise<(string | ArrayBuffer)[]> {
@@ -96,30 +136,33 @@ export class DashboardService {
                         [`upload/${section}/${id}/${imgName}`]
   }
 
-  public confirmAction(action: string, item:string) {
-    const title = action === 'create' ? `Quieres guardar un nuevo ${item}?` : `Quieres actualizar el ${item}?`;
-    return Swal.fire({
-      title,
-      text: "",
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, save it!'
-    });
-  }
+  areObjectsDifferent(obj1:any, obj2:any) {
+    const propertiesToCompare = this.getObjectKeys(obj2).filter(key=>{return key != 'categoryChips'});
+    for (const prop of propertiesToCompare) {
+      let value1 = obj1[prop];
+      let value2 = obj2[prop];
 
-  public confirmDelete() {
-    return Swal.fire({
-      title: 'Quieres eliminar la imagen?',
-      text: "",
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, save it!'
-    });
-  }
+      if (value1 !== null && value1 !== undefined && value2 !== null && value2 !== undefined) {
+        if (typeof value1 === 'number') {
+          value2 = parseFloat(value2);
+        } else if (typeof value1 === 'boolean') {
+          value2 = value2 === true;
+        }
+      }
+
+      if (Array.isArray(value1) && Array.isArray(value2)) {
+        if (value1.length !== value2.length || !value1.every((v, i) => v === value2[i])) {
+          return true;
+        }
+      }
+
+      else if (value1 !== value2) {
+        return true;
+      }
+    }
+
+    return false;
+}
 
   countingChar(event: any) {
     const editorContent = event.editor.getData();

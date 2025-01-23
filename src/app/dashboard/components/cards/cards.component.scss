@@ -2,7 +2,8 @@
 @import '../../../scss/variables.scss';
 
 .card,
-.card__section__menu{
+.card__section__menu,
+.card__section__menu__li{
   display: flex;
 }
 
@@ -106,6 +107,7 @@
     &__menu{
       padding: 0;
       list-style: none;
+      justify-content: space-between;
 
 
       &__btn{

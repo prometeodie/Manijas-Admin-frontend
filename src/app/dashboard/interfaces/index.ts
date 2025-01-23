@@ -14,6 +14,7 @@ export * from './boards interfaces/board-upload.interface';
 export * from './about interface/edit-about-item.iterface';
 export * from './about interface/about.interface';
 export * from './about interface/about-Input.interface';
+export * from './about interface/aboutItem-organizing.interface';
 export * from './others/sections.enum';
 export * from './others/inputs.interface';
 export * from './manijometro interfaces/manijometro.interface';

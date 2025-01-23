@@ -34,6 +34,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
   private TIME_REGEX = /^([01][0-9]|2[0-3]):([0-5][0-9])$/;
   public currentEvent!: EventManija;
   public uploadingEvent:boolean = false;
+  public initialFormValues!: EditEventManija;
   public  autoDeleteChecked: boolean = true;
   public  showPopUpAutoDelete: boolean = false;
   public imgSrc:(string | ArrayBuffer)[] = [];
@@ -68,6 +69,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
 
     ngOnInit(): void {
       this.getEvent();
+      this.initialFormValues = this.myForm.value as EditEventManija;
       this.hasFormChanged();
     }
 
@@ -162,10 +164,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
       // get and fullfill form data
       getEvent() {
         this.existEvent = false;
-        console.log(this.eventId)
         if (!this.eventId) return;
-        console.log('asdasd')
-
         this.eventsService.getEvent(this.eventId).subscribe((event) => {
           if (!event) return;
           this.existEvent = true;
@@ -202,18 +201,29 @@ export class EventFormComponent implements OnInit, OnDestroy{
         return newEvent;
       }
 
+
       hasFormChanged(){
         this.myForm.valueChanges.subscribe((formValue) => {
-          const { title, eventDate,alternativeTxtEventDate,startTime,finishTime, eventPlace, eventColor, url, publish, mustBeAutomaticallyDeleted, imgName } = this.currentEvent;
-          if(this.myForm.get('imgName')?.pristine){
-            formValue.imgName = this.currentEvent.imgName;
-          };
-
-          const originalFormData = JSON.stringify({ title, eventDate:eventDate?.toString().split('T')[0],alternativeTxtEventDate,startTime,finishTime, eventPlace, eventColor, url, publish, mustBeAutomaticallyDeleted, imgName });
-          const newFormData = JSON.stringify({...formValue});
-          (originalFormData === newFormData)?
-          this.myForm.markAsPristine() : null;
+          if(this.eventId){
+              const { eventDate, ...rest } = this.currentEvent;
+              const updatedcurentEventValue = {
+              ...rest,
+              eventDate: eventDate?.toString().split('T')[0]
+            };
+            if(this.myForm.get('imgName')?.pristine){
+              formValue.imgName = this.currentEvent.imgName;
+            };
+            const hasObjectsDifferences = this.areObjectsDifferent(updatedcurentEventValue, {...formValue});
+            (!hasObjectsDifferences)? this.myForm.markAsPristine() : this.myForm.markAsDirty();
+          }else{
+            const hasObjectsDifferences = this.areObjectsDifferent(this.initialFormValues,{...formValue});
+            (!hasObjectsDifferences)? this.myForm.markAsPristine() : this.myForm.markAsDirty();
+          }
         });
+      }
+
+      areObjectsDifferent(itemValue:any, formValue:any) {
+        return this.dashboardService.areObjectsDifferent(itemValue,formValue);
       }
 
 
@@ -252,7 +262,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
 
     cleanImg(){
       this.imgSrc = [];
-      this.myForm.get('imgName')?.reset();
+      this.myForm.get('imgName')?.reset('');
       this.dashboardService.cleanImgSrc();
     }
 

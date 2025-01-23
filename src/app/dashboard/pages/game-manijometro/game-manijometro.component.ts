@@ -28,6 +28,7 @@ export class GameManijometroComponent implements OnInit {
   public manijometro!: Manijometro;
   public isLoading: boolean = false;
   public title!: string;
+  public initialFormValues!: ManijometroValuesPool;
 
 
   public myForm = this.fb.group({
@@ -56,10 +57,11 @@ export class GameManijometroComponent implements OnInit {
       }
     )
     this.userId = this.authService.currentUser()!._id;
+    this.initialFormValues = this.myForm.value as ManijometroValuesPool;
     this.hasFormChanged();
   }
 
-  private confirmAction(action: string) {
+  private confirmAction() {
     return Swal.fire({
       title:"guardar votación?",
       text: "",
@@ -91,12 +93,22 @@ export class GameManijometroComponent implements OnInit {
   hasFormChanged(){
     this.myForm.valueChanges.subscribe((formValue) => {
       const userPool = this.manijometro.manijometroPool.find(pool => pool.userId === this.userId);
-      const {priceQuality, gameplay, replayability, gameSystemExplanation} = userPool!.manijometroValuesPool as ManijometroValuesPool;
-      const originalFormData = JSON.stringify({priceQuality, gameplay, replayability, gameSystemExplanation});
-      const newFormData = JSON.stringify({...formValue});
-      (originalFormData === newFormData)?
-     this.myForm.markAsPristine() : null;
+      console.log('userPool: ',userPool)
+      if(userPool){
+        const {priceQuality, gameplay, replayability, gameSystemExplanation} = userPool!.manijometroValuesPool as ManijometroValuesPool;
+        const updatedmanijometro = {priceQuality, gameplay, replayability, gameSystemExplanation};
+        const hasObjectsDifferences = this.areObjectsDifferent(updatedmanijometro,{...formValue});
+        (!hasObjectsDifferences)? this.myForm.markAsPristine() : this.myForm.markAsDirty();
+      }
+      else{
+        const hasObjectsDifferences = this.areObjectsDifferent(this.initialFormValues,{...formValue});
+        (!hasObjectsDifferences)? this.myForm.markAsPristine() : this.myForm.markAsDirty();
+      }
     });
+  }
+
+  areObjectsDifferent(itemValue:any, formValue:any) {
+    return this.dashboardService.areObjectsDifferent(itemValue,formValue);
   }
 
   canDeactivate():boolean{
@@ -125,12 +137,10 @@ export class GameManijometroComponent implements OnInit {
     return this.manijometroServices.splitByUppercase(text);
   }
 
-
   onSubmit(){
     this.myForm.markAllAsTouched();
     if (this.myForm.invalid) return;
-    const action = true ? 'update' : 'create';
-    this.confirmAction(action).then((result) => {
+    this.confirmAction().then((result) => {
       if (result.isConfirmed) {
        this.isLoading = true;
        const formValues = {totalManijometroUserValue: this.getAverage(), manijometroValuesPool: this.myForm.value as ManijometroValues, userId:this.userId }

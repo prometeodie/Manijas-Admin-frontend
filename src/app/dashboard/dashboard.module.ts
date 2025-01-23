@@ -32,7 +32,7 @@ import { UpdatePasswordComponent } from './components/update-password/update-pas
 import { UserFormComponent } from "./components/user-form/user-form.component";
 import { UserCardComponent } from './components/user-card/user-card.component';
 import { NotAuthorizedComponent } from './pages/not-authorized/not-authorized.component';
-
+import { OrganizeCardsComponent } from './components/organize-cards/organize-cards.component';
 
 @NgModule({
   declarations: [
@@ -69,7 +69,8 @@ import { NotAuthorizedComponent } from './pages/not-authorized/not-authorized.co
     UnsaveComponent,
     UpdatePasswordComponent,
     UserFormComponent,
-    UserCardComponent
+    UserCardComponent,
+    OrganizeCardsComponent
 ]
 })
 export class DashboardModule { }

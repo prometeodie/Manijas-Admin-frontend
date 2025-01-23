@@ -1,0 +1,129 @@
+
+@import '../../../scss/variables.scss';
+
+.organize,
+.organize__ul__li{
+  position: relative;
+}
+
+.organize__ul,
+.organize__ul__li,
+.organize__done{
+  display: flex;
+}
+
+.organize__ul,
+.organize__done{
+  align-items: center;
+}
+
+.organize{
+  padding: 1.5rem 0.8rem;
+  &__ul{
+    flex-direction: column;
+    list-style: none;
+    padding: 0;
+
+    &__li{
+      padding: 0.3rem;
+      background-color: $bc-cards-organize;
+      align-items: center;
+      margin-bottom: 0.3rem;
+      color: $text-Color-organize;
+      width: 100%;
+      max-width: 30rem;
+
+      &__img{
+        width: 2.5rem;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      &__text{
+        margin-left: 1rem;
+        width: 75%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      &__grab{
+        font-size: x-large;
+        position: absolute;
+        right: 0;
+        margin: 0.2rem;
+        color: #fff;
+        cursor: grab;
+
+        &:hover{
+          color: $hover-stuff;
+        }
+      }
+    }
+  }
+
+  &__mark{
+    position: absolute;
+    right: 0.3rem;
+    top: 0.3rem;
+    cursor: pointer;
+    transition: all 0.5 ease;
+
+    &:hover{
+      color: $hover-stuff;
+    }
+  }
+
+  &__done{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #000;
+    padding: 1rem 0;
+    text-align: center;
+    justify-content: center;
+
+    &__btn{
+      padding: 1rem;
+      color: #fff;
+      background: #ab5151;
+      font-weight: 700;
+      font-size: x-large;
+      border-radius: 10px;
+      width: 10rem;
+      display: block;
+      transition: all 0.5s ease;
+      cursor: pointer;
+
+      &:hover{
+        opacity: 0.6;
+      }
+
+      &:active{
+        transform: scale(0.9);
+      }
+    }
+
+  }
+}
+
+.cdk-drag-preview {
+  transform: scale(1.05);
+  width: auto;
+  opacity: 0.8;
+  height: auto;
+  z-index: 1000;
+}
+
+.cdk-drag-placeholder {
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px dashed #ccc;
+}
+
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-animating {
+  transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
+}

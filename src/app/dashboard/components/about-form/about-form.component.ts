@@ -35,6 +35,7 @@ public editorConfig!:EditorConfig;
 public uploadingAboutItem: boolean = false;
 public Editor = ClassicEditor;
 public charCount:number = 0;
+public initialFormValues!: EditAboutItem;
 public imgSrc:(string | ArrayBuffer)[] = [];
 public aboutInputs: AboutInput[] = [
     { name: 'text', placeHolder: 'Escribir un fragmento de la historia Manija', label:'', type: 'textArea', maxLenght: 24 },
@@ -51,6 +52,7 @@ public myForm = this.fb.group({
     this.getBlog();
     this.editorConfig = toolBarConfig;
     this.editorConfig.placeholder = 'Ingresa un fragmento de la historia Manija!';
+    this.initialFormValues = this.myForm.value as EditAboutItem;
     this.hasFormChanged();
   }
 
@@ -114,7 +116,8 @@ public myForm = this.fb.group({
   cleanImg(){
     this.imgSrc = [];
     this.dashboardService.cleanImgSrc();
-    this.myForm.get('imgName')?.reset();
+    this.myForm.get('imgName')?.reset('');
+    this.hasFormChanged()
   }
 
   countingChar(event: any){
@@ -123,16 +126,23 @@ public myForm = this.fb.group({
 
   hasFormChanged(){
     this.myForm.valueChanges.subscribe((formValue) => {
-      if(!this.currentAboutItem) return this.myForm.markAsDirty();
-      const { text, imgName, publish } = this.currentAboutItem;
-      if(this.myForm.get('imgName')?.pristine){
-        formValue.imgName = this.currentAboutItem.imgName;
+      if(this.aboutItemId){
+        const updatedBlog = {
+          ...this.currentAboutItem};
+        if(this.myForm.get('imgName')?.pristine){
+          formValue.imgName = this.currentAboutItem.imgName;
+        };
+        const hasObjectsDifferences = this.areObjectsDifferent(updatedBlog,{...formValue});
+        (!hasObjectsDifferences)? this.myForm.markAsPristine() : this.myForm.markAsDirty();
+      }else{
+        const hasObjectsDifferences = this.areObjectsDifferent(this.initialFormValues,{...formValue});
+        (!hasObjectsDifferences)? this.myForm.markAsPristine() : this.myForm.markAsDirty();
       }
-      const originalFormData = JSON.stringify({ text, publish,imgName });
-      const newFormData = JSON.stringify({...formValue});
-      (originalFormData === newFormData)?
-     this.myForm.markAsPristine() : null;
     });
+  }
+
+  areObjectsDifferent(itemValue:any, formValue:any) {
+    return this.dashboardService.areObjectsDifferent(itemValue,formValue);
   }
 
   get newAboutItem(): EditAboutItem {
@@ -156,6 +166,7 @@ public myForm = this.fb.group({
   private resetForm() {
     this.myForm.reset();
     this.cleanImg();
+    this.myForm.markAsPristine();
     this.selectedFile = null;
 }
    // Create and Update form

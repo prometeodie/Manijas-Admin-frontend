@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CardTemplate } from '../../interfaces';
+import { AboutItemOrganizing, CardTemplate } from '../../interfaces';
 import { AboutService } from '../../services/about.service';
 import { AboutItem } from '../../interfaces/about interface/about.interface';
 import { map } from 'rxjs';
@@ -14,6 +14,7 @@ export class AboutComponent implements OnInit{
   private aboutService = inject(AboutService)
   public isLoading: boolean = false;
   public aboutItems: CardTemplate[] = [];
+  public isOrganizing: boolean = false;
 
   ngOnInit(): void {
     this.actualizeAboutItems();
@@ -34,6 +35,22 @@ export class AboutComponent implements OnInit{
     )
     this.isLoading = false;
   }
+
+  filteredData(): AboutItemOrganizing[] {
+    return this.aboutItems.map(item => {
+      return { _id: item._id, text: item.text || "", img: item.imgName };
+    });
+  }
+
+  userIsOrganizing(){
+    this.isOrganizing = !this.isOrganizing;
+  }
+
+  userOrganizeComplete(){
+      this.actualizeAboutItems();
+      this.userIsOrganizing();
+    }
+
 
   private transformData(item: AboutItem): CardTemplate {
     const {
