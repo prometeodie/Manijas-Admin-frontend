@@ -21,8 +21,9 @@ export interface Boardgame {
   section:             Section.BOARDGAMES;
   cardCoverImgName:    string;
   imgName:             string[];
+  roulette:            boolean;
   publish:             boolean;
-  creationDate?:        Date;
-  manijometroPosition?: number;
+  creationDate?:       Date;
+  manijometroPosition?:number;
 }
 

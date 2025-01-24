@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from 'src/assets/environments/environment';
 import { DashboardService } from './dashboard.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Boardgame, BoardgameUpload, CategoryGame } from '../interfaces';
+import { Boardgame, BoardgameUpload, CategoryGame, RouletteInfo } from '../interfaces';
 import { catchError, of } from 'rxjs';
 import { Dificulty } from '../interfaces/boards interfaces/dificulty.enum';
 import { Replayability } from '../interfaces/boards interfaces/replayability.enum';
@@ -126,6 +126,14 @@ postBoardGImage(id:string, formData: FormData){
   editBoard( id: string, editedEvent: BoardgameUpload){
     const headers = this.dashboardService.getHeaders();
     return this.http.patch<BoardgameUpload>(`${this.url}/edit/${id}`, editedEvent, { headers}).pipe(
+      catchError((err)=>{return of(undefined)})
+    )
+  }
+
+  toggleRoulette(rouletteInfo:RouletteInfo){
+    const headers = this.dashboardService.getHeaders();
+
+    return this.http.patch<BoardgameUpload>(`${this.url}/togglee-roulette`, rouletteInfo, { headers}).pipe(
       catchError((err)=>{return of(undefined)})
     )
   }

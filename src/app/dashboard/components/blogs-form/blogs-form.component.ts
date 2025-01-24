@@ -200,8 +200,8 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
       this.blogsService.postNewBlog(newBlog).subscribe((resp) => {
         if (resp) {
           this.uploadFile(resp._id!);
-          this.dashboardService.downloadObjectData(this.currentBlog);
           this.dashboardService.notificationPopup('success','Blog agregado',2000)
+          this.dashboardService.downloadObjectData(newBlog);
           this.resetForm();
         }else{
           this.dashboardService.notificationPopup('error','algo ocurrio al guardar el Blog',2000)
@@ -227,7 +227,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
           }
           this.dashboardService.notificationPopup('success', 'Blog actualizado correctamente', 2000);
           this.getBlog();
-          this.dashboardService.downloadObjectData(this.currentBlog);
+          this.dashboardService.downloadObjectData(actualizedBlog);
           this.resetForm()
         } else {
           this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Blog :(', 3000);

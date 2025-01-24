@@ -7,7 +7,7 @@ import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { catchError, of } from 'rxjs';
 import { Section } from '../shared/enum/section.enum';
 import { Router } from '@angular/router';
-import { Blog, Boardgame, BoardgameUpload, EditBlog } from '../interfaces';
+import { BoardgameUpload, EditBlog } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -46,6 +46,25 @@ export class DashboardService {
       timer: timer
     });
   }
+
+  notificationPopupRoulette(title:string, background:string, ){
+    const toast = Swal.mixin({
+      toast: true,
+      background,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 1200,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+      }
+    });
+
+    toast.fire({
+      title
+    });
+  }
   public confirmAction(action: string, item:string) {
     const title = action === 'create' ? `Quieres guardar un nuevo ${item}?` : `Quieres actualizar el ${item}?`;
     return Swal.fire({
@@ -75,7 +94,8 @@ export class DashboardService {
     return Object.keys(obj);
   }
 
-  downloadObjectData(item: Boardgame | Blog){
+  downloadObjectData(item: BoardgameUpload | EditBlog){
+    console.log(item)
     const itemDataStringify = JSON.stringify(item, null, 2);
     const currentDate  = new Date().toISOString().split('T')[0];
 

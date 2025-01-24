@@ -88,6 +88,7 @@ export class BoardgamesComponent implements OnInit{
       manijometroPosition,
       manijometroPool,
       publish,
+      roulette,
       imgName,
       cardCoverImgName,
       section,
@@ -104,6 +105,7 @@ export class BoardgamesComponent implements OnInit{
       section,
       manijometroPosition,
       manijometroPool,
+      roulette,
       publish,
       ...rest
     };

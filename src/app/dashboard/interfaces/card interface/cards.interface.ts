@@ -13,6 +13,7 @@ export interface CardTemplate{
   publish:boolean;
   manijometroPosition?:Number;
   manijometroPool?:ManijometroPoolEntity[];
+  roulette?:boolean;
   hasVoted?:boolean;
  }
 

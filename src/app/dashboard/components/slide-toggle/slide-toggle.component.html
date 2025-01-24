@@ -1,0 +1,10 @@
+<div class="slide-toggle">
+  <input
+  #slider
+  type="checkbox"
+  id="toggle-{{sliderInfo._id}}"
+  [checked]="sliderInfo.roulette"
+  (change)="toggleRoulette()" />
+  <label for="toggle-{{sliderInfo._id}}" class="slider"></label>
+</div>
+

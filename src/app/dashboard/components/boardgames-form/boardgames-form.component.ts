@@ -431,9 +431,10 @@ private createBoardGame() {
     if (resp) {
       this.uploadFiles(resp._id);
       this.resetForm();
-      this.dashboardService.downloadObjectData(this.currentBoardgame);
+      this.getBoard();
       this.router.navigateByUrl('lmdr/boardgames');
       this.dashboardService.notificationPopup('success', 'Board Game creado correctamente', 2000);
+      this.dashboardService.downloadObjectData(newBoardGame);
     } else {
       this.dashboardService.notificationPopup("error", 'Algo salió mal al crear el Board :(', 3000);
     }
@@ -453,7 +454,7 @@ private createBoardGame() {
       if (resp) {
         this.uploadFiles(this.boardgameId);
         this.getBoard();
-        this.dashboardService.downloadObjectData(this.currentBoardgame);
+        this.dashboardService.downloadObjectData(actualizedBoard);
         this.myForm.get('cardCoverImgName')?.reset();
         this.myForm.get('imgName')?.reset();
         this.resetForm()

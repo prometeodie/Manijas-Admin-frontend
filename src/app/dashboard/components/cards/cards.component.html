@@ -28,7 +28,7 @@
             (mouseenter)="isBoardVoted(hasVoted)"
             (mouseleave)="isBoardVoted(hasVoted)"><i class="fa-solid fa-trophy"></i></div>
       </li>
-      <li *ngIf="objectTemplate.section === 'BOARDGAMES'"> <div class="card__section__menu__btn card__section__menu__btn--delete" (click)="deleteItem(objectTemplate._id)"><i class="fa-solid fa-trash"></i></div> </li>
+      <li *ngIf="objectTemplate.section === 'BOARDGAMES'"><slide-toggle [sliderInfo]="{_id:objectTemplate._id, roulette:objectTemplate.roulette || false}"/> </li>
     </ul>
     <p class="card__section__warning" *ngIf="isTheBoardVoted">Ya has votado este juego, click para cambiar tu voto</p>
   </section>

@@ -6,11 +6,12 @@ import { DashboardService } from '../../services/dashboard.service';
 import Swal from 'sweetalert2';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
+import { SlideToggleComponent } from '../slide-toggle/slide-toggle.component';
 
 @Component({
   selector: 'app-cards',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, SlideToggleComponent],
   templateUrl: './cards.component.html',
   styleUrls: ['./cards.component.scss']
 })
@@ -18,8 +19,8 @@ export class CardsComponent implements OnInit {
 
   @Input() objectTemplate!: CardTemplate;
   @Output() delete = new EventEmitter<void>();
-private dashboardService = inject(DashboardService);
-private authService = inject(AuthService);
+ private dashboardService = inject(DashboardService);
+ private authService = inject(AuthService);
  public isTheBoardVoted: boolean = false;
  public isEventCategory: boolean = false
  public hasVoted: boolean = false;
@@ -53,6 +54,7 @@ private authService = inject(AuthService);
 stripHtml(html: string){
   this.dashboardService.stripHtml(html)
 }
+
 isBoardVoted(hasVoted: boolean){
   if(hasVoted){
     this.isTheBoardVoted = !this.isTheBoardVoted;
