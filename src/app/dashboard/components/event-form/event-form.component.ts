@@ -384,11 +384,12 @@ export class EventFormComponent implements OnInit, OnDestroy{
       this.confirmDelete().then((result) => {
         if (!result.isConfirmed) return;
 
-        const { path, optimizePath } = this.getImagePaths(imgN, this.currentEvent._id!);
+        const { path, optimizePath, regularSize} = this.getImagePaths(imgN, this.currentEvent._id!);
         this.dashboardService.deleteItemImg(path, Section.EVENTS)?.subscribe((resp) => {
           this.cleanEventImgName();
           if (resp) {
             this.dashboardService.deleteItemImg(optimizePath, Section.EVENTS)?.subscribe();
+            this.dashboardService.deleteItemImg(regularSize, Section.EVENTS)?.subscribe();
           }else{
             this.dashboardService.notificationPopup('error', 'Algo ocurrio al eliminar la imagen', 2000);
           }

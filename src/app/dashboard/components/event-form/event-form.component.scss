@@ -110,6 +110,7 @@
         }
 
         &__error-menssage{
+          display: block;
           font-size: 0.7rem;
           color:$form-error-color;
           font-weight: 700;

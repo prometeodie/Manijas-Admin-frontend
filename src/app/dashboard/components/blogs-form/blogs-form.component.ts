@@ -289,7 +289,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
     return this.dashboardService.getImagePaths(imgN, id)
   }
 
-  private cleanEventImgName() {
+  private cleanBlogImgName() {
     this.blogsService.editBlog(this.currentBlog._id!, { imgName:'' }).subscribe((editResp) => {
       if (editResp) {
         this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
@@ -303,11 +303,12 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
     this.confirmDelete().then((result) => {
       if (!result.isConfirmed) return;
 
-      const { path, optimizePath } = this.getImagePaths(imgN, this.currentBlog._id!);
+      const { path, optimizePath, regularSize } = this.getImagePaths(imgN, this.currentBlog._id!);
       this.dashboardService.deleteItemImg(path, Section.BLOGS)?.subscribe((resp) => {
-        this.cleanEventImgName();
+        this.cleanBlogImgName();
         if (resp) {
           this.dashboardService.deleteItemImg(optimizePath, Section.BLOGS)?.subscribe();
+          this.dashboardService.deleteItemImg(regularSize, Section.BLOGS)?.subscribe();
         }else{
           this.dashboardService.notificationPopup('error', 'Algo ocurrio al eliminar la imagen', 2000);
         }

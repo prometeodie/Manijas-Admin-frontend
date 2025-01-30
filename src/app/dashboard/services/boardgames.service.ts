@@ -3,7 +3,7 @@ import { environment } from 'src/assets/environments/environment';
 import { DashboardService } from './dashboard.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Boardgame, BoardgameUpload, CategoryGame, RouletteInfo } from '../interfaces';
-import { catchError, of } from 'rxjs';
+import { catchError, of, throwError } from 'rxjs';
 import { Dificulty } from '../interfaces/boards interfaces/dificulty.enum';
 import { Replayability } from '../interfaces/boards interfaces/replayability.enum';
 
@@ -64,9 +64,9 @@ export class BoardgamesService {
 
     if (screenSize < 800) {
       return cardCover
-        ? [`upload/${boardGame.section}/${boardGame._id}/optimize/smallS-${boardGame.cardCoverImgName}`]
+        ? [`upload/${boardGame.section}/${boardGame._id}/optimize/${boardGame.cardCoverImgName}`]
         : boardGame.imgName.map(
-            boardImg => `upload/${boardGame.section}/${boardGame._id}/optimize/smallS-${boardImg}`
+            boardImg => `upload/${boardGame.section}/${boardGame._id}/optimize/${boardImg}`
           );
     } else {
       return cardCover
@@ -105,14 +105,14 @@ export class BoardgamesService {
     const headers = this.dashboardService.getHeaders();
 
     return this.http.get<Boardgame>(`${this.url}/${id}`, { headers}).pipe(
-      catchError((err)=>{return of(undefined)})
+      catchError((err)=>{return throwError(() => err);})
     )
   }
 
   postNewBoardG(newBoardGame: BoardgameUpload){
     const headers = this.dashboardService.getHeaders();
     return this.http.post<Boardgame>(`${this.url}/upload`, newBoardGame, { headers}).pipe(
-      catchError((err)=>{return of(undefined)})
+      catchError((err)=>{return throwError(() => err);})
     )
   }
 
@@ -126,7 +126,7 @@ postBoardGImage(id:string, formData: FormData){
   editBoard( id: string, editedEvent: BoardgameUpload){
     const headers = this.dashboardService.getHeaders();
     return this.http.patch<BoardgameUpload>(`${this.url}/edit/${id}`, editedEvent, { headers}).pipe(
-      catchError((err)=>{return of(undefined)})
+      catchError((err)=>{return throwError(() => err);})
     )
   }
 
@@ -134,7 +134,7 @@ postBoardGImage(id:string, formData: FormData){
     const headers = this.dashboardService.getHeaders();
 
     return this.http.patch<BoardgameUpload>(`${this.url}/togglee-roulette`, rouletteInfo, { headers}).pipe(
-      catchError((err)=>{return of(undefined)})
+      catchError((err)=>{return throwError(() => err);})
     )
   }
 }

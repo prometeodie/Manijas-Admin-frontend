@@ -65,17 +65,15 @@ h1{
 // MEDIA QUERIES
 
 @media (min-width:600px) {
-  .boards{
-    &__section__empty{
-      font-size: 3rem;
-    }
-  }
   .boards__nav-bar{
     top: 0;
   }
 }
 
 @media (min-width:700px) {
+  .boards__section__empty{
+    font-size: 3rem;
+  }
   .boards__nav-bar{
     position: sticky;
   }

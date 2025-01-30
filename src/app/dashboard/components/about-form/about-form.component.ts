@@ -49,7 +49,7 @@ public myForm = this.fb.group({
   })
 
   ngOnInit(): void {
-    this.getBlog();
+    this.getAboutItem();
     this.editorConfig = toolBarConfig;
     this.editorConfig.placeholder = 'Ingresa un fragmento de la historia Manija!';
     this.initialFormValues = this.myForm.value as EditAboutItem;
@@ -93,7 +93,7 @@ public myForm = this.fb.group({
     this.imgSrc = this.dashboardService.imgPathCreator(event.imgName,this.dashboardService.screenWidth, Section.ABOUT, this.aboutItemId);
   }
 
-  getBlog(){
+  getAboutItem(){
 
     if (!this.aboutItemId) return;
 
@@ -175,14 +175,13 @@ public myForm = this.fb.group({
     this.aboutService.postNewAboutItem(newAboutItem).subscribe((resp) => {
       if (resp) {
         this.uploadFile(resp._id!);
-        this.dashboardService.notificationPopup('success','Item agregado',2000)
         this.resetForm();
-        this.router.navigateByUrl('lmdr/us');
+        this.dashboardService.notificationPopup('success','Item agregado',2000)
       }else{
         this.dashboardService.notificationPopup('error','algo ocurrio al guardar el Blog',2000)
       }
-      this.uploadingAboutItem = false;
     });
+    this.uploadingAboutItem = false;
   }
 
   private updateAboutItem() {
@@ -200,7 +199,7 @@ public myForm = this.fb.group({
           this.myForm.get('imgName')?.reset();
         }
         this.dashboardService.notificationPopup('success', 'Item actualizado correctamente', 2000);
-        this.getBlog();
+        this.getAboutItem();
       } else {
         this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Item :(', 3000);
       }
@@ -218,7 +217,7 @@ public myForm = this.fb.group({
         }
         this.dashboardService.notificationPopup('success','Item agregado',2000)
         this.resetForm()
-        this.getBlog();
+        this.getAboutItem();
       });
     }
   }
@@ -262,7 +261,7 @@ private cleanEventImgName() {
     if (editResp) {
       this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
       this.resetForm();
-      this.getBlog();
+      this.getAboutItem();
     }
   });
 }
@@ -273,7 +272,8 @@ deleteImg(imgN: string) {
     this.dashboardService.deleteItemImg(imgN, Section.ABOUT)?.subscribe((resp) => {
       this.cleanEventImgName();
       if (resp) {
-        this.dashboardService.deleteItemImg(`/optimize/smallS-${imgN}`, Section.ABOUT)?.subscribe();
+        this.dashboardService.deleteItemImg(`/optimize/${imgN}`, Section.ABOUT)?.subscribe();
+        this.dashboardService.deleteItemImg(`/regular-size/${imgN}`, Section.ABOUT)?.subscribe();
       }else{
         this.dashboardService.notificationPopup('error', 'Algo ocurrio al eliminar la imagen', 2000);
       }

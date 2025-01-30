@@ -95,7 +95,6 @@ export class DashboardService {
   }
 
   downloadObjectData(item: BoardgameUpload | EditBlog){
-    console.log(item)
     const itemDataStringify = JSON.stringify(item, null, 2);
     const currentDate  = new Date().toISOString().split('T')[0];
 
@@ -149,10 +148,10 @@ export class DashboardService {
     if (imgName.length ===  0) return [];
 
     if (section === Section.ABOUT){
-      return (screenSize < 800)? [`upload/${section}/optimize/smallS-${imgName}`]:
+      return (screenSize < 800)? [`upload/${section}/optimize/${imgName}`]:
                           [`upload/${section}/${imgName}`]
     }
-    return (screenSize < 800)? [`upload/${section}/${id}/optimize/smallS-${imgName}`]:
+    return (screenSize < 800)? [`upload/${section}/${id}/optimize/${imgName}`]:
                         [`upload/${section}/${id}/${imgName}`]
   }
 
@@ -295,8 +294,9 @@ export class DashboardService {
   public getImagePaths(imgN: string, id: string) {
     return {
       path: `${id}/${imgN}`,
-      optimizePath: `${id}/optimize/smallS-${imgN}`
-    };
+      optimizePath: `${id}/optimize/${imgN}`,
+      regularSize: `${id}/regular-size/${imgN}`,
+    }
   }
 
   deleteItem(id:string, section: string){

@@ -110,11 +110,11 @@ export class BoardgamesFormComponent {
     // cardCover
     if (formControlName === 'cardCoverImgName') {
 
-      if(this.boardgameId){
-        if(this.currentBoardgame.cardCoverImgName.length === 0){
-          this.cardCoverImgSrc = [];
-        }
-      }
+      // if(this.boardgameId){
+      //   if(this.currentBoardgame?.cardCoverImgName?.length === 0){
+      //     this.cardCoverImgSrc = [];
+      //   }
+      // }
 
       // Cambia el nombre del archivo de portada
       this.cardCoverFile = this.changeFileName(input.files[0]);
@@ -393,11 +393,8 @@ export class BoardgamesFormComponent {
       this.boardgamesService.postBoardGImage(_id!, formData).subscribe(imgResp=>{
 
         if(!imgResp){
-          this.uploadingBoardG = false
           this.dashboardService.notificationPopup("error", 'El Board Game fue guardado, pero algo salio mal al guardar la/s imagen/es revisa q su formato sea valido :(',3000)
         }
-        this.resetForm()
-        this.getBoard();
       });
     }
   }
@@ -427,22 +424,32 @@ private uploadFiles(boardgameId: string) {
 
 private createBoardGame() {
   const newBoardGame = this.newBoardGame;
-  this.boardgamesService.postNewBoardG(newBoardGame).subscribe((resp) => {
-    if (resp) {
-      this.uploadFiles(resp._id);
-      this.resetForm();
-      this.getBoard();
-      this.router.navigateByUrl('lmdr/boardgames');
-      this.dashboardService.notificationPopup('success', 'Board Game creado correctamente', 2000);
-      this.dashboardService.downloadObjectData(newBoardGame);
-    } else {
-      this.dashboardService.notificationPopup("error", 'Algo salió mal al crear el Board :(', 3000);
-    }
-    this.uploadingBoardG = false;
+  this.boardgamesService.postNewBoardG(newBoardGame).subscribe({
+
+    next: (resp) => {
+      if (resp) {
+        this.uploadFiles(resp._id);
+        this.resetForm();
+        this.getBoard();
+        this.router.navigateByUrl('lmdr/boardgames');
+        this.dashboardService.notificationPopup('success', 'Board Game creado correctamente', 2000);
+        this.dashboardService.downloadObjectData(newBoardGame);
+        this.uploadingBoardG = false;
+      }
+    },
+    error: (err) => {
+      console.log('Error completo:', err);
+      if (err.status === 409 && err.error?.type === 'RESOURCE_ALREADY_EXISTS') {
+        this.dashboardService.notificationPopup('error', 'El boardgame ya existe', 2000);
+      } else {
+        this.dashboardService.notificationPopup('error', 'Error al crear el Board Game', 2000);
+      }
+    },
   });
+  this.uploadingBoardG = false;
 }
 
-  private updateBoardGame() {
+private updateBoardGame() {
     const { imgName, cardCoverImgName, ...rest} = this.newBoardGame;
 
     const actualizedBoard = {
@@ -453,10 +460,10 @@ private createBoardGame() {
     this.boardgamesService.editBoard(this.boardgameId, actualizedBoard as BoardgameUpload).subscribe((resp) => {
       if (resp) {
         this.uploadFiles(this.boardgameId);
-        this.getBoard();
         this.dashboardService.downloadObjectData(actualizedBoard);
         this.myForm.get('cardCoverImgName')?.reset();
         this.myForm.get('imgName')?.reset();
+        this.getBoard();
         this.resetForm()
         this.dashboardService.notificationPopup('success', 'Board Game actualizado correctamente', 2000);
       } else {
@@ -508,12 +515,14 @@ private createBoardGame() {
     if (imgN.includes('cardCover')) {
       return {
         path: `${basePath}/cardCover/${imgN}`,
-        optimizePath: `${basePath}/cardCover/optimize/smallS-${imgN}`
+        optimizePath: `${basePath}/cardCover/optimize/${imgN}`,
+        regularSize:  `${basePath}/cardCover/regular-size/${imgN}`
       };
     }
     return {
       path: `${basePath}/${imgN}`,
-      optimizePath: `${basePath}/optimize/smallS-${imgN}`
+      optimizePath: `${basePath}/optimize/${imgN}`,
+      regularSize:  `${basePath}/regular-size/${imgN}`
     };
   }
 
@@ -521,10 +530,11 @@ private createBoardGame() {
     this.confirmDelete().then((result) => {
       if (!result.isConfirmed) return;
 
-      const { path, optimizePath } = this.getImagePaths(imgN);
+      const { path, optimizePath, regularSize } = this.getImagePaths(imgN);
       this.dashboardService.deleteItemImg(path, Section.BOARDGAMES)?.subscribe((resp) => {
         if (resp) {
           this.dashboardService.deleteItemImg(optimizePath, Section.BOARDGAMES)?.subscribe();
+          this.dashboardService.deleteItemImg(regularSize, Section.BOARDGAMES)?.subscribe();
           this.updateBoardgameImages(imgN);
         }
       });
