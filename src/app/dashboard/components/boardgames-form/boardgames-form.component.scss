@@ -93,6 +93,13 @@ h3{
         margin-bottom: 1rem;
       }
 
+      &__characters-average{
+        color:$form-character-average;
+        &--violet{
+          color: $form-character-average-violet;
+        }
+      }
+
     }
 
     &__key-words{

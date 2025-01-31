@@ -28,13 +28,13 @@ private fb = inject(FormBuilder);
 private dashboardService = inject(DashboardService);
 private aboutService = inject(AboutService);
 private fvService = inject(FormService);
-private router = inject(Router);
 private selectedFile: FileList | null = null;
 public currentAboutItem!:AboutItem;
 public editorConfig!:EditorConfig;
 public uploadingAboutItem: boolean = false;
 public Editor = ClassicEditor;
 public charCount:number = 0;
+public averageCharacters:number = 0;
 public initialFormValues!: EditAboutItem;
 public imgSrc:(string | ArrayBuffer)[] = [];
 public aboutInputs: AboutInput[] = [
@@ -54,6 +54,7 @@ public myForm = this.fb.group({
     this.editorConfig.placeholder = 'Ingresa un fragmento de la historia Manija!';
     this.initialFormValues = this.myForm.value as EditAboutItem;
     this.hasFormChanged();
+    this.getTextAverageLength()
   }
 
   ngOnDestroy(): void {
@@ -103,6 +104,12 @@ public myForm = this.fb.group({
       this.updateFormValues(item);
       this.updateImageSources(item);
     });
+  }
+
+  getTextAverageLength(){
+    this.dashboardService.getTextAverage(Section.ABOUT).subscribe(resp=>{
+      (resp)? this.averageCharacters = resp.charactersAverage : this.averageCharacters = 0;
+    })
   }
 
   isValidField(field: string):boolean | null{
@@ -168,6 +175,7 @@ public myForm = this.fb.group({
     this.cleanImg();
     this.myForm.markAsPristine();
     this.selectedFile = null;
+    this.getTextAverageLength();
 }
    // Create and Update form
    private createAboutItem() {
@@ -196,9 +204,9 @@ public myForm = this.fb.group({
       if (resp) {
         if(this.selectedFile !== null){
           this.uploadFile(this.currentAboutItem._id!);
-          this.myForm.get('imgName')?.reset();
         }
         this.dashboardService.notificationPopup('success', 'Item actualizado correctamente', 2000);
+        this.resetForm();
         this.getAboutItem();
       } else {
         this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Item :(', 3000);

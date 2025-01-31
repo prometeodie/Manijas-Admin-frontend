@@ -32,7 +32,7 @@
             (change)="countingChar($event)"
             name="editor">
           </ckeditor>
-          <span>Caracteres: {{charCount}} / Promedio de caracteres de "Fragmentos de historia Manija": 150</span>
+          <span>Caracteres: <strong class="about__form__input-label__input__characters-average">{{charCount}}</strong> / Promedio de caracteres de "Fragmentos de historia Manija": <strong class="about__form__input-label__input__characters-average--violet">{{averageCharacters}}</strong></span>
           <span class="about__form__input-label__error-menssage"
               *ngIf="isValidField(input.name)">{{showError(input.name)}}
               </span>

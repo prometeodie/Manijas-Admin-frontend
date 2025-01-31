@@ -4,11 +4,26 @@ import { User } from 'src/app/auth/interfaces';
 import { DashboardService } from '../../services/dashboard.service';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { Roles } from '../../interfaces';
+import { trigger, style, animate, transition, state } from '@angular/animations';
 
 @Component({
   selector: 'app-control-panel',
   templateUrl: './control-panel.component.html',
-  styleUrls: ['./control-panel.component.scss']
+  styleUrls: ['./control-panel.component.scss'],
+  animations: [
+    trigger('enterState',[
+      state('void',style({
+        transform: 'scale(0.98',
+        opacity:0
+      })),
+      transition(':enter',[
+        animate('300ms ease-in',style({
+          transform: 'scale(1)',
+          opacity:1
+        }))
+      ])
+    ])
+  ]
 })
 export class ControlPanelComponent implements OnInit{
   private controlPanelService = inject(ControlPanelService);

@@ -1,4 +1,4 @@
-<main class="boards">
+<main class="boards" @enterState>
   <h1>Board Games</h1>
   <components-nav-bar class="boards__nav-bar" (category)="onCategorySelected($event)" [categories]="categories"/>
   <search-bar (searchQuery)="onSearch($event)" class="boards__search-bar"/>

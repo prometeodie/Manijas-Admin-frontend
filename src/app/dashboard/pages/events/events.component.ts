@@ -4,11 +4,26 @@ import { DashboardService } from '../../services/dashboard.service';
 import { EventsService } from '../../services/events.service';
 import { map } from 'rxjs';
 import { EventManija } from '../../interfaces';
+import { trigger, style, animate, transition, state } from '@angular/animations';
 
 @Component({
   selector: 'app-events',
   templateUrl: './events.component.html',
-  styleUrls: ['./events.component.scss']
+  styleUrls: ['./events.component.scss'],
+   animations: [
+      trigger('enterState',[
+        state('void',style({
+          transform: 'scale(0.98',
+          opacity:0
+        })),
+        transition(':enter',[
+          animate('300ms ease-in',style({
+            transform: 'scale(1)',
+            opacity:1
+          }))
+        ])
+      ])
+    ]
 })
 export class EventsComponent implements OnInit,OnDestroy {
 

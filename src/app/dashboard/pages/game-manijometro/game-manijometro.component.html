@@ -1,4 +1,4 @@
-<main class="game-manijometro">
+<main class="game-manijometro" @enterState>
   <unsave class="game-manijometro__unsave-icon" [hasUnsavedChanges]="!myForm.pristine"/>
   <div class="game-manijometro__title-img">
     <h2 class="game-manijometro__title-img__title" *ngIf="manijometro; else notInformation">{{manijometro.title}}</h2>

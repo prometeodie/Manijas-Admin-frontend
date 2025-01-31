@@ -38,8 +38,8 @@
                       (change)="countingChar($event)"
                       name="editor">
                     </ckeditor>
-                    <span>Caracteres: {{charCount}}</span>
-                    <span> / Promedio de caracteres en los "Blogs": 150</span>
+                    <span>Caracteres: <strong class="blog__form__input-label__input__characters-average">{{charCount}}</strong>/ Promedio de caracteres en los "Blogs":
+                      <strong class="blog__form__input-label__input__characters-average--violet">{{averageCharacters}}</strong></span>
                   </div>
                     <div *ngIf="input.type === 'select'">
                       <label for="options">{{input.placeHolder}}</label>

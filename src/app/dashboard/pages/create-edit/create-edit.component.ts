@@ -2,12 +2,28 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CanComponentDeactivate } from '../../guard/unsaved-changes.guard';
 import { DashboardService } from '../../services/dashboard.service';
+import { trigger, style, animate, transition, state } from '@angular/animations';
 
 @Component({
   selector: 'app-create-edit',
   templateUrl: './create-edit.component.html',
-  styleUrls: ['./create-edit.component.scss']
+  styleUrls: ['./create-edit.component.scss'],
+  animations: [
+    trigger('enterState',[
+      state('void',style({
+        transform: 'scale(0.98',
+        opacity:0
+      })),
+      transition(':enter',[
+        animate('300ms ease-in',style({
+          transform: 'scale(1)',
+          opacity:1
+        }))
+      ])
+    ])
+  ]
 })
+
 export class CreateEditComponent implements OnInit, CanComponentDeactivate {
   private route = inject(ActivatedRoute);
   private dashboardService = inject(DashboardService);

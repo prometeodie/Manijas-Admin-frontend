@@ -3,11 +3,26 @@ import { BlogsService } from '../../services/blogs.service';
 import { Blog, CardTemplate } from '../../interfaces';
 import { map } from 'rxjs';
 import { BlogsCategories } from '../../interfaces/blogs interfaces/blog-categories.enum';
+import { trigger, style, animate, transition, state } from '@angular/animations';
 
 @Component({
   selector: 'app-blogs',
   templateUrl: './blogs.component.html',
-  styleUrls: ['./blogs.component.scss']
+  styleUrls: ['./blogs.component.scss'],
+  animations: [
+    trigger('enterState',[
+      state('void',style({
+        transform: 'scale(0.98',
+        opacity:0
+      })),
+      transition(':enter',[
+        animate('300ms ease-in',style({
+          transform: 'scale(1)',
+          opacity:1
+        }))
+      ])
+    ])
+  ]
 })
 export class BlogsComponent implements OnInit{
   readonly blogsPath = '/lmdr/create-edit/BLOGS';

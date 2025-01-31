@@ -3,11 +3,26 @@ import { ManijometroService } from '../../services/manijometro.service';
 import { Manijometro } from '../../interfaces';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { Router } from '@angular/router';
+import { trigger, style, animate, transition, state } from '@angular/animations';
 
 @Component({
   selector: 'app-manijometro',
   templateUrl: './manijometro.component.html',
-  styleUrls: ['./manijometro.component.scss']
+  styleUrls: ['./manijometro.component.scss'],
+     animations: [
+        trigger('enterState',[
+          state('void',style({
+            transform: 'scale(0.98',
+            opacity:0
+          })),
+          transition(':enter',[
+            animate('300ms ease-in',style({
+              transform: 'scale(1)',
+              opacity:1
+            }))
+          ])
+        ])
+      ]
 })
 export class ManijometroComponent implements OnInit{
   private manijometroService = inject(ManijometroService);

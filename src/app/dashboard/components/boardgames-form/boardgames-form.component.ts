@@ -48,6 +48,7 @@ export class BoardgamesFormComponent {
   public keywords: string[] = [];
   public originalsKeyWords: string [] = [];
   public charCount:number = 0;
+  public averageCharacters:number = 0;
   public imgSrc:(string | ArrayBuffer)[] = [];
   public cardCoverImgSrc:(string | ArrayBuffer)[] = [];
   public BoardgamesInputs: BoardInput[] = [
@@ -93,11 +94,17 @@ export class BoardgamesFormComponent {
     this.getBoard();
     this.initialFormValues = this.myForm.value as BoardgameUpload;
     this.hasFormChanged();
-
+    this.getTextAverageLength();
   }
 
   ngOnDestroy(): void {
     this.cleanImg();
+  }
+
+  getTextAverageLength(){
+    this.dashboardService.getTextAverage(Section.BOARDGAMES).subscribe(resp=>{
+      (resp)? this.averageCharacters = resp.charactersAverage : this.averageCharacters = 0;
+    })
   }
 
   async onFileSelected(event: Event, formControlName: string): Promise<FileList | void> {
@@ -109,12 +116,6 @@ export class BoardgamesFormComponent {
 
     // cardCover
     if (formControlName === 'cardCoverImgName') {
-
-      // if(this.boardgameId){
-      //   if(this.currentBoardgame?.cardCoverImgName?.length === 0){
-      //     this.cardCoverImgSrc = [];
-      //   }
-      // }
 
       // Cambia el nombre del archivo de portada
       this.cardCoverFile = this.changeFileName(input.files[0]);
@@ -484,6 +485,7 @@ private updateBoardGame() {
     this.cleanImg();
     this.selectedFiles = null;
     this.cardCoverFile = null;
+    this.getTextAverageLength();
   }
 
   //DELETE IMG SECTION

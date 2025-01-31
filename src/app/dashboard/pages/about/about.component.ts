@@ -2,12 +2,27 @@ import { Component, inject, OnInit } from '@angular/core';
 import { AboutItemOrganizing, CardTemplate } from '../../interfaces';
 import { AboutService } from '../../services/about.service';
 import { AboutItem } from '../../interfaces/about interface/about.interface';
+import { trigger, style, animate, transition, state } from '@angular/animations';
 import { map } from 'rxjs';
 
 @Component({
   selector: 'app-about',
   templateUrl: './about.component.html',
-  styleUrls: ['./about.component.scss']
+  styleUrls: ['./about.component.scss'],
+   animations: [
+      trigger('enterState',[
+        state('void',style({
+          transform: 'scale(0.98',
+          opacity:0
+        })),
+        transition(':enter',[
+          animate('300ms ease-in',style({
+            transform: 'scale(1)',
+            opacity:1
+          }))
+        ])
+      ])
+    ]
 })
 export class AboutComponent implements OnInit{
   readonly aboutPath = '/lmdr/create-edit/ABOUT';

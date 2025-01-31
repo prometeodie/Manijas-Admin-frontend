@@ -81,6 +81,13 @@ h3{
         margin-bottom: 0.6rem;
       }
 
+      &__characters-average{
+        color:$form-character-average;
+        &--violet{
+          color: $form-character-average-violet;
+        }
+      }
+
     }
 
     &__input-label__error-menssage{

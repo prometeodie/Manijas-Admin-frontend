@@ -31,7 +31,6 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
   private blogsService= inject(BlogsService);
   private authService= inject(AuthService);
   private fvService= inject(FormService);
-  private router = inject(Router);
   private selectedFile: FileList | null = null;
   public initialFormValues!: EditBlog;
   public currentBlog!:Blog;
@@ -40,6 +39,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
   public editorConfig!:EditorConfig;
   public Editor = ClassicEditor;
   public charCount:number = 0;
+  public averageCharacters:number = 0;
   public imgSrc:(string | ArrayBuffer)[] = [];
   public aboutInputs: BlogInput[] = [
     { name: 'title',       placeHolder: 'Titulo', label:'', type: 'text', maxLenght: 50,  selectOptions:[]},
@@ -68,10 +68,17 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
     this.options.unshift(this.authService.currentUser()!.nickname);
     this.initialFormValues = this.myForm.value as EditBlog;
     this.hasFormChanged();
+    this.getTextAverageLength();
   }
 
   ngOnDestroy(): void {
     this.cleanImg();
+  }
+
+  getTextAverageLength(){
+    this.dashboardService.getTextAverage(Section.BLOGS).subscribe(resp=>{
+      (resp)? this.averageCharacters = resp.charactersAverage : this.averageCharacters = 0;
+    })
   }
 
   // Select images
@@ -192,6 +199,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
       this.myForm.reset({ writedBy: "", category:BlogsCategories.NONE });
       this.myForm.markAsPristine();
       this.selectedFile = null;
+      this.getTextAverageLength();
     }
 
     // Create and Update form

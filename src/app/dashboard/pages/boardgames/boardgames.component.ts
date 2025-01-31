@@ -2,13 +2,28 @@ import { Component, HostListener, inject, OnInit } from '@angular/core';
 import { Boardgame, CardTemplate, CategoryGame } from '../../interfaces';
 import { boardsCategories } from './utils/boardgames-categories';
 import { BoardgamesService } from '../../services/boardgames.service';
+import { trigger, style, animate, transition, state } from '@angular/animations';
 import { map } from 'rxjs';
 
 
 @Component({
   selector: 'app-boardgames',
   templateUrl: './boardgames.component.html',
-  styleUrls: ['./boardgames.component.scss']
+  styleUrls: ['./boardgames.component.scss'],
+  animations: [
+    trigger('enterState',[
+      state('void',style({
+        transform: 'scale(0.98',
+        opacity:0
+      })),
+      transition(':enter',[
+        animate('300ms ease-in',style({
+          transform: 'scale(1)',
+          opacity:1
+        }))
+      ])
+    ])
+  ]
 })
 export class BoardgamesComponent implements OnInit{
   readonly boardsPath: string = '/lmdr/create-edit/BOARDGAMES';

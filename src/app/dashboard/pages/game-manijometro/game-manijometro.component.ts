@@ -8,11 +8,26 @@ import { FormBuilder, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { ManijometroValues } from '../../interfaces/boards interfaces/manijometro-pool.interface';
 import { FormService } from 'src/app/services/form-validator.service';
+import { trigger, style, animate, transition, state } from '@angular/animations';
 
 @Component({
   selector: 'app-game-manijometro',
   templateUrl: './game-manijometro.component.html',
-  styleUrls: ['./game-manijometro.component.scss']
+  styleUrls: ['./game-manijometro.component.scss'],
+     animations: [
+        trigger('enterState',[
+          state('void',style({
+            transform: 'scale(0.98',
+            opacity:0
+          })),
+          transition(':enter',[
+            animate('300ms ease-in',style({
+              transform: 'scale(1)',
+              opacity:1
+            }))
+          ])
+        ])
+      ]
 })
 export class GameManijometroComponent implements OnInit {
 

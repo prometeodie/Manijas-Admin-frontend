@@ -39,8 +39,10 @@
         name="editor">
       </ckeditor>
       <!-- CHARACTERS COUNT -->
-      <span>Caracteres: {{charCount}} </span>
-      <span>/ Promedio de caracteres en las "reseñas": 150</span>
+      <!-- <span>Caracteres: {{charCount}} </span>
+      <span>/ Promedio de caracteres en las "reseñas": 150</span> -->
+      <span>Caracteres: <strong class="board-games__form__input-label__input__characters-average">{{charCount}}</strong>/ Promedio de caracteres en los "Blogs":
+        <strong class="board-games__form__input-label__input__characters-average--violet">{{averageCharacters}}</strong></span>
     </div>
     <!-- IMAGES -->
     <div *ngIf="input.name === 'imgName'">

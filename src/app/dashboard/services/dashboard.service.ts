@@ -4,10 +4,10 @@ import { environment } from 'src/assets/environments/environment';
 import { HttpClient } from '@angular/common/http';
 
 import Swal, { SweetAlertIcon } from 'sweetalert2';
-import { catchError, of } from 'rxjs';
+import { catchError, of, throwError } from 'rxjs';
 import { Section } from '../shared/enum/section.enum';
 import { Router } from '@angular/router';
-import { BoardgameUpload, EditBlog } from '../interfaces';
+import { BoardgameUpload, CharacterAverageLenght, EditBlog } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -291,6 +291,17 @@ export class DashboardService {
   return false;
   }
 
+  getTextAverage(seccion: Section){
+    const headers = this.getHeaders();
+
+    return this.http.get<CharacterAverageLenght>(`${this.url}/${seccion}/character-average`,{headers}).pipe(
+      catchError((err)=>{
+        console.error('Error en la petición:', err);
+        return throwError(() => new Error(err.message || 'Error desconocido'));
+      })
+    )
+  }
+
   public getImagePaths(imgN: string, id: string) {
     return {
       path: `${id}/${imgN}`,
@@ -302,7 +313,10 @@ export class DashboardService {
   deleteItem(id:string, section: string){
     const headers = this.getHeaders();
     return this.http.delete(`${this.url}/${section}/delete/${id}`,{headers}).pipe(
-      catchError((err)=>{return of(undefined)})
+      catchError((err)=>{
+        console.error('Error en la petición:', err);
+        return throwError(() => new Error(err.message || 'Error desconocido'));
+      })
     )
   }
 
@@ -310,7 +324,10 @@ export class DashboardService {
     if(!path) return;
     const headers = this.getHeaders();
     return this.http.delete(`${this.url}/${section}/delete/img/upload/${section}/${path}`,{headers}).pipe(
-      catchError((err)=>{return of(undefined)})
+      catchError((err)=>{
+        console.error('Error en la petición:', err);
+        return throwError(() => new Error(err.message || 'Error desconocido'));
+      })
     )
   }
 

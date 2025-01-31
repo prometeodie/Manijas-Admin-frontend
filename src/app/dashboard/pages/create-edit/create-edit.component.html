@@ -1,4 +1,4 @@
-<main class="create-edit">
+<main class="create-edit" @enterState>
   <h1>{{title | titlecase}}</h1>
   <about-form class="create-edit__form" [aboutItemId]="id" *ngIf="seccion === 'ABOUT'"/>
   <blogs-form class="create-edit__form" [blogId]="id" *ngIf="seccion === 'BLOGS'"/>

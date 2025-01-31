@@ -2,6 +2,7 @@ export * from './card interface/cards.interface';
 export * from './event interfaces/event-card-sample.interface';
 export * from './event interfaces/event.interface';
 export * from './others/icons.interface';
+export * from './others/chararters-average.interface';
 export * from './messages interfaces/message-status.interface';
 export * from './messages interfaces/message.interface';
 export * from './messages interfaces/unread-messages.interface';

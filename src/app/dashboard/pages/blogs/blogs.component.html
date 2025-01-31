@@ -1,4 +1,4 @@
-<main class="blogs">
+<main class="blogs" @enterState>
   <h1>Blogs</h1>
   <components-nav-bar class="blogs__nav-bar" (category)="onCategorySelected($event)"[categories]="categories"/>
   <section class="blogs__section">
