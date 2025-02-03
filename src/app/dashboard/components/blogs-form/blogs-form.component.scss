@@ -164,8 +164,8 @@ h3{
   }
 
   &__unsave-icon{
-    position: absolute;
+    position: fixed;
     right: 0.5rem;
-    top: 0.5rem;
+    bottom: 0.5rem;
   }
 }

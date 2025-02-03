@@ -109,6 +109,17 @@ export class DashboardService {
     window.URL.revokeObjectURL(url);
   }
 
+  public hasNonExcludedField(excluded:string[],modifiedFields:Set<string>){
+
+    const excludedFields = excluded;
+    const validModifiedFields = [...modifiedFields].filter(field => !excludedFields.includes(field));
+
+    if (validModifiedFields.length === 0) {
+      return true;
+    }
+    return false;
+  }
+
   async onFileSelected(event: Event): Promise<(string | ArrayBuffer)[]> {
     const input = event.target as HTMLInputElement;
 
@@ -155,33 +166,47 @@ export class DashboardService {
                         [`upload/${section}/${id}/${imgName}`]
   }
 
-  areObjectsDifferent(obj1:any, obj2:any) {
-    const propertiesToCompare = this.getObjectKeys(obj2).filter(key=>{return key != 'categoryChips'});
-    for (const prop of propertiesToCompare) {
-      let value1 = obj1[prop];
-      let value2 = obj2[prop];
+areObjectsDifferent(obj1: any, obj2: any): boolean {
+  const propertiesToCompare = this.getObjectKeys(obj2).filter(key=>{return key != 'categoryChips'});
 
-      if (value1 !== null && value1 !== undefined && value2 !== null && value2 !== undefined) {
-        if (typeof value1 === 'number') {
-          value2 = parseFloat(value2);
-        } else if (typeof value1 === 'boolean') {
-          value2 = value2 === true;
-        }
-      }
+  for (const prop of propertiesToCompare) {
+    let value1 = obj1[prop];
+    let value2 = obj2[prop];
 
-      if (Array.isArray(value1) && Array.isArray(value2)) {
-        if (value1.length !== value2.length || !value1.every((v, i) => v === value2[i])) {
-          return true;
-        }
-      }
-
-      else if (value1 !== value2) {
-        return true;
-      }
+    if (typeof value1 === 'string' && typeof value2 === 'string') {
+      value1 = value1.trim().replace(/\s+/g, ' ');
+      value2 = value2.trim().replace(/\s+/g, ' ');
     }
 
-    return false;
+    if (typeof value1 === 'number' || typeof value2 === 'number') {
+      if (Number(value1) !== Number(value2)) {
+        return true;
+      }
+      continue;
+    }
+
+    if (typeof value1 === 'boolean' || typeof value2 === 'boolean') {
+      if (Boolean(value1) !== Boolean(value2)) {
+        return true;
+      }
+      continue;
+    }
+
+    if (Array.isArray(value1) && Array.isArray(value2)) {
+      if (JSON.stringify(value1.sort()) !== JSON.stringify(value2.sort())) {
+        return true;
+      }
+      continue;
+    }
+
+    if (value1 !== value2) {
+      return true;
+    }
+  }
+
+  return false;
 }
+
 
   countingChar(event: any) {
     const editorContent = event.editor.getData();

@@ -9,8 +9,8 @@ export class FormService {
   readonly urlRegEx = /^(https?:\/\/)?([\w\-]+(\.[\w\-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
   readonly emailPattern = "^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$";
   readonly passwordPattern = '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,20}$';
-  readonly instaUrlRegEx = /^(https?:\/\/)?(www\.)?instagram\.com\/(p|reel|tv|stories)\/[A-Za-z0-9_-]+\/?$|^(https?:\/\/)?(www\.)?instagram\.com\/[A-Za-z0-9._-]+\/?$/;
-  readonly tikTokUrlRegEx = /^(https?:\/\/)?(www\.)?(tiktok\.com)\/(@[a-zA-Z0-9._-]+\/video\/\d+|t\/[a-zA-Z0-9._-]+|embed\/[a-zA-Z0-9._-]+|v|video\/\d+)(\/)?(\?.*)?$/;
+  readonly instaUrlRegEx = /^https:\/\/www\.instagram\.com\/.+$/;
+  readonly tikTokUrlRegEx = /^https:\/\/www\.tiktok\.com\/.+$/;
   readonly passwordPatternMessage = `Al menos una letra minúscula y una mayúscula,
                    Al menos un número,
                    Minimo 8 caracteres,

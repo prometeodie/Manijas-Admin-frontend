@@ -145,17 +145,13 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
           if(this.myForm.get('imgName')?.pristine){
             formValue.imgName = this.currentBlog.imgName;
           };
-          const hasObjectsDifferences = this.areObjectsDifferent(updatedBlog,{...formValue});
+          const hasObjectsDifferences = this.dashboardService.areObjectsDifferent(updatedBlog,{...formValue});
           (!hasObjectsDifferences)? this.myForm.markAsPristine() : this.myForm.markAsDirty();
         }else{
-          const hasObjectsDifferences = this.areObjectsDifferent(this.initialFormValues,{...formValue});
+          const hasObjectsDifferences = this.dashboardService.areObjectsDifferent(this.initialFormValues,{...formValue});
           (!hasObjectsDifferences)? this.myForm.markAsPristine() : this.myForm.markAsDirty();
         }
       });
-    }
-
-    areObjectsDifferent(itemValue:any, formValue:any) {
-      return this.dashboardService.areObjectsDifferent(itemValue,formValue);
     }
 
     get newBlog(): EditBlog {
@@ -202,6 +198,12 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
       this.getTextAverageLength();
     }
 
+    public downloadData(newBlog:EditBlog){
+      const { publish: currentPublish, ...updatedBlog } = { ...this.currentBlog };
+      const { publish, ...formData } = this.myForm.value;
+      (this.dashboardService.areObjectsDifferent(updatedBlog, formData))?  this.dashboardService.downloadObjectData(newBlog) : null ;
+    }
+
     // Create and Update form
     private createBlog() {
       const newBlog = this.newBlog;
@@ -209,7 +211,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
         if (resp) {
           this.uploadFile(resp._id!);
           this.dashboardService.notificationPopup('success','Blog agregado',2000)
-          this.dashboardService.downloadObjectData(newBlog);
+          this.downloadData(newBlog);
           this.resetForm();
         }else{
           this.dashboardService.notificationPopup('error','algo ocurrio al guardar el Blog',2000)
@@ -217,6 +219,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
         this.uploadingBlog = false;
       });
     }
+
 
     private updateBlog() {
 
@@ -235,7 +238,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
           }
           this.dashboardService.notificationPopup('success', 'Blog actualizado correctamente', 2000);
           this.getBlog();
-          this.dashboardService.downloadObjectData(actualizedBlog);
+          this.downloadData(actualizedBlog);
           this.resetForm()
         } else {
           this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Blog :(', 3000);

@@ -108,7 +108,6 @@ export class GameManijometroComponent implements OnInit {
   hasFormChanged(){
     this.myForm.valueChanges.subscribe((formValue) => {
       const userPool = this.manijometro.manijometroPool.find(pool => pool.userId === this.userId);
-      console.log('userPool: ',userPool)
       if(userPool){
         const {priceQuality, gameplay, replayability, gameSystemExplanation} = userPool!.manijometroValuesPool as ManijometroValuesPool;
         const updatedmanijometro = {priceQuality, gameplay, replayability, gameSystemExplanation};

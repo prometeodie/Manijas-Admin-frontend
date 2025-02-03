@@ -99,7 +99,6 @@ export class UserFormComponent implements OnInit{
       roles: rest.roles ?? Roles.USER.toString(),
       password: rest.password ?? '',
     };
-    console.log(this.myForm.get('roles')?.value);
     this.createEditUserService.createNewUser(newUser).subscribe({
       next: (resp) => {
         this.dashboardService.notificationPopup('success', 'Usuario creado con éxito', 1500);

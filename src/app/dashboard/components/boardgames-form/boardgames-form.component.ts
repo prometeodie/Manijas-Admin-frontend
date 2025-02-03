@@ -383,6 +383,22 @@ export class BoardgamesFormComponent {
       return newBoardGame;
     }
 
+    public downloadData(newBoardGame: BoardgameUpload) {
+      const updateBoardGame = { ...this.currentBoardgame };
+      const { publish, ...formData } = this.myForm.value;
+
+      const transformedBoardGame = {
+        ...updateBoardGame,
+        reelInstagram: updateBoardGame.reel?.[0]?.reelUrl ?? "",
+        reelTikTok: updateBoardGame.reel?.[1]?.reelUrl ?? "",
+        categoryChips: this.keywords
+      };
+
+      if (this.dashboardService.areObjectsDifferent(transformedBoardGame, formData)) {
+        this.dashboardService.downloadObjectData(newBoardGame);
+      }
+    }
+
 // Create and Update form
 
   cleanImg(){
@@ -439,7 +455,6 @@ private createBoardGame() {
       }
     },
     error: (err) => {
-      console.log('Error completo:', err);
       if (err.status === 409 && err.error?.type === 'RESOURCE_ALREADY_EXISTS') {
         this.dashboardService.notificationPopup('error', 'El boardgame ya existe', 2000);
       } else {
@@ -461,7 +476,7 @@ private updateBoardGame() {
     this.boardgamesService.editBoard(this.boardgameId, actualizedBoard as BoardgameUpload).subscribe((resp) => {
       if (resp) {
         this.uploadFiles(this.boardgameId);
-        this.dashboardService.downloadObjectData(actualizedBoard);
+        this.downloadData(actualizedBoard);
         this.myForm.get('cardCoverImgName')?.reset();
         this.myForm.get('imgName')?.reset();
         this.getBoard();
