@@ -2,9 +2,14 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+// export const environment = {
+//   production: false,
+//   baseUrl:'https://lmdr-backoffice.onrender.com'
+// };
+
 export const environment = {
-  production: false,
-  baseUrl:'http://localhost:3000'
+  production: true,
+  baseUrl:'https://lmdr-backoffice.onrender.com'
 };
 
 /*

@@ -107,7 +107,6 @@ export class UserFormComponent implements OnInit{
         this.uploadingUser = false;
       },
       error: (err) => {
-        // Analiza el error que proviene del backend
         if (err.error?.code === 11000) {
           this.myForm.get('email')?.setErrors({ duplicated: true });
         } else {
