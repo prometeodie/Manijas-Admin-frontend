@@ -163,7 +163,7 @@ export class DashboardService {
                           [`upload/${section}/regular-size/${imgName}`]
     }
     return (screenSize < 800)? [`upload/${section}/${id}/optimize/${imgName}`]:
-                        [`upload/${section}/${id}/${imgName}`]
+                        [`upload/${section}/regular-size/${id}/${imgName}`]
   }
 
 areObjectsDifferent(obj1: any, obj2: any): boolean {

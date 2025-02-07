@@ -67,7 +67,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
     this.options.unshift(this.authService.currentUser()!.name);
     this.options.unshift(this.authService.currentUser()!.nickname);
     this.initialFormValues = this.myForm.value as EditBlog;
-    if(this.currentBlog.imgName.length > 0){
+    if(this.currentBlog.imgName){
       this.imgSrc=this.dashboardService.imgPathCreator(this.currentBlog.imgName,this.dashboardService.screenWidth, Section.BLOGS, this.blogId);
     }
     this.hasFormChanged();
