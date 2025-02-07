@@ -25,8 +25,8 @@ export class LoginComponent {
   public chekingCredentials: boolean = false;
 
   public myForm = this.fb.group({
-    email:['franco.d.r1992@gmail.com',[Validators.required, Validators.pattern(this.emailPattern)]],
-    password:['Wishmaster7$',[Validators.required,Validators.minLength(8),Validators.maxLength(20), Validators.pattern(this.passwordPattern)]]
+    email:['',[Validators.required, Validators.pattern(this.emailPattern)]],
+    password:['',[Validators.required,Validators.minLength(8),Validators.maxLength(20), Validators.pattern(this.passwordPattern)]]
   })
 
   isValidField(field: string):boolean | null{

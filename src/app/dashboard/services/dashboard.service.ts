@@ -160,7 +160,7 @@ export class DashboardService {
 
     if (section === Section.ABOUT){
       return (screenSize < 800)? [`upload/${section}/optimize/${imgName}`]:
-                          [`upload/${section}/${imgName}`]
+                          [`upload/${section}/regular-size/${imgName}`]
     }
     return (screenSize < 800)? [`upload/${section}/${id}/optimize/${imgName}`]:
                         [`upload/${section}/${id}/${imgName}`]

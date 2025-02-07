@@ -67,6 +67,9 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
     this.options.unshift(this.authService.currentUser()!.name);
     this.options.unshift(this.authService.currentUser()!.nickname);
     this.initialFormValues = this.myForm.value as EditBlog;
+    if(this.currentBlog.imgName.length > 0){
+      this.imgSrc=this.dashboardService.imgPathCreator(this.currentBlog.imgName,this.dashboardService.screenWidth, Section.BLOGS, this.blogId);
+    }
     this.hasFormChanged();
     this.getTextAverageLength();
   }
@@ -311,6 +314,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
   }
 
   deleteImg(imgN: string) {
+    this.uploadingBlog = true;
     this.confirmDelete().then((result) => {
       if (!result.isConfirmed) return;
 
@@ -325,6 +329,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
         }
       });
     });
+    this.uploadingBlog = false;
   }
      ///Submit form
      private confirmAction(action: string) {
