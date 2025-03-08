@@ -4,5 +4,6 @@ export interface AboutItem {
   text:        string;
   section:     string;
   imgName:     string;
+  imgMobileName:     string;
   publish:     boolean;
 }

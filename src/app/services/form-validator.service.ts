@@ -67,7 +67,7 @@ export class FormService {
       min:`Valor minimo permitido ${errors['min']?.min}`,
       minlength:`Minimo de Caracteres ${errors['minlength']?.requiredLength}`,
       passwordMismatch:'Las contraseñas no coinciden',
-      pastDate:'La fecha debe ser menor a la actual o podes volver al pasado gil?',
+      pastDate:'La fecha no debe ser menor a la actual o podes volver al pasado gil?',
       pattern:`${invalidPatternMessages[field]}`,
       required: 'Este campo es requerido'
     }

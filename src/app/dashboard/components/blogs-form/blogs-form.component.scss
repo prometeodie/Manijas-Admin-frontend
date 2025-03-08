@@ -118,8 +118,14 @@ h3{
       margin-bottom: 0.5rem;
 
       &__img{
+        opacity: 0;
         max-width: 18rem;
         object-fit: scale-down;
+        transition: opacity 0.5s ease-in;
+
+          &--loaded{
+            opacity: 1;
+          }
       }
 
       &__delete-img{

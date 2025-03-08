@@ -103,6 +103,7 @@ export class BlogsComponent implements OnInit{
       category,
       publish,
       imgName,
+      imgMobileName,
       section,
       ...rest
     } = blog;
@@ -112,7 +113,7 @@ export class BlogsComponent implements OnInit{
       title,
       text:blogContent,
       imgName,
-      imgPath:imgName,
+      imgMobileName,
       isInfoAList: false,
       section,
       publish,

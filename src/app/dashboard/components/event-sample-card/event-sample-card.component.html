@@ -5,7 +5,7 @@
     <div class="events__card__content">
       <img class="events__card__content__img" *ngIf="imgSrc();else noImg" [src]="imgSrc()" alt="Event-img">
       <ng-template #noImg>
-        <img class="events__card__content__img events__card__content__img--meeple-with" src="../../././../../assets/no-img/meeple.svg" alt="Event-img">
+        <img class="events__card__content__img events__card__content__img--meeple-with" src="../../././../../assets/no-img/meeple.svg" alt="Event-img" (load)="loadImg($event)">
       </ng-template>
 
       <ul class="events__card__content__info-ul">

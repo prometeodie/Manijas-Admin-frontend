@@ -105,7 +105,9 @@ export class BoardgamesComponent implements OnInit{
       publish,
       roulette,
       imgName,
+      imgNameMobile,
       cardCoverImgName,
+      cardCoverImgNameMobile,
       section,
       ...rest
     } = boardgame;
@@ -115,7 +117,7 @@ export class BoardgamesComponent implements OnInit{
       title,
       text:gameReview,
       imgName:cardCoverImgName,
-      imgPath:cardCoverImgName,
+      imgMobileName:cardCoverImgNameMobile,
       isInfoAList: false,
       section,
       manijometroPosition,

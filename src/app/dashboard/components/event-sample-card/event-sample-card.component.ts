@@ -15,4 +15,9 @@ export class EventSampleCardComponent {
   private eventsService = inject(EventsService);
   public imgSrc = this.dashboardService.imgSrc;
   public eventSample = this.eventsService.eventCardSample;
+
+  loadImg(event: Event){
+    const loadClass = 'events__card__content__img--loaded'
+    this.dashboardService.loadImg(event, loadClass)
+  }
 }

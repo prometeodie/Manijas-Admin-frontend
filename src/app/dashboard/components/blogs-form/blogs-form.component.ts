@@ -289,6 +289,11 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
       }
   }
 
+  loadImg(event: Event){
+    const loadClass = 'blog__form__img-container__img--loaded';
+    this.dashboardService.loadImg(event, loadClass)
+  }
+
   // Delete image section
   showDeleteBtn(imgName: string | ArrayBuffer, event:Blog, id:string){
     if(!event) return false;
@@ -314,22 +319,22 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
   }
 
   deleteImg(imgN: string) {
-    this.uploadingBlog = true;
-    this.confirmDelete().then((result) => {
-      if (!result.isConfirmed) return;
+  //   this.uploadingBlog = true;
+  //   this.confirmDelete().then((result) => {
+  //     if (!result.isConfirmed) return;
 
-      const { path, optimizePath, regularSize } = this.getImagePaths(imgN, this.currentBlog._id!);
-      this.dashboardService.deleteItemImg(path, Section.BLOGS)?.subscribe((resp) => {
-        this.cleanBlogImgName();
-        if (resp) {
-          this.dashboardService.deleteItemImg(optimizePath, Section.BLOGS)?.subscribe();
-          this.dashboardService.deleteItemImg(regularSize, Section.BLOGS)?.subscribe();
-        }else{
-          this.dashboardService.notificationPopup('error', 'Algo ocurrio al eliminar la imagen', 2000);
-        }
-      });
-    });
-    this.uploadingBlog = false;
+  //     const { path, optimizePath, regularSize } = this.getImagePaths(imgN, this.currentBlog._id!);
+  //     this.dashboardService.deleteItemImg(path, Section.BLOGS)?.subscribe((resp) => {
+  //       this.cleanBlogImgName();
+  //       if (resp) {
+  //         this.dashboardService.deleteItemImg(optimizePath, Section.BLOGS)?.subscribe();
+  //         this.dashboardService.deleteItemImg(regularSize, Section.BLOGS)?.subscribe();
+  //       }else{
+  //         this.dashboardService.notificationPopup('error', 'Algo ocurrio al eliminar la imagen', 2000);
+  //       }
+  //     });
+  //   });
+  //   this.uploadingBlog = false;
   }
      ///Submit form
      private confirmAction(action: string) {

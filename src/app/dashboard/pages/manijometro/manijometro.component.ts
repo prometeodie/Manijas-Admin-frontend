@@ -4,6 +4,7 @@ import { Manijometro } from '../../interfaces';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { Router } from '@angular/router';
 import { trigger, style, animate, transition, state } from '@angular/animations';
+import { DashboardService } from '../../services/dashboard.service';
 
 @Component({
   selector: 'app-manijometro',
@@ -26,6 +27,7 @@ import { trigger, style, animate, transition, state } from '@angular/animations'
 })
 export class ManijometroComponent implements OnInit{
   private manijometroService = inject(ManijometroService);
+  private dashboardService = inject(DashboardService);
   private authService = inject(AuthService);
   private router = inject(Router);
   public categories: string[] = [
@@ -81,6 +83,11 @@ export class ManijometroComponent implements OnInit{
     }else{
       this.onCategorySelected(this.category);
     }
+  }
+
+  loadImg(event: Event){
+    const loadClass = 'manijometro__section__cards__card__img--loaded';
+    this.dashboardService.loadImg(event, loadClass)
   }
 
   onCategorySelected(category: string | null) {

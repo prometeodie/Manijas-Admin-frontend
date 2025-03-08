@@ -9,5 +9,6 @@ export interface Blog {
   category:    BlogsCategories;
   section:     string;
   imgName:     string;
+  imgMobileName:     string;
   publish:     boolean;
 }

@@ -34,13 +34,20 @@ export class CardsComponent implements OnInit {
   this.routeToVoteBoard = `/lmdr/manijometro/${this.objectTemplate._id}`;
   this.objectTemplate.text = this.dashboardService.stripHtml(this.objectTemplate.text!);
   (this.objectTemplate.section === 'EVENTS')? this.isEventCategory = true : this.isEventCategory = false;
-  this.imgUrl = this.objectTemplate.imgPath;
   this.hasUserVoted();
-  if(this.objectTemplate.imgPath){
+  if(this.objectTemplate.imgName){
     (this.dashboardService.screenWidth > 800)?
-      this.objectTemplate.imgPath = `assets/upload/${this.objectTemplate.section}/${this.objectTemplate.title}/${this.objectTemplate.imgPath}`:
-      this.objectTemplate.imgPath = `assets/upload/${this.objectTemplate.section}/${this.objectTemplate.title}/optimize/${this.objectTemplate.imgPath}`;
-      // TODO:acomodar bien el url cuando tenga el backend en produccion/ cambiar por la id ya que las fotos ahora se guardan con el id
+      this.dashboardService.getImgUrl(this.objectTemplate.imgName,this.objectTemplate.section).subscribe(
+        resp => {
+          this.imgUrl = resp.signedUrl;
+        }
+        ):
+      this.dashboardService.getImgUrl(this.objectTemplate.imgMobileName,this.objectTemplate.section).subscribe(
+        resp => {
+          this.imgUrl = resp.signedUrl;
+        }
+      )
+
   }
  }
 
@@ -60,6 +67,11 @@ isBoardVoted(hasVoted: boolean){
     this.isTheBoardVoted = !this.isTheBoardVoted;
   }
   return;
+}
+
+loadImg(event: Event){
+  const loadClass = 'card__header__img--loaded';
+  this.dashboardService.loadImg(event, loadClass)
 }
 
 hasUserVoted(){
@@ -89,9 +101,9 @@ deleteItem(id:string){
       this.dashboardService.deleteItem(id, section).subscribe(
         resp =>{
           if(resp){
-            const path = `${this.objectTemplate._id}`;
+            const id = `${this.objectTemplate._id}`;
             this.dashboardService.notificationPopup('success','item eliminado', 1500)
-            this.dashboardService.deleteItemImg(path,section)?.subscribe()
+            this.dashboardService.deleteAllImages(id,section)?.subscribe()
             this.delete.emit();
           }else{
             this.dashboardService.notificationPopup("error", 'Algo salio mal :(', 2000)

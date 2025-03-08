@@ -75,6 +75,7 @@ export class EventsComponent implements OnInit,OnDestroy {
       eventPlace,
       publish,
       imgName,
+      imgMobileName,
       section,
       ...rest
     } = event;
@@ -83,7 +84,7 @@ export class EventsComponent implements OnInit,OnDestroy {
       _id: _id!,
       title,
       imgName,
-      imgPath: imgName,
+      imgMobileName,
       isInfoAList: false,
       info: {
         eventDate: eventDate? eventDate.toString() : '',

@@ -144,9 +144,15 @@
 
 
         &__img{
+          opacity: 0;
           object-fit: scale-down;
           width: 100%;
           max-width: 32rem;
+          transition: opacity 0.5s ease-in;
+
+          &--loaded{
+            opacity: 1;
+          }
         }
 
         &__delete-img{

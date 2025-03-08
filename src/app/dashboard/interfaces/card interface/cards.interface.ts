@@ -4,8 +4,8 @@ import { Info } from "./info.interface";
 export interface CardTemplate{
   _id:string
   title?: string;
-  imgPath:string;
   imgName: string;
+  imgMobileName: string;
   isInfoAList?:boolean;
   info?:Info;
   text?:string;

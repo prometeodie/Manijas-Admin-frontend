@@ -11,7 +11,7 @@
     <ng-template #items>
       <div class="manijometro__section__cards">
         <div *ngFor="let mItem of filteredBoardgames" class="manijometro__section__cards__card" (click)="voteBoardGame(mItem._id)">
-          <img src="../.././../../assets/570805.jpg" [alt]="mItem.title" class="manijometro__section__cards__card__img">
+          <img src="../.././../../assets/570805.jpg" [alt]="mItem.title" class="manijometro__section__cards__card__img" (load)="loadImg($event)">
           <ul class="manijometro__section__cards__card__ul">
             <li class="manijometro__section__cards__card__ul__li manijometro__section__cards__card__ul__li--title"><strong>{{mItem.title}}</strong></li>
             <li class="manijometro__section__cards__card__ul__li  manijometro__section__cards__card__ul__li--position"><strong>#{{mItem.manijometroPosition}}</strong></li>

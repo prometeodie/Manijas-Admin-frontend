@@ -355,6 +355,11 @@ export class EventFormComponent implements OnInit, OnDestroy{
       }
   }
 
+  loadImg(event: Event){
+    const loadClass = 'events__form__img-container__img--loaded'
+    this.dashboardService.loadImg(event, loadClass)
+  }
+
     //DELETE IMG SECTION
 
     showDeleteBtn(imgName: string | ArrayBuffer, event:EventManija, id:string){
@@ -381,20 +386,20 @@ export class EventFormComponent implements OnInit, OnDestroy{
     }
 
     deleteImg(imgN: string) {
-      this.confirmDelete().then((result) => {
-        if (!result.isConfirmed) return;
+    //   this.confirmDelete().then((result) => {
+    //     if (!result.isConfirmed) return;
 
-        const { path, optimizePath, regularSize} = this.getImagePaths(imgN, this.currentEvent._id!);
-        this.dashboardService.deleteItemImg(path, Section.EVENTS)?.subscribe((resp) => {
-          this.cleanEventImgName();
-          if (resp) {
-            this.dashboardService.deleteItemImg(optimizePath, Section.EVENTS)?.subscribe();
-            this.dashboardService.deleteItemImg(regularSize, Section.EVENTS)?.subscribe();
-          }else{
-            this.dashboardService.notificationPopup('error', 'Algo ocurrio al eliminar la imagen', 2000);
-          }
-        });
-      });
+    //     const { path, optimizePath, regularSize} = this.getImagePaths(imgN, this.currentEvent._id!);
+    //     this.dashboardService.deleteItemImg(path, Section.EVENTS)?.subscribe((resp) => {
+    //       this.cleanEventImgName();
+    //       if (resp) {
+    //         this.dashboardService.deleteItemImg(optimizePath, Section.EVENTS)?.subscribe();
+    //         this.dashboardService.deleteItemImg(regularSize, Section.EVENTS)?.subscribe();
+    //       }else{
+    //         this.dashboardService.notificationPopup('error', 'Algo ocurrio al eliminar la imagen', 2000);
+    //       }
+    //     });
+    //   });
     }
 
     ///Submit form

@@ -1,4 +1,4 @@
-<loading-animation *ngIf="uploadingBoardG"/>
+<loading-animation *ngIf="loadingAnimation"/>
 <div class="board-games" [ngClass]="{'board-games__no-scroll': isExplanationOpen}">
   <h2>Board Games</h2>
   <unsave class="board-games__unsave-icon" [hasUnsavedChanges]="!myForm.pristine"/>
@@ -39,9 +39,7 @@
         name="editor">
       </ckeditor>
       <!-- CHARACTERS COUNT -->
-      <!-- <span>Caracteres: {{charCount}} </span>
-      <span>/ Promedio de caracteres en las "reseñas": 150</span> -->
-      <span>Caracteres: <strong class="board-games__form__input-label__input__characters-average">{{charCount}}</strong>/ Promedio de caracteres en los "Blogs":
+      <span>Caracteres: <strong class="board-games__form__input-label__input__characters-average">{{charCount}}</strong>/ Promedio de caracteres en los "Board games":
         <strong class="board-games__form__input-label__input__characters-average--violet">{{averageCharacters}}</strong></span>
     </div>
     <!-- IMAGES -->
@@ -49,10 +47,10 @@
       <!-- CARD-COVER IMG -->
       <div *ngIf="cardCoverImgSrc.length === 1">
         <div class="board-games__form__img-container board-games__form__img-container--card-cover"
-        *ngFor="let cardCoverItem of cardCoverImgSrc; index as i">
-          <img  [src]="cardCoverItem" [alt]="cardCoverItem"  class="board-games__form__img-container__img board-games__form__img-container__img--card-cover">
-          <i class="fa-regular fa-trash-can board-games__form__img-container__delete-img" *ngIf="showDeleteBtn(cardCoverItem, currentBoardgame, i), else resetCardCover"
-          (click)="deleteImg(currentBoardgame.cardCoverImgName)"></i>
+        *ngFor="let cardCoverImg of cardCoverImgSrc; index as i">
+          <img  [src]="cardCoverImg"  [alt]="currentBoardgame.title"  class="board-games__form__img-container__img board-games__form__img-container__img--card-cover" (load)="loadImg($event)">
+          <i class="fa-regular fa-trash-can board-games__form__img-container__delete-img" *ngIf="showDeleteBtn(cardCoverImg), else resetCardCover"
+          (click)="deleteImg(currentBoardgame.cardCoverImgName, true)"></i>
           <ng-template #resetCardCover>
             <i class="fa-solid fa-recycle board-games__form__img-container__delete-img" (click)="resetSelectedImages('cardCoverImgName')"> RESET</i>
           </ng-template>
@@ -61,9 +59,9 @@
       <!-- REGULAR IMGS -->
       <div *ngIf="imgSrc.length > 0" class="board-games__form__img-container__images">
         <div *ngFor="let image of imgSrc; index as i" class="board-games__form__img-container">
-          <img  [src]="image" [alt]="image" class="board-games__form__img-container__img">
-          <i class="fa-regular fa-trash-can board-games__form__img-container__delete-img" *ngIf="showDeleteBtn(image, currentBoardgame, i), else reset"
-          (click)="deleteImg(currentBoardgame.imgName[i])"></i>
+          <img  [src]="image" [alt]="image" class="board-games__form__img-container__img" (load)="loadImg($event)">
+          <i class="fa-regular fa-trash-can board-games__form__img-container__delete-img" *ngIf="showDeleteBtn(image), else reset"
+          (click)="deleteImg(currentBoardgame.imgName[i], false)" ></i>
           <ng-template #reset>
             <i class="fa-solid fa-recycle board-games__form__img-container__delete-img" (click)="resetSelectedImages('imgName')"> RESET</i>
           </ng-template>

@@ -1,4 +1,4 @@
-import { HttpHeaders } from '@angular/common/http';
+import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { environment } from 'src/assets/environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -7,7 +7,7 @@ import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { catchError, of, throwError } from 'rxjs';
 import { Section } from '../shared/enum/section.enum';
 import { Router } from '@angular/router';
-import { BoardgameUpload, CharacterAverageLenght, EditBlog } from '../interfaces';
+import { BoardgameUpload, CharacterAverageLenght, EditBlog, SignedImgUrl } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -207,6 +207,9 @@ areObjectsDifferent(obj1: any, obj2: any): boolean {
   return false;
 }
 
+  extractFileName(filePath: string): string {
+    return filePath.replace(/^uploads\//, '');
+  }
 
   countingChar(event: any) {
     const editorContent = event.editor.getData();
@@ -316,6 +319,18 @@ areObjectsDifferent(obj1: any, obj2: any): boolean {
   return false;
   }
 
+  getImgUrl(key: string , section: string){
+
+    return this.http.get<SignedImgUrl>(`${this.url}/${section}/img-url`,{
+      params: new HttpParams().set('key', key)
+    }).pipe(
+      catchError((err)=>{
+        console.error('Error en la petición:', err);
+        return throwError(() => new Error(err.message || 'Error desconocido'));
+      })
+    )
+  }
+
   getTextAverage(seccion: Section){
     const headers = this.getHeaders();
 
@@ -335,6 +350,11 @@ areObjectsDifferent(obj1: any, obj2: any): boolean {
     }
   }
 
+  loadImg(event: Event, loadClass: string){
+    const img = event.target as HTMLImageElement;
+    img.classList.add(loadClass);
+  }
+
   deleteItem(id:string, section: string){
     const headers = this.getHeaders();
     return this.http.delete(`${this.url}/${section}/delete/${id}`,{headers}).pipe(
@@ -345,16 +365,28 @@ areObjectsDifferent(obj1: any, obj2: any): boolean {
     )
   }
 
-  deleteItemImg(path:string, section: string, ){
-    if(!path) return;
+deleteItemImg(id: string, section: string, imgKey: string, path: string) {
+  if (!id) return;
+  const headers = this.getHeaders();
+  return this.http.delete(`${this.url}/${section}/${path}/${id}`, {
+    headers,
+    params: new HttpParams().set('imgKey', imgKey)
+  }).pipe(
+    catchError((err) => {
+      console.error('Error en la petición:', err);
+      return throwError(() => new Error(err.message || 'Error desconocido'));
+    })
+  );
+}
+
+  deleteAllImages(id:string, section: string ){
+    if(!id) return;
     const headers = this.getHeaders();
-    return this.http.delete(`${this.url}/${section}/delete/img/upload/${section}/${path}`,{headers}).pipe(
+    return this.http.delete(`${this.url}/${section}/delete-all-images/${id}`,{headers}).pipe(
       catchError((err)=>{
         console.error('Error en la petición:', err);
         return throwError(() => new Error(err.message || 'Error desconocido'));
       })
     )
   }
-
-
 }

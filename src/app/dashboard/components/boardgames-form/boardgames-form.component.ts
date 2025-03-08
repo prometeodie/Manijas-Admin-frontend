@@ -16,6 +16,7 @@ import { Dificulty } from '../../interfaces/boards interfaces/dificulty.enum';
 import { Replayability } from '../../interfaces/boards interfaces/replayability.enum';
 import { Router } from '@angular/router';
 import { UnsaveComponent } from "../unsave/unsave.component";
+import { finalize, of, switchMap } from 'rxjs';
 
 
 @Component({
@@ -41,7 +42,7 @@ export class BoardgamesFormComponent {
   readonly urlPattern = /^(https?:\/\/)?(www\.)?instagram\.com\/(p|reel|tv|stories)\/[A-Za-z0-9_-]+\/?$|^(https?:\/\/)?(www\.)?instagram\.com\/[A-Za-z0-9._-]+\/?$/;
   public currentBoardgame!: Boardgame;
   public isExplanationOpen: boolean = false;
-  public uploadingBoardG: boolean = false;
+  public loadingAnimation: boolean = false;
   public initialFormValues!: BoardgameUpload;
   public editorConfig!:EditorConfig;
   public Editor = ClassicEditor;
@@ -50,6 +51,7 @@ export class BoardgamesFormComponent {
   public charCount:number = 0;
   public averageCharacters:number = 0;
   public imgSrc:(string | ArrayBuffer)[] = [];
+  public imgUrl: string[] = [];
   public cardCoverImgSrc:(string | ArrayBuffer)[] = [];
   public BoardgamesInputs: BoardInput[] = [
     { name: 'title',            placeHolder: 'Titulo', label:'', type: 'text', maxLenght: 50,  selectOptions:[]},
@@ -116,10 +118,7 @@ export class BoardgamesFormComponent {
 
     // cardCover
     if (formControlName === 'cardCoverImgName') {
-
-      // Cambia el nombre del archivo de portada
-      this.cardCoverFile = this.changeFileName(input.files[0]);
-      const validSize = this.fvService.avoidImgExceedsMaxSize(this.cardCoverFile[0].size, 3145728);
+      const validSize = this.fvService.avoidImgExceedsMaxSize(input.files[0].size, 3145728);
 
       if (validSize) {
         this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.', 2000);
@@ -140,22 +139,16 @@ export class BoardgamesFormComponent {
 
     // Regular images
     for (let i = 0; i < input.files.length; i++) {
-      this.imgSrc = [];
       const file = input.files[i];
       const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
 
       if (validSize) {
         this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.', 2000);
         this.myForm.get('imgName')?.reset();
-        this.imgSrc = [];
         this.getBoard();
         return;
       }
-
-      const imagesSaved = this.boardgamesService.imgPathCreator(this.currentBoardgame, this.dashboardService.screenWidth, false);
       const images = await this.dashboardService.onFileSelected(event);
-
-      imagesSaved.forEach(img => this.imgSrc.push(img));
 
       if (this.imgSrc.length < 4 && (images.length + this.imgSrc.length <= 4)) {
         const fileArray = Array.from(input.files);
@@ -177,13 +170,42 @@ export class BoardgamesFormComponent {
 
     this.boardgamesService.getBoard(this.boardgameId).subscribe((boardGame) => {
       if (!boardGame) return;
-
       this.currentBoardgame = {...boardGame};
       this.updateFormValues(boardGame);
-      this.updateImageSources(boardGame);
       this.keywords = boardGame.categoryChips || [];
       this.originalsKeyWords = [...boardGame.categoryChips];
+      if(this.imgUrl.length === 0){
+        (this.dashboardService.screenWidth > 800)?
+        this.getImgUrlBoard(boardGame.imgName, boardGame.cardCoverImgName):
+        this.getImgUrlBoard(boardGame.imgNameMobile, boardGame.cardCoverImgNameMobile);
+      }
     });
+  }
+
+  getImgUrlBoard(images: string[], cardCoverImg: string) {
+    if (images.length === 0) return;
+
+    let requestsCompleted = 0;
+
+    images.forEach(img => {
+      this.dashboardService.getImgUrl(img, Section.BOARDGAMES).subscribe(resp => {
+        if (resp) {
+          this.imgUrl.push(resp.signedUrl);
+        }
+        requestsCompleted++;
+        if (requestsCompleted === images.length) {
+          this.imgSrc = [...this.imgUrl];
+        }
+      });
+    });
+
+    if (cardCoverImg !== '') {
+      this.dashboardService.getImgUrl(cardCoverImg, Section.BOARDGAMES).subscribe(resp => {
+        if (resp) {
+          this.cardCoverImgSrc = [resp.signedUrl];
+        }
+      });
+    }
   }
 
   private updateFormValues(boardGame: Boardgame) {
@@ -203,11 +225,6 @@ export class BoardgamesFormComponent {
       reelTikTok: boardGame.reel[1]?.reelUrl,
       publish: boardGame.publish
     });
-  }
-
-  private updateImageSources(boardGame: Boardgame) {
-    this.cardCoverImgSrc = this.boardgamesService.imgPathCreator(boardGame, this.dashboardService.screenWidth, true);
-    this.imgSrc = this.boardgamesService.imgPathCreator(boardGame, this.dashboardService.screenWidth, false);
   }
 
     isValidField(field: string):boolean | null{
@@ -234,7 +251,7 @@ export class BoardgamesFormComponent {
         this.cardCoverFile = null;
       }else{
         this.myForm.get('imgName')?.reset();
-        this.imgSrc = [];
+        this.imgSrc = [...this.imgUrl];
         this.selectedFiles = null;
       }
     }
@@ -299,7 +316,7 @@ export class BoardgamesFormComponent {
         if (editResp) {
           this.resetForm();
           this.getBoard();
-          this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
+
         }
       });
     }
@@ -451,7 +468,7 @@ private createBoardGame() {
         this.router.navigateByUrl('lmdr/boardgames');
         this.dashboardService.notificationPopup('success', 'Board Game creado correctamente', 2000);
         this.dashboardService.downloadObjectData(newBoardGame);
-        this.uploadingBoardG = false;
+        this.loadingAnimation = false;
       }
     },
     error: (err) => {
@@ -462,7 +479,7 @@ private createBoardGame() {
       }
     },
   });
-  this.uploadingBoardG = false;
+  this.loadingAnimation = false;
 }
 
 private updateBoardGame() {
@@ -485,7 +502,7 @@ private updateBoardGame() {
       } else {
         this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Board :(', 3000);
       }
-      this.uploadingBoardG = false;
+      this.loadingAnimation = false;
     });
   }
 
@@ -503,23 +520,20 @@ private updateBoardGame() {
     this.getTextAverageLength();
   }
 
+ loadImg(event: Event){
+  const loadClass = 'board-games__form__img-container__img--loaded'
+  this.dashboardService.loadImg(event, loadClass)
+}
+
   //DELETE IMG SECTION
 
-  showDeleteBtn(imgName:  string | ArrayBuffer, currentBoardgame:Boardgame, i:number){
+  showDeleteBtn(imgName:  string | ArrayBuffer){
     if(this.boardgameId){
       if (typeof imgName === 'string') {
-        if(imgName.includes(currentBoardgame.cardCoverImgName) &&
-        imgName.includes('cardCover')) {
-          return true;
-        };
-
-        if(imgName.includes(currentBoardgame.imgName[i]) &&
-        !imgName.includes('cardCover')) {
-          return true;
-        };
+        if(this.cardCoverImgSrc.includes(imgName)) return true;
+        if(this.imgUrl.includes(imgName)) return true;
       }
     }
-
     return false
   }
 
@@ -527,35 +541,55 @@ private updateBoardGame() {
     return this.dashboardService.confirmDelete();
   }
 
-  private getImagePaths(imgN: string) {
-    const basePath = `${this.currentBoardgame._id}`;
-    if (imgN.includes('cardCover')) {
-      return {
-        path: `${basePath}/cardCover/${imgN}`,
-        optimizePath: `${basePath}/cardCover/optimize/${imgN}`,
-        regularSize:  `${basePath}/cardCover/regular-size/${imgN}`
-      };
-    }
-    return {
-      path: `${basePath}/${imgN}`,
-      optimizePath: `${basePath}/optimize/${imgN}`,
-      regularSize:  `${basePath}/regular-size/${imgN}`
-    };
-  }
-
-  deleteImg(imgN: string) {
+  deleteImg(imgName: string, isCardCover: boolean) {
     this.confirmDelete().then((result) => {
       if (!result.isConfirmed) return;
 
-      const { path, optimizePath, regularSize } = this.getImagePaths(imgN);
-      this.dashboardService.deleteItemImg(path, Section.BOARDGAMES)?.subscribe((resp) => {
-        if (resp) {
-          this.dashboardService.deleteItemImg(optimizePath, Section.BOARDGAMES)?.subscribe();
-          this.dashboardService.deleteItemImg(regularSize, Section.BOARDGAMES)?.subscribe();
-          this.updateBoardgameImages(imgN);
-        }
-      });
+      this.loadingAnimation = true;
+      const boardgameId = this.currentBoardgame._id;
+
+      if (isCardCover) {
+        this.deleteCardCoverImages(boardgameId, imgName, this.currentBoardgame.cardCoverImgNameMobile);
+      } else {
+        this.deleteRegularImage(boardgameId, imgName);
+      }
     });
+  }
+
+  private deleteCardCoverImages(boardgameId: string, imgName: string, mobileImgName: string ) {
+    this.dashboardService.deleteItemImg(boardgameId, Section.BOARDGAMES, imgName, 'delete-cardcover-image')!.pipe(
+      switchMap((resp) => resp ? this.dashboardService.deleteItemImg(boardgameId, Section.BOARDGAMES, mobileImgName, 'delete-cardcover-image') ?? of(null) : of(null)),
+      finalize(() => this.loadingAnimation = false)
+    ).subscribe(resp => {
+      if (resp) {
+        this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
+        this.cardCoverImgSrc = [];
+      } else {
+        this.dashboardService.notificationPopup('error', 'No se pudo eliminar la imagen', 2000);
+      }
+    });
+  }
+
+  private deleteRegularImage(boardgameId: string, imgName: string) {
+    const imgCleanName = this.dashboardService.extractFileName(imgName);
+    const mobileImg = this.currentBoardgame.imgNameMobile.find(img => img.includes(imgCleanName));
+
+    this.dashboardService.deleteItemImg(boardgameId, Section.BOARDGAMES, imgName, 'delete-image')!.pipe(
+      switchMap((resp) => resp && mobileImg ? this.dashboardService.deleteItemImg(boardgameId, Section.BOARDGAMES, mobileImg, 'delete-image')?? of(null) : of(null)),
+      finalize(() => this.loadingAnimation = false)
+    ).subscribe(resp => {
+      if (resp) {
+        this.cleanDeletedImages(imgName);
+        this.imgSrc = this.imgUrl;
+        this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
+      } else {
+        this.dashboardService.notificationPopup('error', 'No se pudo eliminar la imagen', 2000);
+      }
+    });
+  }
+
+  cleanDeletedImages(imgName: string){
+    this.imgUrl = this.imgUrl.filter((img) => !img.includes(imgName));
   }
 
   //Submit form
@@ -572,7 +606,7 @@ private updateBoardGame() {
     this.confirmAction(action).then((result) => {
       if (result.isConfirmed) {
         this.myForm.markAsPristine();
-        this.uploadingBoardG = true;
+        this.loadingAnimation = true;
         action === 'create' ? this.createBoardGame() : this.updateBoardGame();
       }
     });

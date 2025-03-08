@@ -254,6 +254,11 @@ public myForm = this.fb.group({
     }
 }
 
+loadImg(event: Event){
+  const loadClass = 'about__form__img-container__img--loaded'
+  this.dashboardService.loadImg(event, loadClass)
+}
+
 // Delete image section
 showDeleteBtn(imgName: string | ArrayBuffer, event:AboutItem, id:string){
   if(!event) return false;
@@ -275,18 +280,18 @@ private cleanEventImgName() {
 }
 
 deleteImg(imgN: string) {
-  this.confirmDelete().then((result) => {
-    if (!result.isConfirmed) return;
-    this.dashboardService.deleteItemImg(imgN, Section.ABOUT)?.subscribe((resp) => {
-      this.cleanEventImgName();
-      if (resp) {
-        this.dashboardService.deleteItemImg(`/optimize/${imgN}`, Section.ABOUT)?.subscribe();
-        this.dashboardService.deleteItemImg(`/regular-size/${imgN}`, Section.ABOUT)?.subscribe();
-      }else{
-        this.dashboardService.notificationPopup('error', 'Algo ocurrio al eliminar la imagen', 2000);
-      }
-    });
-  });
+  // this.confirmDelete().then((result) => {
+  //   if (!result.isConfirmed) return;
+  //   // this.dashboardService.deleteItemImg(imgN, Section.ABOUT)?.subscribe((resp) => {
+  //     this.cleanEventImgName();
+  //     if (resp) {
+  //       // this.dashboardService.deleteItemImg(`/optimize/${imgN}`, Section.ABOUT)?.subscribe();
+  //       // this.dashboardService.deleteItemImg(`/regular-size/${imgN}`, Section.ABOUT)?.subscribe();
+  //     }else{
+  //       this.dashboardService.notificationPopup('error', 'Algo ocurrio al eliminar la imagen', 2000);
+  //     }
+  //   });
+  // });
 }
 
    ///Submit form

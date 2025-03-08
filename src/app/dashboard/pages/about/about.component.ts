@@ -73,19 +73,19 @@ export class AboutComponent implements OnInit{
       text,
       publish,
       imgName,
+      imgMobileName,
       section,
       ...rest
     } = item;
 
     return {
       _id: _id!,
-      imgName,
       text,
-      imgPath:imgName,
+      imgName,
+      imgMobileName,
       section,
       publish,
       ...rest
     };
   }
 }
-

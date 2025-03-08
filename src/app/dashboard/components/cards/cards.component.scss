@@ -63,13 +63,17 @@
   max-width: 19.3rem;
 
   &__header{
-    max-height: 9rem;
+    height: 9rem;
 
     &__img{
-      height: 13rem;
+      opacity: 0;
       object-fit: cover;
       position: relative;
       z-index: 3;
+      transition: opacity 0.5s ease-in;
+        &--loaded{
+          opacity: 1;
+        }
     }
 
     &__manijometro{
@@ -157,6 +161,9 @@
 
   &--event{
     flex-direction: row-reverse;
+    .card__header{
+      height: 6rem;
+    }
 
     .card__header__manijometro{
       font-size: x-large;
