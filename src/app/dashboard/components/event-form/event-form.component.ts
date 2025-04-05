@@ -10,8 +10,9 @@ import { EditEventManija, EventCardSample } from '../../interfaces';
 import { Section } from '../../shared/enum/section.enum';
 import { LoadingAnimationComponent } from '../loading-animation/loading-animation.component';
 import { EventSampleCardComponent } from '../event-sample-card/event-sample-card.component';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UnsaveComponent } from '../unsave/unsave.component';
+import { finalize, forkJoin, map, Observable, of, switchMap, throwError } from 'rxjs';
 
 
 @Component({
@@ -30,14 +31,17 @@ export class EventFormComponent implements OnInit, OnDestroy{
   private eventsService = inject(EventsService);
   private dashboardService = inject(DashboardService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private selectedFile: FileList | null = null;
+  private isInCreateEditRoute: boolean = false;
   private TIME_REGEX = /^([01][0-9]|2[0-3]):([0-5][0-9])$/;
   public currentEvent!: EventManija;
-  public uploadingEvent:boolean = false;
+  public loadingAnimation:boolean = false;
   public initialFormValues!: EditEventManija;
   public  autoDeleteChecked: boolean = true;
   public  showPopUpAutoDelete: boolean = false;
   public imgSrc:(string | ArrayBuffer)[] = [];
+  public imgUrl:string[] = [];
   public existEvent: boolean = false;
   public colors: string[] = ['#ff3296', '#ff4b4b', '#872e6e', '#00ff64', '#0064ff', '#0096ff', '#18dcff', '#00ffc8', '#00d59c', '#32ff96', '#c832ff', '#ff64c8', '#ffdc00']
   public selectedColor: string = this.colors[0];
@@ -64,10 +68,13 @@ export class EventFormComponent implements OnInit, OnDestroy{
       url:                       ['',[Validators.pattern(this.fvService.urlRegEx)]],
       publish:                   [false],
       mustBeAutomaticallyDeleted:[true ,[Validators.required]],
-      imgName:                       [''],
+      imgName:                   [''],
     })
 
     ngOnInit(): void {
+      this.route.paramMap.subscribe(params => {
+       (params.get('sectiion')) ? this.isInCreateEditRoute = true: this.isInCreateEditRoute = false;
+     });
       this.getEvent();
       this.initialFormValues = this.myForm.value as EditEventManija;
       this.hasFormChanged();
@@ -132,7 +139,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
     async onFileSelected(event: Event) {
 
       if(this.currentEvent && this.currentEvent._id){
-        const thereisImg = this.dashboardService.validateImageUploadLimit(this.currentEvent._id, this.currentEvent.imgName.length);
+        const thereisImg = this.dashboardService.validateImageUploadLimit(this.currentEvent.imgName);
         if(thereisImg){
           this.myForm.get('imgName')?.reset();
           return;
@@ -157,10 +164,6 @@ export class EventFormComponent implements OnInit, OnDestroy{
         }
       }
 
-      private updateImageSources(event: EventManija) {
-        this.imgSrc = this.dashboardService.imgPathCreator(event.imgName,this.dashboardService.screenWidth, Section.EVENTS, this.eventId);
-      }
-
       // get and fullfill form data
       getEvent() {
         this.existEvent = false;
@@ -170,9 +173,27 @@ export class EventFormComponent implements OnInit, OnDestroy{
           this.existEvent = true;
           this.currentEvent = event;
           this.updateFormValues(event);
-          this.updateImageSources(event);
+          this.getImageUrlByScreenSize(event);
           this.fullfillSampleCard(this.currentEvent as EventCardSample);
         });
+      }
+
+       getImageUrlByScreenSize(event:EventManija){
+            (this.dashboardService.screenWidth > 800)?
+              this.getImgUrlEvent(event.imgName):
+              this.getImgUrlEvent(event.imgMobileName);
+          }
+
+      getImgUrlEvent(image: string) {
+      this.imgUrl = [];
+      if (image){
+          this.dashboardService.getImgUrl(image, Section.EVENTS).subscribe(resp => {
+            if (resp) {
+              this.imgUrl.push(resp.signedUrl);
+            }
+              this.imgSrc = [...this.imgUrl];
+          });
+        }
       }
 
       fullfillSampleCard(event: EventCardSample){
@@ -262,6 +283,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
 
     cleanImg(){
       this.imgSrc = [];
+      this.imgUrl = [];
       this.myForm.get('imgName')?.reset('');
       this.dashboardService.cleanImgSrc();
     }
@@ -278,17 +300,36 @@ export class EventFormComponent implements OnInit, OnDestroy{
     // Create and Update form
     private createEvent() {
       const newEvent = this.newEvent;
-      this.eventsService.postNewEvent(newEvent).subscribe((resp) => {
-        if (resp) {
-          this.uploadFile(resp._id!);
+      this.eventsService.postNewEvent(newEvent).pipe(
+              switchMap(resp => {
+                if (!resp) {
+                  this.dashboardService.notificationPopup("error", "Error al crear el Evento", 3000);
+                  return throwError(() => new Error("Error al crear el Evento"));
+                }
+
+                return this.uploadFile(resp._id!).pipe(
+                  map(imagesUploaded => ({ eventId: resp._id, imagesUploaded }))
+                );
+              }),
+              switchMap(({eventId, imagesUploaded }) => {
+                if (!imagesUploaded) {
+                  this.dashboardService.notificationPopup("error", "Algunas imágenes no se subieron correctamente.", 3000);
+                }
+                return this.eventsService.getEvent(eventId!);
+              }),
+              finalize(() => {
+                this.loadingAnimation = false;
+              })
+            ).subscribe((event) => {
+        if (event) {
           this.dashboardService.notificationPopup('success','Evento agregado',2000)
           this.resetForm();
-          this.router.navigateByUrl('lmdr/events');
+          (this.isInCreateEditRoute)? this.updateFormValues(event): this.router.navigateByUrl('/lmdr/events');
           this.newElementAdded.emit();
         }else{
           this.dashboardService.notificationPopup('error','algo ocurrio al guardar el evento',2000)
         }
-        this.uploadingEvent = false;
+        this.loadingAnimation = false;
       });
     }
 
@@ -300,60 +341,66 @@ export class EventFormComponent implements OnInit, OnDestroy{
         section: Section.EVENTS,
       };
 
-      this.eventsService.editEvent(this.eventId, actualizedEvent as EditEventManija).subscribe((resp) => {
-        if (resp) {
-          if(this.selectedFile !== null){
-            this.uploadFile(this.currentEvent._id!);
-            this.myForm.get('imgName')?.reset();
+      this.eventsService.editEvent(this.eventId, actualizedEvent as EditEventManija).pipe(
+        switchMap(resp => {
+          this.loadingAnimation=true
+          if (!resp) {
+            this.dashboardService.notificationPopup("error", "Algo salió mal al actualizar el Evento :(", 3000);
+            return throwError(() => new Error("Error al actualizar el Evento"));
           }
+          return this.uploadFile(this.eventId!);
+        }),
+        switchMap((imagesUploaded) => {
+          if (!imagesUploaded) {
+            this.dashboardService.notificationPopup("error", "Algunas imágenes no se subieron correctamente.", 3000);
+          }
+          return this.eventsService.getEvent(this.eventId);
+        }),
+        finalize(() => this.loadingAnimation = false)
+      )
+      .subscribe((event) => {
+        if (event) {
           this.dashboardService.notificationPopup('success', 'Evento actualizado correctamente', 2000);
+          this.getImageUrlByScreenSize(event)
           this.getEvent();
           this.resetForm();
+          this.updateFormValues(event);
         } else {
           this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Evento :(', 3000);
         }
-        this.uploadingEvent = false;
+        this.loadingAnimation = false;
       });
     }
 
-    uploadFormData(formData: FormData, _id: string){
-      if(formData){
-        this.eventsService.postEventImage(_id!, formData).subscribe(imgResp=>{
-
-          if(!imgResp){
-            this.uploadingEvent = false
-            this.dashboardService.notificationPopup("error", 'El Evento fue guardado, pero algo salio mal al guardar la/s imagen/es revisa q su formato sea valido :(',3000)
-          }
-          this.dashboardService.notificationPopup('success','Evento agregado',2000)
-          this.resetForm()
-          this.getEvent();
-        });
-      }
-    }
-
-    private uploadFile(eventId: string) {
+    private uploadFile(eventId: string) :Observable<boolean>{
       if (this.selectedFile == null) {
         console.log("No file selected, upload image canceled.");
-        return;
+        return of(false);
       }
-      this.uploadImg(eventId, Section.EVENTS, this.selectedFile);
+      const uploadTasks: Observable<boolean>[] = [];
+      uploadTasks.push(this.uploadImg(eventId, this.selectedFile![0]));
+      return uploadTasks.length > 0
+            ? forkJoin(uploadTasks).pipe(map(results => results.every(success => success)))
+            : of(true);
     }
 
-    uploadImg(id: string , section:Section, selectedFiles: FileList){
-
-      if(id && selectedFiles){
-        const formData = this.dashboardService.formDataToUploadSingleImg(section, selectedFiles![0]);
-        if (formData && formData.has('file')) {
-          this.uploadFormData(formData!, id);
-        }
-        this.dashboardService.notificationPopup('success','Evento agregado',2000)
-      return false;
-    }
-    else{
-      this.dashboardService.notificationPopup("error", 'Algo salio mal al Guardar el Evento :(',3000);
-      return false;
+  uploadImg(id: string, selectedFile: File) {
+      if (!id || !selectedFile) {
+        this.dashboardService.notificationPopup("error", "Algo salió mal al guardar el Evento :(", 3000);
+        return of(false);
       }
-  }
+
+      const formData = this.dashboardService.formDataToUploadSingleImg(selectedFile);
+      return this.dashboardService.postImage(id, 'events/upload-image', formData!).pipe(
+        switchMap(resp => {
+          if (!resp) {
+            this.dashboardService.notificationPopup("error", "El Evento Game fue guardado, pero hubo un error con la imagen.", 3000);
+          }
+          return of(true);
+        }),
+        finalize(() => {this.loadingAnimation = false})
+      );
+    }
 
   loadImg(event: Event){
     const loadClass = 'events__form__img-container__img--loaded'
@@ -375,32 +422,29 @@ export class EventFormComponent implements OnInit, OnDestroy{
       return this.dashboardService.getImagePaths(imgN, id)
     }
 
-    private cleanEventImgName() {
-      this.eventsService.editEvent(this.currentEvent._id!, { imgName:'' }).subscribe((editResp) => {
-        if (editResp) {
-          this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
-          this.resetForm();
-          this.getEvent();
-        }
-      });
+
+      deleteImg(imgName: string) {
+        this.confirmDelete().then((result) => {
+          if (!result.isConfirmed) return;
+          this.loadingAnimation = true;
+          this.deleteImage(this.eventId, imgName);
+      })
     }
 
-    deleteImg(imgN: string) {
-    //   this.confirmDelete().then((result) => {
-    //     if (!result.isConfirmed) return;
-
-    //     const { path, optimizePath, regularSize} = this.getImagePaths(imgN, this.currentEvent._id!);
-    //     this.dashboardService.deleteItemImg(path, Section.EVENTS)?.subscribe((resp) => {
-    //       this.cleanEventImgName();
-    //       if (resp) {
-    //         this.dashboardService.deleteItemImg(optimizePath, Section.EVENTS)?.subscribe();
-    //         this.dashboardService.deleteItemImg(regularSize, Section.EVENTS)?.subscribe();
-    //       }else{
-    //         this.dashboardService.notificationPopup('error', 'Algo ocurrio al eliminar la imagen', 2000);
-    //       }
-    //     });
-    //   });
-    }
+     private deleteImage(boardgameId: string, imgName: string) {
+         this.dashboardService.deleteItemImg(boardgameId, Section.EVENTS, imgName, 'delete-image')!.pipe(
+           finalize(() => this.loadingAnimation = false)
+         ).subscribe(resp => {
+           if (resp) {
+             this.imgUrl = [];
+             this.imgSrc = [];
+             this.currentEvent.imgName = '';
+             this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
+           } else {
+             this.dashboardService.notificationPopup('error', 'No se pudo eliminar la imagen', 2000);
+           }
+         });
+       }
 
     ///Submit form
     private confirmAction(action: string) {
@@ -413,7 +457,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
       const action = this.currentEvent ? 'update' : 'create';
       this.confirmAction(action).then((result) => {
         if (result.isConfirmed) {
-          this.uploadingEvent = true;
+          this.loadingAnimation = true;
           action === 'create' ? this.createEvent() : this.updateEvent();
         }
       });

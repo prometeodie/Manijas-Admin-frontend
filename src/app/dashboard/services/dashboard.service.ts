@@ -5,9 +5,11 @@ import { HttpClient } from '@angular/common/http';
 
 import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { catchError, of, throwError } from 'rxjs';
-import { Section } from '../shared/enum/section.enum';
 import { Router } from '@angular/router';
 import { BoardgameUpload, CharacterAverageLenght, EditBlog, SignedImgUrl } from '../interfaces';
+import { Section } from '../interfaces/others/sections.enum';
+import { read } from 'fs';
+import { AuthService } from '../../auth/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +19,7 @@ export class DashboardService {
   readonly url = `${environment.baseUrl}`
   private http = inject(HttpClient);
   public router = inject(Router);
+  public AuthService= inject(AuthService);
   private _imgSrc = signal<string | ArrayBuffer | null>(null);
   public imgSrc = computed(( )=> this._imgSrc());
   private _hasBeenChanged = signal<boolean>(false);
@@ -121,34 +124,37 @@ export class DashboardService {
   }
 
   async onFileSelected(event: Event): Promise<(string | ArrayBuffer)[]> {
+    if (!event || !(event.target as HTMLInputElement)) {
+      console.warn("El evento no es válido.");
+      return [];
+    }
+
     const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      console.warn("No se seleccionaron archivos.");
+      return [];
+    }
 
-    if (input.files && input.files.length > 0) {
-      const filePromises: Promise<string | ArrayBuffer>[] = [];
+    const filePromises: Promise<string | ArrayBuffer>[] = [];
 
-      for (let i = 0; i < input.files.length; i++) {
-        const file = input.files[i];
-        const reader = new FileReader();
-        const filePromise = new Promise<string | ArrayBuffer>((resolve, reject) => {
-          reader.onload = () => {
-            resolve(reader.result!);
-          };
-          reader.onerror = (error) => {
-            reject(error);
-          };
-          reader.readAsDataURL(file);
-        });
-        filePromises.push(filePromise);
-      }
+    for (let i = 0; i < input.files.length; i++) {
+      const file = input.files[i];
+      const reader = new FileReader();
 
-      try {
-        const results = await Promise.all(filePromises);
-        return results;
-      } catch (error) {
-        console.error('Error al leer uno o más archivos:', error);
-        return [];
-      }
-    } else {
+      const filePromise = new Promise<string | ArrayBuffer>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result ?? '');
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+      });
+
+      filePromises.push(filePromise);
+    }
+
+    try {
+      const results = await Promise.all(filePromises);
+      return results;
+    } catch (error) {
+      console.error("Error al leer uno o más archivos:", error);
       return [];
     }
   }
@@ -170,46 +176,48 @@ areObjectsDifferent(obj1: any, obj2: any): boolean {
   const propertiesToCompare = this.getObjectKeys(obj2).filter(key=>{return key != 'categoryChips'});
 
   for (const prop of propertiesToCompare) {
-    let value1 = obj1[prop];
-    let value2 = obj2[prop];
+    if(obj1[prop] && obj2[prop]){
+      let value1 = obj1[prop];
+      let value2 = obj2[prop];
 
-    if (typeof value1 === 'string' && typeof value2 === 'string') {
-      value1 = value1.trim().replace(/\s+/g, ' ');
-      value2 = value2.trim().replace(/\s+/g, ' ');
-    }
+      if (typeof value1 === 'string' && typeof value2 === 'string') {
+        value1 = value1.trim().replace(/\s+/g, ' ');
+        value2 = value2.trim().replace(/\s+/g, ' ');
+      }
 
-    if (typeof value1 === 'number' || typeof value2 === 'number') {
-      if (Number(value1) !== Number(value2)) {
+      if (typeof value1 === 'number' || typeof value2 === 'number') {
+        if (Number(value1) !== Number(value2)) {
+          return true;
+        }
+        continue;
+      }
+
+      if (typeof value1 === 'boolean' || typeof value2 === 'boolean') {
+        if (Boolean(value1) !== Boolean(value2)) {
+          return true;
+        }
+        continue;
+      }
+
+      if (Array.isArray(value1) && Array.isArray(value2)) {
+        if (JSON.stringify(value1.sort()) !== JSON.stringify(value2.sort())) {
+          return true;
+        }
+        continue;
+      }
+
+      if (value1 !== value2) {
         return true;
       }
-      continue;
-    }
-
-    if (typeof value1 === 'boolean' || typeof value2 === 'boolean') {
-      if (Boolean(value1) !== Boolean(value2)) {
-        return true;
-      }
-      continue;
-    }
-
-    if (Array.isArray(value1) && Array.isArray(value2)) {
-      if (JSON.stringify(value1.sort()) !== JSON.stringify(value2.sort())) {
-        return true;
-      }
-      continue;
-    }
-
-    if (value1 !== value2) {
-      return true;
     }
   }
 
   return false;
 }
 
-  extractFileName(filePath: string): string {
-    return filePath.replace(/^uploads\//, '');
-  }
+testAuthStatus(){
+  console.log(this.AuthService.authStatus())
+}
 
   countingChar(event: any) {
     const editorContent = event.editor.getData();
@@ -222,6 +230,13 @@ areObjectsDifferent(obj1: any, obj2: any): boolean {
     div.innerHTML = html;
     return div.textContent || div.innerText || '';
   }
+
+  postImage(id:string, section:string, formData: FormData){
+      const headers = this.getHeaders();
+      return this.http.post(`${this.url}/${section}/${id}`, formData, { headers}).pipe(
+        catchError((err)=>{return of(undefined)})
+      )
+    }
 
   returnImgs(event: Event){
     const input = event.target as HTMLInputElement;
@@ -242,14 +257,12 @@ areObjectsDifferent(obj1: any, obj2: any): boolean {
     return formData;
   }
 
-  formDataToUploadImgs(section: Section, imgFiles: FileList) {
+  formDataToUploadImgs(imgFiles: FileList) {
     const formData = new FormData();
 
     if (!imgFiles || imgFiles.length === 0) {
       return;
     }
-
-    formData.append('section', section);
 
 
     for (let i = 0; i < imgFiles.length; i++) {
@@ -259,12 +272,11 @@ areObjectsDifferent(obj1: any, obj2: any): boolean {
     return formData;
   }
 
-  formDataToUploadSingleImg(section: Section, imgFile: File | null) {
+  formDataToUploadSingleImg(imgFile: File | null) {
     const formData = new FormData();
     if (!imgFile) {
       return;
     }
-    formData.append('section', section);
     formData.append('file', imgFile);
 
     return formData;
@@ -284,15 +296,12 @@ areObjectsDifferent(obj1: any, obj2: any): boolean {
     return input.checked;
   }
 
-  validateImageUploadLimit( id:string, imgNameLenght:number ){
-    if(id){
-      if (imgNameLenght !== 0){
+  validateImageUploadLimit( imgName:string ){
+      if (imgName){
         this.notificationPopup("error", 'Solo puede existir una imagen', 3000);
         return true;
       }
       return false;
-    }
-    return false;
   }
 
   setHasBeenChanged(value:boolean){
@@ -366,27 +375,16 @@ areObjectsDifferent(obj1: any, obj2: any): boolean {
   }
 
 deleteItemImg(id: string, section: string, imgKey: string, path: string) {
-  if (!id) return;
-  const headers = this.getHeaders();
-  return this.http.delete(`${this.url}/${section}/${path}/${id}`, {
-    headers,
-    params: new HttpParams().set('imgKey', imgKey)
-  }).pipe(
-    catchError((err) => {
-      console.error('Error en la petición:', err);
-      return throwError(() => new Error(err.message || 'Error desconocido'));
-    })
-  );
-}
-
-  deleteAllImages(id:string, section: string ){
-    if(!id) return;
+    if (!id) return;
     const headers = this.getHeaders();
-    return this.http.delete(`${this.url}/${section}/delete-all-images/${id}`,{headers}).pipe(
-      catchError((err)=>{
+    return this.http.delete(`${this.url}/${section}/${path}/${id}`, {
+      headers,
+      params: new HttpParams().set('imgKey', imgKey)
+    }).pipe(
+      catchError((err) => {
         console.error('Error en la petición:', err);
         return throwError(() => new Error(err.message || 'Error desconocido'));
       })
-    )
+    );
   }
 }

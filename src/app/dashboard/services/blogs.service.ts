@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { DashboardService } from './dashboard.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { catchError, of } from 'rxjs';
+import { catchError, of, throwError } from 'rxjs';
 import { environment } from 'src/assets/environments/environment';
 import { Blog, EditBlog } from '../interfaces';
 import { BlogsCategories } from '../interfaces/blogs interfaces/blog-categories.enum';
@@ -45,28 +45,28 @@ export class BlogsService {
     const headers = this.dashboardService.getHeaders();
 
     return this.http.get<Blog>(`${this.url}/${id}`, { headers}).pipe(
-      catchError((err)=>{return of(undefined)})
+      catchError((err)=>{return throwError(() => err);})
     )
   }
 
   postNewBlog(newBlog: EditBlog){
     const headers = this.dashboardService.getHeaders();
     return this.http.post<Blog>(`${this.url}/upload`, newBlog, { headers}).pipe(
-      catchError((err)=>{return of(undefined)})
+      catchError((err)=>{return throwError(() => err);})
     )
   }
 
   postBlogImage(id:string, formData: FormData){
     const headers = this.dashboardService.getHeaders();
     return this.http.post<Blog>(`${this.url}/uploadImg/${id}`, formData, { headers}).pipe(
-      catchError((err)=>{return of(undefined)})
+      catchError((err)=>{return throwError(() => err);})
     )
   }
 
   editBlog( id: string, editedEvent: EditBlog){
     const headers = this.dashboardService.getHeaders();
     return this.http.patch<EditBlog>(`${this.url}/edit/${id}`, editedEvent, { headers}).pipe(
-      catchError((err)=>{return of(undefined)})
+      catchError((err)=>{return throwError(() => err);})
     )
   }
 }

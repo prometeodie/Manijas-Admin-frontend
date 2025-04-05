@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AboutItemOrganizing } from '../../interfaces';
+import { AboutItemOrganizing, Section } from '../../interfaces';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { HttpClient } from '@angular/common/http';
 import { DashboardService } from '../../services/dashboard.service';
@@ -28,11 +28,25 @@ export class OrganizeCardsComponent implements OnInit {
 
   ngOnInit(): void {
     this.aboutItems = this.aboutItemOrganizing;
+    this.aboutItems.forEach(item => {
+      console.log(item);
+      this.dashboardService.getImgUrl(item.img, Section.ABOUT).subscribe(imgUrl => {
+        item.imgUrl = imgUrl;
+      });
+    })
   }
 
   closeOrganize(){
     this.close.emit();
   }
+
+  getImgUrlEvent(image: string) {
+          if (image){
+              this.dashboardService.getImgUrl(image, Section.ABOUT).subscribe(resp => {
+                return resp;
+              });
+            }
+          }
 
   drop(event: CdkDragDrop<any[]>) {
     moveItemInArray(this.aboutItems, event.previousIndex, event.currentIndex);

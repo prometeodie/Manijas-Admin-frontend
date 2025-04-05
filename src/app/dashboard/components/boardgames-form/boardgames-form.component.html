@@ -48,8 +48,8 @@
       <div *ngIf="cardCoverImgSrc.length === 1">
         <div class="board-games__form__img-container board-games__form__img-container--card-cover"
         *ngFor="let cardCoverImg of cardCoverImgSrc; index as i">
-          <img  [src]="cardCoverImg"  [alt]="currentBoardgame.title"  class="board-games__form__img-container__img board-games__form__img-container__img--card-cover" (load)="loadImg($event)">
-          <i class="fa-regular fa-trash-can board-games__form__img-container__delete-img" *ngIf="showDeleteBtn(cardCoverImg), else resetCardCover"
+          <img  [src]="cardCoverImg"  [alt]="cardCoverImg"  class="board-games__form__img-container__img board-games__form__img-container__img--card-cover" (load)="loadImg($event)">
+          <i class="fa-regular fa-trash-can board-games__form__img-container__delete-img" *ngIf="showDeleteBtn(cardCoverImg, [cardCoverImgUrl]), else resetCardCover"
           (click)="deleteImg(currentBoardgame.cardCoverImgName, true)"></i>
           <ng-template #resetCardCover>
             <i class="fa-solid fa-recycle board-games__form__img-container__delete-img" (click)="resetSelectedImages('cardCoverImgName')"> RESET</i>
@@ -60,8 +60,8 @@
       <div *ngIf="imgSrc.length > 0" class="board-games__form__img-container__images">
         <div *ngFor="let image of imgSrc; index as i" class="board-games__form__img-container">
           <img  [src]="image" [alt]="image" class="board-games__form__img-container__img" (load)="loadImg($event)">
-          <i class="fa-regular fa-trash-can board-games__form__img-container__delete-img" *ngIf="showDeleteBtn(image), else reset"
-          (click)="deleteImg(currentBoardgame.imgName[i], false)" ></i>
+          <i class="fa-regular fa-trash-can board-games__form__img-container__delete-img" *ngIf="showDeleteBtn(image, imgUrl), else reset"
+          (click)="deleteImg((!currentBoardgame.imgName[i])? currentBoardgame.imgNameMobile[i]:currentBoardgame.imgName[i], false)" ></i>
           <ng-template #reset>
             <i class="fa-solid fa-recycle board-games__form__img-container__delete-img" (click)="resetSelectedImages('imgName')"> RESET</i>
           </ng-template>

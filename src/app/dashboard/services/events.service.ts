@@ -5,7 +5,7 @@ import { DashboardService } from './dashboard.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/assets/environments/environment';
 import { EditEventManija, EventManija } from '../interfaces';
-import { catchError, of } from 'rxjs';
+import { catchError, of, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -97,7 +97,7 @@ export class EventsService {
     const headers = this.dashboardService.getHeaders();
 
     return this.http.get<EventManija[]>(`${this.url}/admin`, { headers}).pipe(
-      catchError((err)=>{return of(undefined)})
+      catchError((err)=>{return throwError(() => err);})
     )
 
   }
@@ -106,28 +106,28 @@ export class EventsService {
     const headers = this.dashboardService.getHeaders();
 
     return this.http.get<EventManija>(`${this.url}/${id}`, { headers}).pipe(
-      catchError((err)=>{return of(undefined)})
+      catchError((err)=>{return throwError(() => err);})
     )
   }
 
   postNewEvent(newEvent: EditEventManija){
     const headers = this.dashboardService.getHeaders();
     return this.http.post<EventManija>(`${this.url}/upload`, newEvent, { headers}).pipe(
-      catchError((err)=>{return of(undefined)})
+      catchError((err)=>{return throwError(() => err);})
     )
   }
 
   postEventImage(id:string, formData: FormData){
     const headers = this.dashboardService.getHeaders();
     return this.http.post<EventManija>(`${this.url}/uploadImg/${id}`, formData, { headers}).pipe(
-      catchError((err)=>{return of(undefined)})
+      catchError((err)=>{return throwError(() => err);})
     )
   }
 
   editEvent( id: string, editedEvent: EditEventManija){
     const headers = this.dashboardService.getHeaders();
     return this.http.patch<EditEventManija>(`${this.url}/edit/${id}`, editedEvent, { headers}).pipe(
-      catchError((err)=>{return of(undefined)})
+      catchError((err)=>{return throwError(() => err);})
     )
   }
 

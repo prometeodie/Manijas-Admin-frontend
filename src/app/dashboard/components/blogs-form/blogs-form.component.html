@@ -1,4 +1,4 @@
-<loading-animation *ngIf="uploadingBlog"/>
+<loading-animation *ngIf="loadingAnimation"/>
 <div class="blog">
   <h2>Blog</h2>
     <unsave class="blog__unsave-icon" [hasUnsavedChanges]="!myForm.pristine"/>
@@ -21,7 +21,7 @@
               <!-- image -->
               <div class="blog__form__img-container" *ngIf="imgSrc[0] && input.name === 'imgName'">
                 <img  [src]="imgSrc[0]" [alt]="imgSrc[0].slice(0,25)" class="blog__form__img-container__img" (load)="loadImg($event)">
-                <i class="fa-regular fa-trash-can blog__form__img-container__delete-img" *ngIf="showDeleteBtn(imgSrc[0],currentBlog,blogId), else resetImg"
+                <i class="fa-regular fa-trash-can blog__form__img-container__delete-img" *ngIf="showDeleteBtn(imgSrc[0], imgUrl), else resetImg"
                 (click)="deleteImg(currentBlog.imgName!)"></i>
                 <ng-template #resetImg>
                   <i class="fa-solid fa-recycle blog__form__img-container__delete-img" (click)="cleanImg()"> RESET</i>

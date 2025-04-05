@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
 import { AboutService } from '../../services/about.service';
 import { Router } from '@angular/router';
 import { UnsaveComponent } from '../unsave/unsave.component';
+import { finalize, forkJoin, map, Observable, of, switchMap, throwError } from 'rxjs';
 
 @Component({
   selector: 'about-form',
@@ -31,12 +32,13 @@ private fvService = inject(FormService);
 private selectedFile: FileList | null = null;
 public currentAboutItem!:AboutItem;
 public editorConfig!:EditorConfig;
-public uploadingAboutItem: boolean = false;
+public loadingAnimation: boolean = false;
 public Editor = ClassicEditor;
 public charCount:number = 0;
 public averageCharacters:number = 0;
 public initialFormValues!: EditAboutItem;
 public imgSrc:(string | ArrayBuffer)[] = [];
+public imgUrl:string[] = [];
 public aboutInputs: AboutInput[] = [
     { name: 'text', placeHolder: 'Escribir un fragmento de la historia Manija', label:'', type: 'textArea', maxLenght: 24 },
     { name: 'imgName', placeHolder: '', label: 'Seleccionar una imagen', type: 'file', maxLenght:null},
@@ -64,7 +66,7 @@ public myForm = this.fb.group({
   async onFileSelected(event: Event) {
 
     if(this.currentAboutItem && this.currentAboutItem._id){
-      const thereisImg = this.dashboardService.validateImageUploadLimit(this.currentAboutItem._id, this.currentAboutItem.imgName.length);
+      const thereisImg = this.dashboardService.validateImageUploadLimit( this.currentAboutItem.imgName);
       if(thereisImg){
         this.myForm.get('imgName')?.reset();
         return;
@@ -90,10 +92,6 @@ public myForm = this.fb.group({
     }
   }
 
-  private updateImageSources(event: AboutItem) {
-    this.imgSrc = this.dashboardService.imgPathCreator(event.imgName,this.dashboardService.screenWidth, Section.ABOUT, this.aboutItemId);
-  }
-
   getAboutItem(){
 
     if (!this.aboutItemId) return;
@@ -102,9 +100,27 @@ public myForm = this.fb.group({
       if (!item) return;
       this.currentAboutItem = item;
       this.updateFormValues(item);
-      this.updateImageSources(item);
+      this.getImageUrlByScreenSize(item);
     });
   }
+
+     getImageUrlByScreenSize(aboutItem:AboutItem){
+              (this.dashboardService.screenWidth > 800)?
+                this.getImgUrlEvent(aboutItem.imgName):
+                this.getImgUrlEvent(aboutItem.imgMobileName);
+            }
+
+        getImgUrlEvent(image: string) {
+        this.imgUrl = [];
+        if (image){
+            this.dashboardService.getImgUrl(image, Section.ABOUT).subscribe(resp => {
+              if (resp) {
+                this.imgUrl.push(resp.signedUrl);
+              }
+                this.imgSrc = [...this.imgUrl];
+            });
+          }
+        }
 
   getTextAverageLength(){
     this.dashboardService.getTextAverage(Section.ABOUT).subscribe(resp=>{
@@ -180,16 +196,38 @@ public myForm = this.fb.group({
    // Create and Update form
    private createAboutItem() {
     const newAboutItem = this.newAboutItem;
-    this.aboutService.postNewAboutItem(newAboutItem).subscribe((resp) => {
-      if (resp) {
-        this.uploadFile(resp._id!);
-        this.resetForm();
+    this.aboutService.postNewAboutItem(newAboutItem).pipe(
+                  switchMap(resp => {
+                    this.loadingAnimation = true;
+                    if (!resp) {
+                      this.dashboardService.notificationPopup("error", "Error al crear el fragmento de historia", 3000);
+                      return throwError(() => new Error("Error al crear el fragmento de historia"));
+                    }
+
+                    return this.uploadFile(resp._id!).pipe(
+                      map(imagesUploaded => ({ aboutItemId: resp._id, imagesUploaded }))
+                    );
+                  }),
+                  switchMap(({aboutItemId, imagesUploaded }) => {
+                    if (!imagesUploaded) {
+                      this.dashboardService.notificationPopup("error", "Algunas imágenes no se subieron correctamente.", 3000);
+                    }
+                    return this.aboutService.getAboutItem(aboutItemId!);
+                  }),
+                  finalize(() => {
+                    this.loadingAnimation = false;
+                  })
+                ).subscribe((aboutItem) => {
+      if (aboutItem) {
         this.dashboardService.notificationPopup('success','Item agregado',2000)
+        this.resetForm();
+        this.updateFormValues(aboutItem);
+        this.getImageUrlByScreenSize(aboutItem);
       }else{
-        this.dashboardService.notificationPopup('error','algo ocurrio al guardar el Blog',2000)
+        this.dashboardService.notificationPopup('error','algo ocurrio al guardar el fragmento de historia',2000)
       }
     });
-    this.uploadingAboutItem = false;
+    this.loadingAnimation = false;
   }
 
   private updateAboutItem() {
@@ -200,18 +238,37 @@ public myForm = this.fb.group({
       section: Section.ABOUT,
     };
 
-    this.aboutService.editAboutItem(this.aboutItemId, actualizedAboutItem as EditAboutItem).subscribe((resp) => {
-      if (resp) {
+    this.aboutService.editAboutItem(this.aboutItemId, actualizedAboutItem as EditAboutItem)
+    .pipe(
+      switchMap(resp => {
+        this.loadingAnimation = true;
+        if (!resp) {
+          this.dashboardService.notificationPopup("error", "Algo salió mal al actualizar el fragmento de historia :(", 3000);
+          return throwError(() => new Error("Error al actualizar el fragmento de historia"));
+        }
+        return this.uploadFile(this.aboutItemId!);
+      }),
+      switchMap((imagesUploaded) => {
+        if (!imagesUploaded) {
+          this.dashboardService.notificationPopup("error", "Algunas imágenes no se subieron correctamente.", 3000);
+        }
+        return this.aboutService.getAboutItem(this.aboutItemId);
+      }),
+      finalize(() => this.loadingAnimation = false)
+    ).subscribe((aboutItem) => {
+      if (aboutItem) {
         if(this.selectedFile !== null){
           this.uploadFile(this.currentAboutItem._id!);
         }
         this.dashboardService.notificationPopup('success', 'Item actualizado correctamente', 2000);
         this.resetForm();
-        this.getAboutItem();
+        this.getImageUrlByScreenSize(aboutItem)
+        this.resetForm();
+        this.updateFormValues(aboutItem);
       } else {
         this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Item :(', 3000);
       }
-      this.uploadingAboutItem = false;
+      this.loadingAnimation = false;
     });
   }
 
@@ -220,7 +277,7 @@ public myForm = this.fb.group({
       this.aboutService.postAboutItemsImage(_id!, formData).subscribe(imgResp=>{
 
         if(!imgResp){
-          this.uploadingAboutItem = false
+          this.loadingAnimation = false
           this.dashboardService.notificationPopup("error", 'El Item fue guardado, pero algo salio mal al guardar la/s imagen/es revisa q su formato sea valido :(',3000)
         }
         this.dashboardService.notificationPopup('success','Item agregado',2000)
@@ -230,29 +287,35 @@ public myForm = this.fb.group({
     }
   }
 
-  private uploadFile(eventId: string) {
-    if (this.selectedFile == null) {
-      console.log("No file selected, upload image canceled.");
-      return;
-    }
-    this.uploadImg(eventId, Section.BLOGS, this.selectedFile);
-  }
-
-  uploadImg(id: string , section:Section, selectedFiles: FileList){
-
-    if(id && selectedFiles){
-      const formData = this.dashboardService.formDataToUploadSingleImg(section, selectedFiles![0]);
-      if (formData && formData.has('file')) {
-        this.uploadFormData(formData!, id);
+    private uploadFile(aboutItemID: string) :Observable<boolean>{
+        if (this.selectedFile == null) {
+          console.log("No file selected, upload image canceled.");
+          return of(false);
+        }
+        const uploadTasks: Observable<boolean>[] = [];
+        uploadTasks.push(this.uploadImg(aboutItemID, this.selectedFile![0]));
+        return uploadTasks.length > 0
+              ? forkJoin(uploadTasks).pipe(map(results => results.every(success => success)))
+              : of(true);
       }
-      this.dashboardService.notificationPopup('success','Item agregado',2000)
-    return false;
-  }
-  else{
-    this.dashboardService.notificationPopup("error", 'Algo salio mal al Guardar el Item :(',3000);
-    return false;
-    }
-}
+
+    uploadImg(id: string, selectedFile: File) {
+        if (!id || !selectedFile) {
+          this.dashboardService.notificationPopup("error", "Algo salió mal al guardar el Fragmento de historia :(", 3000);
+          return of(false);
+        }
+
+        const formData = this.dashboardService.formDataToUploadSingleImg(selectedFile);
+        return this.dashboardService.postImage(id, 'about/upload-image', formData!).pipe(
+          switchMap(resp => {
+            if (!resp) {
+              this.dashboardService.notificationPopup("error", "El Fragmento de historia Manija fue guardado, pero hubo un error con la imagen.", 3000);
+            }
+            return of(true);
+          }),
+          finalize(() => {this.loadingAnimation = false})
+        );
+      }
 
 loadImg(event: Event){
   const loadClass = 'about__form__img-container__img--loaded'
@@ -269,36 +332,32 @@ private confirmDelete() {
   return this.dashboardService.confirmDelete();
 }
 
-private cleanEventImgName() {
-  this.aboutService.editAboutItem(this.currentAboutItem._id!, { imgName:'' }).subscribe((editResp) => {
-    if (editResp) {
-      this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
-      this.resetForm();
-      this.getAboutItem();
+     deleteImg(imgName: string) {
+        this.confirmDelete().then((result) => {
+          if (!result.isConfirmed) return;
+          this.loadingAnimation = true;
+          this.deleteImage(this.aboutItemId, imgName);
+      })
     }
-  });
-}
 
-deleteImg(imgN: string) {
-  // this.confirmDelete().then((result) => {
-  //   if (!result.isConfirmed) return;
-  //   // this.dashboardService.deleteItemImg(imgN, Section.ABOUT)?.subscribe((resp) => {
-  //     this.cleanEventImgName();
-  //     if (resp) {
-  //       // this.dashboardService.deleteItemImg(`/optimize/${imgN}`, Section.ABOUT)?.subscribe();
-  //       // this.dashboardService.deleteItemImg(`/regular-size/${imgN}`, Section.ABOUT)?.subscribe();
-  //     }else{
-  //       this.dashboardService.notificationPopup('error', 'Algo ocurrio al eliminar la imagen', 2000);
-  //     }
-  //   });
-  // });
-}
+     private deleteImage(boardgameId: string, imgName: string) {
+         this.dashboardService.deleteItemImg(boardgameId, Section.EVENTS, imgName, 'delete-image')!.pipe(
+           finalize(() => this.loadingAnimation = false)
+         ).subscribe(resp => {
+           if (resp) {
+             this.imgUrl = [];
+             this.imgSrc = [];
+             this.currentAboutItem.imgName = '';
+             this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
+           } else {
+             this.dashboardService.notificationPopup('error', 'No se pudo eliminar la imagen', 2000);
+           }
+         });
+       }
 
-   ///Submit form
-
-   private confirmAction(action: string) {
-    return this.dashboardService.confirmAction(action, 'Item')
-  }
+       private confirmAction(action: string) {
+        return this.dashboardService.confirmAction(action, 'Evento')
+      }
 
   onSubmit() {
     this.myForm.markAllAsTouched();
@@ -306,7 +365,7 @@ deleteImg(imgN: string) {
     const action = this.currentAboutItem ? 'update' : 'create';
     this.confirmAction(action).then((result) => {
       if (result.isConfirmed) {
-        this.uploadingAboutItem = true;
+        this.loadingAnimation = true;
         action === 'create' ? this.createAboutItem() : this.updateAboutItem();
       }
     });

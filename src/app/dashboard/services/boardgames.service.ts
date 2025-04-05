@@ -116,13 +116,6 @@ export class BoardgamesService {
     )
   }
 
-postBoardGImage(id:string, formData: FormData){
-    const headers = this.dashboardService.getHeaders();
-    return this.http.post<Boardgame>(`${this.url}/uploadImg/${id}`, formData, { headers}).pipe(
-      catchError((err)=>{return of(undefined)})
-    )
-  }
-
   editBoard( id: string, editedEvent: BoardgameUpload){
     const headers = this.dashboardService.getHeaders();
     return this.http.patch<BoardgameUpload>(`${this.url}/edit/${id}`, editedEvent, { headers}).pipe(

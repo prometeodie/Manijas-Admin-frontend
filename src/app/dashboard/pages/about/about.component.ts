@@ -53,7 +53,7 @@ export class AboutComponent implements OnInit{
 
   filteredData(): AboutItemOrganizing[] {
     return this.aboutItems.map(item => {
-      return { _id: item._id, text: item.text || "", img: item.imgName };
+      return { _id: item._id, text: item.text || "", img: item.imgMobileName };
     });
   }
 

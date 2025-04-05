@@ -1,6 +1,6 @@
 <main class="about" @enterState>
   <h1>Historia Manija</h1>
-  <div class="about__organize" (click)="userIsOrganizing()">
+  <div class="about__organize" (click)="userIsOrganizing()" *ngIf="aboutItems.length > 1">
     <strong>{{'reorganizar'|titlecase}}</strong>
     <i class="fa-solid fa-shuffle about__section__organize__icon"></i>
   </div>

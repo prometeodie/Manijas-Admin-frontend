@@ -8,7 +8,7 @@
     <li *ngFor="let item of aboutItems"
         class="organize__ul__li"
         cdkDrag>
-      <img src="../../../../assets/images.jpeg"
+      <img [src]="item.imgUrl?.signedUrl"
            [alt]="item.text"
            class="organize__ul__li__img">
       <strong class="organize__ul__li__text">{{ item.text }}</strong>

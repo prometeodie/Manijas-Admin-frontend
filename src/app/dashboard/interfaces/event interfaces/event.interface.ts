@@ -12,5 +12,5 @@ export interface EventManija {
   publish:                    boolean;
   mustBeAutomaticallyDeleted: boolean;
   imgName:                    string;
-  imgMobileName:                    string;
+  imgMobileName:              string;
 }

@@ -103,7 +103,6 @@ deleteItem(id:string){
           if(resp){
             const id = `${this.objectTemplate._id}`;
             this.dashboardService.notificationPopup('success','item eliminado', 1500)
-            this.dashboardService.deleteAllImages(id,section)?.subscribe()
             this.delete.emit();
           }else{
             this.dashboardService.notificationPopup("error", 'Algo salio mal :(', 2000)
