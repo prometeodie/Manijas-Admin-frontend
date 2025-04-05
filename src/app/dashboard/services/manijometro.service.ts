@@ -16,7 +16,7 @@ private dashboardService= inject(DashboardService);
 
   constructor() { }
 
-  getAllMAnijmetroBoard(){
+  getAllManijometroBoard(){
     const headers = this.dashboardService.getHeaders();
 
     return this.http.get<Manijometro[]>(`${this.url}/admin-manijometro`, { headers }).pipe(

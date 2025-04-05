@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ManijometroService } from '../../services/manijometro.service';
 import { AuthService } from 'src/app/auth/services/auth.service';
-import { Manijometro, ManijometroPool, ManijometroValuesPool } from '../../interfaces';
+import { Manijometro, ManijometroPool, ManijometroValuesPool, Section } from '../../interfaces';
 import { DashboardService } from '../../services/dashboard.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -44,6 +44,7 @@ export class GameManijometroComponent implements OnInit {
   public isLoading: boolean = false;
   public title!: string;
   public initialFormValues!: ManijometroValuesPool;
+  public imgUrl: string = '';
 
 
   public myForm = this.fb.group({
@@ -63,6 +64,7 @@ export class GameManijometroComponent implements OnInit {
         if(resp){
           this.manijometro = resp;
           this.title = resp.title;
+          this.getImgUrlBlog(this.manijometro.cardCoverImgName);
           this.updateFormValues(this.verifyUserVoted(resp));
         }
         else{
@@ -74,6 +76,17 @@ export class GameManijometroComponent implements OnInit {
     this.userId = this.authService.currentUser()!._id;
     this.initialFormValues = this.myForm.value as ManijometroValuesPool;
     this.hasFormChanged();
+  }
+
+  getImgUrlBlog(image: string) {
+  this.imgUrl = '';
+  if (image){
+      this.dashboardService.getImgUrl(image, Section.BOARDGAMES).subscribe(resp => {
+        if (resp) {
+          this.imgUrl = resp.signedUrl;
+        }
+      });
+    }
   }
 
   private confirmAction() {

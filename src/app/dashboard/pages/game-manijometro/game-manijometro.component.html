@@ -2,7 +2,7 @@
   <unsave class="game-manijometro__unsave-icon" [hasUnsavedChanges]="!myForm.pristine"/>
   <div class="game-manijometro__title-img">
     <h2 class="game-manijometro__title-img__title" *ngIf="manijometro; else notInformation">{{manijometro.title}}</h2>
-    <img src="../../../../assets/images.jpeg" class="game-manijometro__title-img__img--small" alt="">
+    <img [src]="imgUrl" class="game-manijometro__title-img__img--small" alt="">
   </div>
   <ng-template #notInformation>
     No se pudo recuperar información del manijometro
@@ -30,7 +30,7 @@
           <strong>{{getAverage()}}</strong>
         </li>
       </ul>
-      <img src="../../../../assets/images.jpeg" class="game-manijometro__section__info-img__img" alt="">
+      <img [src]="imgUrl" class="game-manijometro__section__info-img__img" alt="">
     </div>
   </section>
 </main>

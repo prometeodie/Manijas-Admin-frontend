@@ -1,9 +1,12 @@
+import { SignedImgUrl } from "../others/signed-img-url.interface";
+
 export interface Manijometro {
   _id:               string;
   title:            string;
   manijometroPool:  ManijometroPool[];
   manijometroPosition:      number;
   cardCoverImgName: string;
+  imgUrl?: SignedImgUrl
 }
 
 export interface ManijometroPool {

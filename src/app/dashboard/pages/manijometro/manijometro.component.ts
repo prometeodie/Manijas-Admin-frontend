@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ManijometroService } from '../../services/manijometro.service';
-import { Manijometro } from '../../interfaces';
+import { Manijometro, Section } from '../../interfaces';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { Router } from '@angular/router';
 import { trigger, style, animate, transition, state } from '@angular/animations';
@@ -49,11 +49,18 @@ export class ManijometroComponent implements OnInit{
   ngOnInit(): void {
     this.isLoading = true;
     this.userId = this.authService.currentUser()!._id;
-    this.manijometroService.getAllMAnijmetroBoard().subscribe(resp =>{
+    this.manijometroService.getAllManijometroBoard().subscribe(resp =>{
       if(resp){
         this.allBoardGames = resp;
-        this.filterVotedAndUnVotedBg(resp)
-        this.filteredBoardgames= this.boardGamesNotVoted;
+        this.allBoardGames.forEach(item => {
+              if(item.cardCoverImgName){
+                this.dashboardService.getImgUrl(item.cardCoverImgName, Section.BOARDGAMES).subscribe(imgUrl => {
+                  item.imgUrl = imgUrl;
+                });
+              }
+            })
+            this.filterVotedAndUnVotedBg(resp)
+            this.filteredBoardgames = this.boardGamesNotVoted;
       }else{
         this.allBoardGames = []
       }

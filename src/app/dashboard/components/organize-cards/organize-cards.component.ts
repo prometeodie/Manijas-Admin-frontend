@@ -29,7 +29,6 @@ export class OrganizeCardsComponent implements OnInit {
   ngOnInit(): void {
     this.aboutItems = this.aboutItemOrganizing;
     this.aboutItems.forEach(item => {
-      console.log(item);
       this.dashboardService.getImgUrl(item.img, Section.ABOUT).subscribe(imgUrl => {
         item.imgUrl = imgUrl;
       });
