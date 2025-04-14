@@ -1,10 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ManijometroService } from '../../services/manijometro.service';
 import { Manijometro, Section } from '../../interfaces';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { Router } from '@angular/router';
 import { trigger, style, animate, transition, state } from '@angular/animations';
 import { DashboardService } from '../../services/dashboard.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-manijometro',
@@ -25,11 +26,12 @@ import { DashboardService } from '../../services/dashboard.service';
         ])
       ]
 })
-export class ManijometroComponent implements OnInit{
+export class ManijometroComponent implements OnInit, OnDestroy{
   private manijometroService = inject(ManijometroService);
   private dashboardService = inject(DashboardService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private manijometrosSub: Subscription = new Subscription();
   public categories: string[] = [
     'ALL',
     ...Array.from({ length: 13 }, (_, i) => String.fromCharCode(65 + i)), // A - M
@@ -46,26 +48,31 @@ export class ManijometroComponent implements OnInit{
   public userId!:string;
   public votedGames:boolean = false;
   public category:string = 'all';
+
   ngOnInit(): void {
     this.isLoading = true;
     this.userId = this.authService.currentUser()!._id;
-    this.manijometroService.getAllManijometroBoard().subscribe(resp =>{
+    this.manijometrosSub = this.manijometroService.getAllManijometroBoard().subscribe(resp =>{
       if(resp){
         this.allBoardGames = resp;
         this.allBoardGames.forEach(item => {
-              if(item.cardCoverImgName){
-                this.dashboardService.getImgUrl(item.cardCoverImgName, Section.BOARDGAMES).subscribe(imgUrl => {
-                  item.imgUrl = imgUrl;
-                });
-              }
-            })
-            this.filterVotedAndUnVotedBg(resp)
-            this.filteredBoardgames = this.boardGamesNotVoted;
+          if(item.cardCoverImgName){
+            this.dashboardService.getImgUrl(item.cardCoverImgName, Section.BOARDGAMES).subscribe(imgUrl => {
+              item.imgUrl = imgUrl;
+            });
+          }
+        })
+        this.filterVotedAndUnVotedBg(resp)
+        this.filteredBoardgames = this.boardGamesNotVoted;
       }else{
         this.allBoardGames = []
       }
     });
     this.isLoading = false;
+  }
+
+  ngOnDestroy(): void {
+    this.manijometrosSub.unsubscribe();
   }
 
   filterVotedAndUnVotedBg(boards: Manijometro[]) {

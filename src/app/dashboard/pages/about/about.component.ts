@@ -1,9 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { AboutItemOrganizing, CardTemplate } from '../../interfaces';
 import { AboutService } from '../../services/about.service';
 import { AboutItem } from '../../interfaces/about interface/about.interface';
 import { trigger, style, animate, transition, state } from '@angular/animations';
-import { map } from 'rxjs';
+import { map, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-about',
@@ -24,9 +24,10 @@ import { map } from 'rxjs';
       ])
     ]
 })
-export class AboutComponent implements OnInit{
+export class AboutComponent implements OnInit, OnDestroy{
   readonly aboutPath = '/lmdr/create-edit/ABOUT';
   private aboutService = inject(AboutService)
+  private aboutItemSub: Subscription = new Subscription();
   public isLoading: boolean = false;
   public aboutItems: CardTemplate[] = [];
   public isOrganizing: boolean = false;
@@ -35,13 +36,17 @@ export class AboutComponent implements OnInit{
     this.actualizeAboutItems();
   }
 
+  ngOnDestroy(): void {
+   this.aboutItemSub.unsubscribe();
+  }
+
   onCardDelete(){
     this.actualizeAboutItems();
   }
 
   actualizeAboutItems(){
     this.isLoading = true;
-      this.aboutService.getAllAboutItems( ).pipe(
+     this.aboutItemSub =  this.aboutService.getAllAboutItems( ).pipe(
         map(item=> item!.map(item=>this.transformData(item)))
     ).subscribe(
       aboutItems =>{

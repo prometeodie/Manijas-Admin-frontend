@@ -25,7 +25,7 @@ export class ControlPanelService {
         );
   }
 
-  getAlUsers(){
+  getAllUsers(){
     const headers = this.dashboardService.getHeaders()
 
     return this.http.get<User[]>(`${this.url}/all-users`, {headers}).pipe(

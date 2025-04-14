@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 import { AboutService } from '../../services/about.service';
 import { Router } from '@angular/router';
 import { UnsaveComponent } from '../unsave/unsave.component';
-import { finalize, forkJoin, map, Observable, of, switchMap, throwError } from 'rxjs';
+import { finalize, forkJoin, map, Observable, of, Subscription, switchMap, throwError } from 'rxjs';
 
 @Component({
   selector: 'about-form',
@@ -30,6 +30,7 @@ private dashboardService = inject(DashboardService);
 private aboutService = inject(AboutService);
 private fvService = inject(FormService);
 private selectedFile: FileList | null = null;
+private aboutItemsSubscriptions: Subscription = new Subscription();
 public currentAboutItem!:AboutItem;
 public editorConfig!:EditorConfig;
 public loadingAnimation: boolean = false;
@@ -61,6 +62,7 @@ public myForm = this.fb.group({
 
   ngOnDestroy(): void {
     this.cleanImg();
+    this.aboutItemsSubscriptions.unsubscribe();
   }
 
   async onFileSelected(event: Event) {
@@ -96,12 +98,14 @@ public myForm = this.fb.group({
 
     if (!this.aboutItemId) return;
 
-    this.aboutService.getAboutItem(this.aboutItemId).subscribe((item) => {
+    const sub = this.aboutService.getAboutItem(this.aboutItemId).subscribe((item) => {
       if (!item) return;
       this.currentAboutItem = item;
       this.updateFormValues(item);
       this.getImageUrlByScreenSize(item);
     });
+
+    this.aboutItemsSubscriptions.add(sub);
   }
 
      getImageUrlByScreenSize(aboutItem:AboutItem){
@@ -113,19 +117,21 @@ public myForm = this.fb.group({
         getImgUrlEvent(image: string) {
         this.imgUrl = [];
         if (image){
-            this.dashboardService.getImgUrl(image, Section.ABOUT).subscribe(resp => {
+            const sub = this.dashboardService.getImgUrl(image, Section.ABOUT).subscribe(resp => {
               if (resp) {
                 this.imgUrl.push(resp.signedUrl);
               }
                 this.imgSrc = [...this.imgUrl];
             });
+            this.aboutItemsSubscriptions.add(sub);
           }
         }
 
   getTextAverageLength(){
-    this.dashboardService.getTextAverage(Section.ABOUT).subscribe(resp=>{
+    const sub = this.dashboardService.getTextAverage(Section.ABOUT).subscribe(resp=>{
       (resp)? this.averageCharacters = resp.charactersAverage : this.averageCharacters = 0;
     })
+    this.aboutItemsSubscriptions.add(sub);
   }
 
   isValidField(field: string):boolean | null{
@@ -148,7 +154,7 @@ public myForm = this.fb.group({
   }
 
   hasFormChanged(){
-    this.myForm.valueChanges.subscribe((formValue) => {
+    const sub = this.myForm.valueChanges.subscribe((formValue) => {
       if(this.aboutItemId){
         const updatedBlog = {
           ...this.currentAboutItem};
@@ -162,6 +168,7 @@ public myForm = this.fb.group({
         (!hasObjectsDifferences)? this.myForm.markAsPristine() : this.myForm.markAsDirty();
       }
     });
+    this.aboutItemsSubscriptions.add(sub);
   }
 
   areObjectsDifferent(itemValue:any, formValue:any) {
@@ -196,7 +203,7 @@ public myForm = this.fb.group({
    // Create and Update form
    private createAboutItem() {
     const newAboutItem = this.newAboutItem;
-    this.aboutService.postNewAboutItem(newAboutItem).pipe(
+    const sub = this.aboutService.postNewAboutItem(newAboutItem).pipe(
                   switchMap(resp => {
                     this.loadingAnimation = true;
                     if (!resp) {
@@ -228,6 +235,7 @@ public myForm = this.fb.group({
       }
     });
     this.loadingAnimation = false;
+    this.aboutItemsSubscriptions.add(sub);
   }
 
   private updateAboutItem() {
@@ -238,7 +246,7 @@ public myForm = this.fb.group({
       section: Section.ABOUT,
     };
 
-    this.aboutService.editAboutItem(this.aboutItemId, actualizedAboutItem as EditAboutItem)
+    const sub = this.aboutService.editAboutItem(this.aboutItemId, actualizedAboutItem as EditAboutItem)
     .pipe(
       switchMap(resp => {
         this.loadingAnimation = true;
@@ -270,11 +278,12 @@ public myForm = this.fb.group({
       }
       this.loadingAnimation = false;
     });
+    this.aboutItemsSubscriptions.add(sub);
   }
 
   uploadFormData(formData: FormData, _id: string){
     if(formData){
-      this.aboutService.postAboutItemsImage(_id!, formData).subscribe(imgResp=>{
+      const sub = this.aboutService.postAboutItemsImage(_id!, formData).subscribe(imgResp=>{
 
         if(!imgResp){
           this.loadingAnimation = false
@@ -284,6 +293,7 @@ public myForm = this.fb.group({
         this.resetForm()
         this.getAboutItem();
       });
+      this.aboutItemsSubscriptions.add(sub);
     }
   }
 
@@ -341,7 +351,7 @@ private confirmDelete() {
     }
 
      private deleteImage(boardgameId: string, imgName: string) {
-         this.dashboardService.deleteItemImg(boardgameId, Section.EVENTS, imgName, 'delete-image')!.pipe(
+         const sub = this.dashboardService.deleteItemImg(boardgameId, Section.EVENTS, imgName, 'delete-image')!.pipe(
            finalize(() => this.loadingAnimation = false)
          ).subscribe(resp => {
            if (resp) {
@@ -353,6 +363,7 @@ private confirmDelete() {
              this.dashboardService.notificationPopup('error', 'No se pudo eliminar la imagen', 2000);
            }
          });
+         this.aboutItemsSubscriptions.add(sub);
        }
 
        private confirmAction(action: string) {

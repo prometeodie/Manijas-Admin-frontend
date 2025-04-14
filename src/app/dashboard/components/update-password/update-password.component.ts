@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormService } from 'src/app/services/form-validator.service';
@@ -6,6 +6,7 @@ import { Inputs } from '../../interfaces';
 import { ControlPanelService } from '../../services/control-panel.service';
 import { DashboardService } from '../../services/dashboard.service';
 import { LoadingAnimationComponent } from "../loading-animation/loading-animation.component";
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'update-password',
@@ -14,16 +15,21 @@ import { LoadingAnimationComponent } from "../loading-animation/loading-animatio
   templateUrl: './update-password.component.html',
   styleUrls: ['./update-password.component.scss']
 })
-export class UpdatePasswordComponent {
-readonly inputs : Inputs[] = [{controlName:'currentPassword', placeholder:'Contraseña Actual', typeInput:'password'},
-                   {controlName:'newPassword', placeholder:'Nueva Contraseña',typeInput:'password'},
-                   {controlName:'repeatNewPassword', placeholder:'Repetir Nueva Contraseña',typeInput:'password'} ];
-private fb = inject(FormBuilder);
-private fvService = inject(FormService);
-private dashboardService = inject(DashboardService);
-private controlPanelService = inject(ControlPanelService);
-readonly passwordPattern = this.fvService.passwordPattern;
-public loadingChanges: boolean = false;
+export class UpdatePasswordComponent implements OnDestroy{
+  readonly inputs : Inputs[] = [{controlName:'currentPassword', placeholder:'Contraseña Actual', typeInput:'password'},
+    {controlName:'newPassword', placeholder:'Nueva Contraseña',typeInput:'password'},
+    {controlName:'repeatNewPassword', placeholder:'Repetir Nueva Contraseña',typeInput:'password'} ];
+    private fb = inject(FormBuilder);
+    private fvService = inject(FormService);
+    private dashboardService = inject(DashboardService);
+    private controlPanelService = inject(ControlPanelService);
+    private passworsSub: Subscription = new Subscription();
+    readonly passwordPattern = this.fvService.passwordPattern;
+    public loadingChanges: boolean = false;
+
+  ngOnDestroy(): void {
+    this.passworsSub.unsubscribe();
+  }
 
 public myForm = this.fb.group({
     currentPassword:          ['', [Validators.required, Validators.min(8), Validators.max(20), Validators.pattern(this.passwordPattern)]],
@@ -59,7 +65,7 @@ public myForm = this.fb.group({
         return;
       }
 
-      this.controlPanelService.userChangesPassword({currentPassword, newPassword}).subscribe((res)=>{
+      this.passworsSub = this.controlPanelService.userChangesPassword({currentPassword, newPassword}).subscribe((res)=>{
         if (res) {
           this.dashboardService.notificationPopup('success','Contraseña actualizada con exito', 1500);
           this.togglePassword(0);

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ManijometroService } from '../../services/manijometro.service';
 import { AuthService } from 'src/app/auth/services/auth.service';
@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { ManijometroValues } from '../../interfaces/boards interfaces/manijometro-pool.interface';
 import { FormService } from 'src/app/services/form-validator.service';
 import { trigger, style, animate, transition, state } from '@angular/animations';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-game-manijometro',
@@ -29,7 +30,7 @@ import { trigger, style, animate, transition, state } from '@angular/animations'
         ])
       ]
 })
-export class GameManijometroComponent implements OnInit {
+export class GameManijometroComponent implements OnInit, OnDestroy {
 
   private route = inject(ActivatedRoute);
   private manijometroServices = inject(ManijometroService);
@@ -37,6 +38,7 @@ export class GameManijometroComponent implements OnInit {
   private dashboardService = inject(DashboardService);
   private fb = inject(FormBuilder);
   private fvService = inject(FormService);
+  private manijometroSub: Subscription = new Subscription();
   public inputs: string[] = ["priceQuality", "gameplay", "replayability", "gameSystemExplanation"];
   public id!: string;
   public userId!: string;
@@ -55,11 +57,11 @@ export class GameManijometroComponent implements OnInit {
   })
 
   ngOnInit(): void {
-      this.isLoading = true;
-      this.route.paramMap.subscribe(params => {
-        this.id = params.get('id')!;
+    this.isLoading = true;
+    this.route.paramMap.subscribe(params => {
+      this.id = params.get('id')!;
     });
-    this.manijometroServices.getOneManijometro(this.id).subscribe(
+    this.manijometroSub = this.manijometroServices.getOneManijometro(this.id).subscribe(
       resp =>{
         if(resp){
           this.manijometro = resp;
@@ -76,6 +78,10 @@ export class GameManijometroComponent implements OnInit {
     this.userId = this.authService.currentUser()!._id;
     this.initialFormValues = this.myForm.value as ManijometroValuesPool;
     this.hasFormChanged();
+  }
+
+  ngOnDestroy(): void {
+    this.manijometroSub.unsubscribe();
   }
 
   getImgUrlBlog(image: string) {

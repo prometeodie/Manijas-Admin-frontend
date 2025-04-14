@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CreateUser, Inputs, Roles, UpdateUser } from '../../interfaces';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -9,6 +9,7 @@ import { CreateEditUserService } from '../../services/create-edit-user.service';
 import { User } from 'src/app/auth/interfaces/user.interface';
 import { LoadingAnimationComponent } from "../loading-animation/loading-animation.component";
 import { UserResponse } from '../../interfaces/user interface/user-responsee.interface';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'user-form',
@@ -17,13 +18,14 @@ import { UserResponse } from '../../interfaces/user interface/user-responsee.int
   templateUrl: './user-form.component.html',
   styleUrls: ['./user-form.component.scss']
 })
-export class UserFormComponent implements OnInit{
+export class UserFormComponent implements OnInit, OnDestroy{
   @Input() userId: string = '';
   private fb = inject(FormBuilder);
   private fvService = inject(FormService);
   private dashboardService = inject(DashboardService);
   private createEditUserService = inject(CreateEditUserService);
   private controlPanelService = inject(ControlPanelService);
+  private userSubcriptions: Subscription = new Subscription();
   public uploadingUser: boolean = false;
   public action: string = 'create';
   public actionTitle: string = 'Crear Usuario';
@@ -38,9 +40,8 @@ export class UserFormComponent implements OnInit{
     {controlName:'password', placeholder:'Contraseña', typeInput:'password'},
     {controlName:'repeatPassword', placeholder:'Repetir Contraseña',typeInput:'password'} ];
 
-  readonly passwordPattern = this.fvService.passwordPattern;
+    readonly passwordPattern = this.fvService.passwordPattern;
 
-    // TODO:logica para q no sea requierido el campo password si esta editando
     public myForm = this.fb.group({
       email:['', [Validators.required, Validators.pattern(this.fvService.emailPattern)]],
       name:['', Validators.required],
@@ -58,7 +59,7 @@ export class UserFormComponent implements OnInit{
       if(this.userId){
         this.action = 'update';
         this.actionTitle = 'Editar Usuario';
-        this.createEditUserService.getUser(this.userId).subscribe(resp=>{
+        const sub = this.createEditUserService.getUser(this.userId).subscribe(resp=>{
           this.currentUser = resp;
           this.updateFormValues(this.currentUser);
         });
@@ -70,15 +71,20 @@ export class UserFormComponent implements OnInit{
           passwordControl.setValidators([Validators.min(8), Validators.max(20), Validators.pattern(this.passwordPattern)]);
           repeatPasswordControl.setValidators([Validators.min(8), Validators.max(20), Validators.pattern(this.passwordPattern)]);
         }
+        this.userSubcriptions.add(sub);
       }
     }
 
-  isValidField(field: string):boolean | null{
-    return this.fvService.isValidField(this.myForm,field);
-  }
+    ngOnDestroy(): void {
+      this.userSubcriptions.unsubscribe();
+    }
 
-  showError(field: string):string | null{
-    return `${this.fvService.showError(this.myForm,field)}`
+    isValidField(field: string):boolean | null{
+      return this.fvService.isValidField(this.myForm,field);
+    }
+
+    showError(field: string):string | null{
+      return `${this.fvService.showError(this.myForm,field)}`
   }
 
   togglePassword(indice:number){
@@ -99,7 +105,7 @@ export class UserFormComponent implements OnInit{
       roles: rest.roles ?? Roles.USER.toString(),
       password: rest.password ?? '',
     };
-    this.createEditUserService.createNewUser(newUser).subscribe({
+    const sub = this.createEditUserService.createNewUser(newUser).subscribe({
       next: (resp) => {
         this.dashboardService.notificationPopup('success', 'Usuario creado con éxito', 1500);
         this.myForm.reset();
@@ -116,6 +122,7 @@ export class UserFormComponent implements OnInit{
         this.uploadingUser = false;
       },
     });
+    this.userSubcriptions.add(sub);
   }
 
     private updateFormValues(user: User) {
@@ -151,11 +158,12 @@ export class UserFormComponent implements OnInit{
   }
 
   update(user: UpdateUser){
-    this.createEditUserService.updateUser(this.userId, user ).subscribe(resp =>{
+    const sub = this.createEditUserService.updateUser(this.userId, user ).subscribe(resp =>{
       (resp)?
         this.dashboardService.notificationPopup('success', 'Usuario actualizado con éxito', 1500):
         this.dashboardService.notificationPopup('error', 'Error inesperado al actualizar usuario. Inténtalo más tarde.', 1500);
     })
+    this.userSubcriptions.add(sub);
   }
   private confirmAction(action: string) {
     return this.controlPanelService.confirmAction(action)

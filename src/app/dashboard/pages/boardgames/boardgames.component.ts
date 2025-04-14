@@ -1,9 +1,9 @@
-import { Component, HostListener, inject, OnInit } from '@angular/core';
+import { Component, HostListener, inject, OnDestroy, OnInit } from '@angular/core';
 import { Boardgame, CardTemplate, CategoryGame } from '../../interfaces';
 import { boardsCategories } from './utils/boardgames-categories';
 import { BoardgamesService } from '../../services/boardgames.service';
 import { trigger, style, animate, transition, state } from '@angular/animations';
-import { map } from 'rxjs';
+import { map, Subscription } from 'rxjs';
 
 
 @Component({
@@ -25,9 +25,10 @@ import { map } from 'rxjs';
     ])
   ]
 })
-export class BoardgamesComponent implements OnInit{
+export class BoardgamesComponent implements OnInit, OnDestroy{
   readonly boardsPath: string = '/lmdr/create-edit/BOARDGAMES';
   private boardgamesServices = inject(BoardgamesService);
+  private boardsSub: Subscription = new Subscription();
   public boards: CardTemplate[] = [];
   public isLoading: boolean = false;
   public isScrolling: boolean = false;
@@ -38,6 +39,11 @@ export class BoardgamesComponent implements OnInit{
   ngOnInit(): void {
     this.actualizeBoards(CategoryGame.ALL, this.page);
   }
+
+  ngOnDestroy(): void {
+    this.boardsSub.unsubscribe();
+  }
+
   @HostListener('window:scroll', [])
   onScroll(): void {
     if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight && !this.isLoading) {
@@ -68,7 +74,7 @@ export class BoardgamesComponent implements OnInit{
 
     actualizeBoards(category?: CategoryGame | null, page: number = 1){
       this.isLoading = true;
-      this.boardgamesServices.getAllBoards(category , page ).pipe(
+      this.boardsSub = this.boardgamesServices.getAllBoards(category , page ).pipe(
         map(board=> board!.map(board=>this.transformData(board)))
     ).subscribe(
       newBoards=>{

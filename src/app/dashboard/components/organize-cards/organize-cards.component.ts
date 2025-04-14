@@ -1,11 +1,11 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AboutItemOrganizing, Section } from '../../interfaces';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { HttpClient } from '@angular/common/http';
 import { DashboardService } from '../../services/dashboard.service';
 import Swal from 'sweetalert2';
-import { catchError, of } from 'rxjs';
+import { catchError, of, Subscription } from 'rxjs';
 import { environment } from 'src/assets/environments/environment';
 import { LoadingAnimationComponent } from '../loading-animation/loading-animation.component';
 
@@ -16,23 +16,29 @@ import { LoadingAnimationComponent } from '../loading-animation/loading-animatio
   templateUrl: './organize-cards.component.html',
   styleUrls: ['./organize-cards.component.scss']
 })
-export class OrganizeCardsComponent implements OnInit {
+export class OrganizeCardsComponent implements OnInit, OnDestroy {
   @Input() aboutItemOrganizing!: AboutItemOrganizing[];
   @Output() close = new EventEmitter<void>();
   @Output() orderCompleted = new EventEmitter<void>();
   readonly url = `${environment.baseUrl}/about`
   private http = inject(HttpClient);
   private dashboardService= inject(DashboardService);
+  private cardsSubscriptions: Subscription = new Subscription();
   public aboutItems!: AboutItemOrganizing[];
   public loading:boolean = false;
 
   ngOnInit(): void {
     this.aboutItems = this.aboutItemOrganizing;
     this.aboutItems.forEach(item => {
-      this.dashboardService.getImgUrl(item.img, Section.ABOUT).subscribe(imgUrl => {
+      const sub = this.dashboardService.getImgUrl(item.img, Section.ABOUT).subscribe(imgUrl => {
         item.imgUrl = imgUrl;
       });
+      this.cardsSubscriptions.add(sub);
     })
+  }
+
+  ngOnDestroy(): void {
+    this.cardsSubscriptions.unsubscribe();
   }
 
   closeOrganize(){
@@ -40,12 +46,13 @@ export class OrganizeCardsComponent implements OnInit {
   }
 
   getImgUrlEvent(image: string) {
-          if (image){
-              this.dashboardService.getImgUrl(image, Section.ABOUT).subscribe(resp => {
-                return resp;
-              });
-            }
-          }
+    if (image){
+        const sub = this.dashboardService.getImgUrl(image, Section.ABOUT).subscribe(resp => {
+          return resp;
+        });
+        this.cardsSubscriptions.add(sub);
+      }
+  }
 
   drop(event: CdkDragDrop<any[]>) {
     moveItemInArray(this.aboutItems, event.previousIndex, event.currentIndex);
@@ -70,7 +77,7 @@ export class OrganizeCardsComponent implements OnInit {
         }).then((result) => {
           if(!result.isConfirmed) return;
           this.loading = true;
-          this.saveOrder().subscribe(resp =>{
+          const sub = this.saveOrder().subscribe(resp =>{
             if(resp){
               this.dashboardService.notificationPopup('success','Se ha Actualizado correctamente', 1500);
               this.orderCompleted.emit();
@@ -79,6 +86,7 @@ export class OrganizeCardsComponent implements OnInit {
             }
           })
           this.loading = false;
+          this.cardsSubscriptions.add(sub);
         })
   }
 }

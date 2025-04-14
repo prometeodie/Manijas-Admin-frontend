@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CardTemplate } from '../../interfaces/card interface/cards.interface';
 import { DashboardService } from '../../services/dashboard.service';
 import { EventsService } from '../../services/events.service';
-import { map } from 'rxjs';
+import { map, Subscription } from 'rxjs';
 import { EventManija } from '../../interfaces';
 import { trigger, style, animate, transition, state } from '@angular/animations';
 
@@ -30,6 +30,7 @@ export class EventsComponent implements OnInit,OnDestroy {
   readonly eventPath = '/lmdr/create-edit/EVENTS';
   private dashboardService = inject(DashboardService);
   private eventsService = inject(EventsService);
+  private eventsSub: Subscription = new Subscription();
   public imgSrc = this.dashboardService.imgSrc;
   public eventSample = this.eventsService.eventCardSample;
   public events: CardTemplate[] = [];
@@ -41,7 +42,8 @@ export class EventsComponent implements OnInit,OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.dashboardService.cleanImgSrc()
+    this.dashboardService.cleanImgSrc();
+    this.eventsSub.unsubscribe();
   }
 
   actualizeElements(){

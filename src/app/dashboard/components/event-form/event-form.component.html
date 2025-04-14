@@ -25,7 +25,7 @@
   <!-- image-->
   <div class="events__form__img-container" *ngIf="imgSrc[0]">
     <img  [src]="imgSrc[0]" [alt]="imgSrc[0].slice(0,25)" class="events__form__img-container__img" (load)="loadImg($event)">
-    <i class="fa-regular fa-trash-can events__form__img-container__delete-img" *ngIf="showDeleteBtn(imgSrc[0],currentEvent,eventId), else resetImg"
+    <i class="fa-regular fa-trash-can events__form__img-container__delete-img" *ngIf="showDeleteBtn(imgSrc[0],imgUrl), else resetImg"
     (click)="deleteImg(currentEvent.imgName!)"></i>
     <ng-template #resetImg>
       <i class="fa-solid fa-recycle events__form__img-container__delete-img" (click)="cleanImg()"> RESET</i>

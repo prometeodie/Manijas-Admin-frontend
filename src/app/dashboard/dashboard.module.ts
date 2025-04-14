@@ -21,7 +21,6 @@ import { LayoutComponent } from './pages/layout/layout.component';
 import { LoadingAnimationComponent } from './components/loading-animation/loading-animation.component';
 import { ManijometroComponent } from './pages/manijometro/manijometro.component';
 import { MessageComponent } from './pages/message/message.component';
-import { MessagesComponent } from './pages/messages/messages.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { NewBtnComponent } from './components/new-btn/new-btn.component';
 import { SearchBarComponent } from './components/search-bar/search-bar.component';
@@ -41,7 +40,6 @@ import { OrganizeCardsComponent } from './components/organize-cards/organize-car
     BlogsComponent,
     EventsComponent,
     AboutComponent,
-    MessagesComponent,
     ManijometroComponent,
     CreateEditComponent,
     MessageComponent,

@@ -1,10 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ControlPanelService } from '../../services/control-panel.service';
 import { User } from 'src/app/auth/interfaces';
 import { DashboardService } from '../../services/dashboard.service';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { Roles } from '../../interfaces';
 import { trigger, style, animate, transition, state } from '@angular/animations';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-control-panel',
@@ -25,10 +26,11 @@ import { trigger, style, animate, transition, state } from '@angular/animations'
     ])
   ]
 })
-export class ControlPanelComponent implements OnInit{
+export class ControlPanelComponent implements OnInit, OnDestroy{
   private controlPanelService = inject(ControlPanelService);
   private dashboardService = inject(DashboardService);
   private authService = inject(AuthService);
+  private usersSub: Subscription = new Subscription();
   readonly btns = ['cambiar contraseña', 'Modificar Usuario'];
   readonly newUserPath: string = '/lmdr/create-edit/USERS';
   public selectedBtn = 'cambiar contraseña';
@@ -39,6 +41,10 @@ export class ControlPanelComponent implements OnInit{
 
   ngOnInit(): void {
     this.currenUserRol = this.authService.currentUser()!.roles[0];
+  }
+
+  ngOnDestroy(): void {
+    this.usersSub.unsubscribe();
   }
 
   FilterBtns(btn: string){
@@ -53,7 +59,7 @@ export class ControlPanelComponent implements OnInit{
     this.selectedBtn = btn;
     if(btn !== 'Modificar Usuario') return;
     this.loading = true;
-    this.controlPanelService.getAlUsers().subscribe((resp)=>{
+    this.usersSub = this.controlPanelService.getAllUsers().subscribe((resp)=>{
       if(resp){
         this.users = resp
       }else{

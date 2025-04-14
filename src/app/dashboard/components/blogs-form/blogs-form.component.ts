@@ -13,7 +13,7 @@ import { BlogsService } from '../../services/blogs.service';
 import { Blog, EditBlog, Section } from '../../interfaces';
 import { BlogsCategories } from '../../interfaces/blogs interfaces/blog-categories.enum';
 import { UnsaveComponent } from '../unsave/unsave.component';
-import { finalize, forkJoin, map, Observable, of, switchMap, throwError } from 'rxjs';
+import { finalize, forkJoin, map, Observable, of, Subscription, switchMap, throwError } from 'rxjs';
 
 @Component({
   selector: 'blogs-form',
@@ -23,7 +23,7 @@ import { finalize, forkJoin, map, Observable, of, switchMap, throwError } from '
   templateUrl: './blogs-form.component.html',
   styleUrls: ['./blogs-form.component.scss']
 })
-export class BlogsFormComponent implements  OnInit,OnDestroy{
+export class BlogsFormComponent implements  OnInit, OnDestroy{
   @Input() blogId!: string;
   private fb = inject(FormBuilder);
   private dashboardService= inject(DashboardService);
@@ -31,6 +31,7 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
   private authService= inject(AuthService);
   private fvService= inject(FormService);
   private selectedFile: FileList | null = null;
+  private blogsSubscriptions: Subscription = new Subscription();
   public initialFormValues!: EditBlog;
   public currentBlog!:Blog;
   public loadingAnimation: boolean = false;
@@ -73,12 +74,14 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
 
   ngOnDestroy(): void {
     this.cleanImg();
+    this.blogsSubscriptions.unsubscribe();
   }
 
   getTextAverageLength(){
-    this.dashboardService.getTextAverage(Section.BLOGS).subscribe(resp=>{
+    const sub = this.dashboardService.getTextAverage(Section.BLOGS).subscribe(resp=>{
       (resp)? this.averageCharacters = resp.charactersAverage : this.averageCharacters = 0;
     })
+    this.blogsSubscriptions.add(sub);
   }
 
   // Select images
@@ -113,12 +116,13 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
 
       if (!this.blogId) return;
 
-      this.blogsService.getBlog(this.blogId).subscribe((blog) => {
+      const sub = this.blogsService.getBlog(this.blogId).subscribe((blog) => {
         if (!blog) return;
         this.currentBlog = blog;
         this.updateFormValues(blog);
         this.getImageUrlByScreenSize(blog);
       });
+      this.blogsSubscriptions.add(sub);
     }
 
     getImageUrlByScreenSize(blog: Blog){
@@ -130,12 +134,13 @@ export class BlogsFormComponent implements  OnInit,OnDestroy{
 getImgUrlBlog(image: string) {
 this.imgUrl = [];
 if (image){
-    this.dashboardService.getImgUrl(image, Section.BLOGS).subscribe(resp => {
+    const sub = this.dashboardService.getImgUrl(image, Section.BLOGS).subscribe(resp => {
       if (resp) {
         this.imgUrl.push(resp.signedUrl);
       }
         this.imgSrc = [...this.imgUrl];
     });
+    this.blogsSubscriptions.add(sub);
   }
 }
 
@@ -152,7 +157,7 @@ if (image){
     }
 
     hasFormChanged(){
-      this.myForm.valueChanges.subscribe((formValue) => {
+      const sub = this.myForm.valueChanges.subscribe((formValue) => {
         if(this.blogId){
           const updatedBlog = {
             ...this.currentBlog};
@@ -166,6 +171,7 @@ if (image){
           (!hasObjectsDifferences)? this.myForm.markAsPristine() : this.myForm.markAsDirty();
         }
       });
+      this.blogsSubscriptions.add(sub);
     }
 
     get newBlog(): EditBlog {
@@ -222,7 +228,7 @@ if (image){
     // Create and Update form
     private createBlog() {
       const newBlog = this.newBlog;
-      this.blogsService.postNewBlog(newBlog).pipe(
+      const sub =this.blogsService.postNewBlog(newBlog).pipe(
         switchMap(resp => {
           if (!resp) {
             this.dashboardService.notificationPopup("error", "Error al crear el Blog", 3000);
@@ -255,6 +261,7 @@ if (image){
         }
         this.loadingAnimation = false;
       });
+      this.blogsSubscriptions.add(sub);
     }
 
 
@@ -267,7 +274,7 @@ if (image){
           section: Section.BLOGS,
         };
 
-      this.blogsService.editBlog(this.blogId, actualizedBlog as EditBlog).pipe(
+      const sub =this.blogsService.editBlog(this.blogId, actualizedBlog as EditBlog).pipe(
         switchMap(resp => {
               this.loadingAnimation=true
               if (!resp) {
@@ -295,6 +302,7 @@ if (image){
         }
         this.loadingAnimation = false;
       });
+      this.blogsSubscriptions.add(sub);
     }
 
     private uploadFile(eventId: string) :Observable<boolean>{
@@ -353,7 +361,7 @@ if (image){
 }
 
  private deleteImage(boardgameId: string, imgName: string) {
-     this.dashboardService.deleteItemImg(boardgameId, Section.BLOGS, imgName, 'delete-image')!.pipe(
+     const sub = this.dashboardService.deleteItemImg(boardgameId, Section.BLOGS, imgName, 'delete-image')!.pipe(
        finalize(() => this.loadingAnimation = false)
      ).subscribe(resp => {
        if (resp) {
@@ -365,6 +373,7 @@ if (image){
          this.dashboardService.notificationPopup('error', 'No se pudo eliminar la imagen', 2000);
        }
      });
+     this.blogsSubscriptions.add(sub);
    }
 
      ///Submit form

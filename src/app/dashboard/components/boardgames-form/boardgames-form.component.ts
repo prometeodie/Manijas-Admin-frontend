@@ -1,5 +1,5 @@
 import { Boardgame } from './../../interfaces/boards interfaces/boardgames.interface';
-import { Component, inject, Input, ViewEncapsulation } from '@angular/core';
+import { Component, inject, Input, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LoadingAnimationComponent } from '../loading-animation/loading-animation.component';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -16,7 +16,7 @@ import { Dificulty } from '../../interfaces/boards interfaces/dificulty.enum';
 import { Replayability } from '../../interfaces/boards interfaces/replayability.enum';
 import { Router } from '@angular/router';
 import { UnsaveComponent } from "../unsave/unsave.component";
-import { catchError, finalize, forkJoin, map, Observable, of, switchMap, throwError } from 'rxjs';
+import { catchError, finalize, forkJoin, map, Observable, of, Subscription, switchMap, throwError } from 'rxjs';
 
 
 @Component({
@@ -27,7 +27,7 @@ import { catchError, finalize, forkJoin, map, Observable, of, switchMap, throwEr
   templateUrl: './boardgames-form.component.html',
   styleUrls: ['./boardgames-form.component.scss']
 })
-export class BoardgamesFormComponent {
+export class BoardgamesFormComponent implements OnDestroy {
 
   @Input() boardgameId!: string;
   private fb = inject(FormBuilder);
@@ -38,6 +38,7 @@ export class BoardgamesFormComponent {
   private selectedFiles: FileList | null = null;
   private cardCoverFile: File | null = null;
   private fields:string[] = ['minPlayers', 'maxPlayers', 'duration', 'minAge']
+  private boardsSubscriptions: Subscription = new Subscription();
   readonly categoryExplanation:string[] = boardGameCategories;
   readonly urlPattern = /^(https?:\/\/)?(www\.)?instagram\.com\/(p|reel|tv|stories)\/[A-Za-z0-9_-]+\/?$|^(https?:\/\/)?(www\.)?instagram\.com\/[A-Za-z0-9._-]+\/?$/;
   public currentBoardgame!: Boardgame;
@@ -102,12 +103,15 @@ export class BoardgamesFormComponent {
 
   ngOnDestroy(): void {
     this.cleanImg();
+    this.boardsSubscriptions.unsubscribe();
   }
 
   getTextAverageLength(){
-    this.dashboardService.getTextAverage(Section.BOARDGAMES).subscribe(resp=>{
+    const sub = this.dashboardService.getTextAverage(Section.BOARDGAMES).subscribe(resp=>{
       (resp)? this.averageCharacters = resp.charactersAverage : this.averageCharacters = 0;
     })
+
+    this.boardsSubscriptions.add(sub);
   }
 
   async onFileSelected(event: Event, formControlName: string): Promise<FileList | void> {
@@ -183,7 +187,7 @@ export class BoardgamesFormComponent {
   getBoard() {
     if (!this.boardgameId) return;
 
-    this.boardgamesService.getBoard(this.boardgameId).subscribe((boardGame) => {
+    const sub = this.boardgamesService.getBoard(this.boardgameId).subscribe((boardGame) => {
       if (!boardGame) return;
       this.currentBoardgame = {...boardGame};
       this.updateFormValues(boardGame);
@@ -193,6 +197,8 @@ export class BoardgamesFormComponent {
         this.getImgUrlBoard(boardGame.imgName, boardGame.cardCoverImgName):
         this.getImgUrlBoard(boardGame.imgNameMobile, boardGame.cardCoverImgNameMobile);
     });
+
+    this.boardsSubscriptions.add(sub);
   }
 
   getImgUrlBoard(images: string[], cardCoverImg: string) {
@@ -201,7 +207,7 @@ export class BoardgamesFormComponent {
     if (images.length !== 0 ){
       let requestsCompleted = 0;
       images.forEach(img => {
-        this.dashboardService.getImgUrl(img, Section.BOARDGAMES).subscribe(resp => {
+        const sub = this.dashboardService.getImgUrl(img, Section.BOARDGAMES).subscribe(resp => {
           if (resp) {
             this.imgUrl.push(resp.signedUrl);
           }
@@ -210,16 +216,18 @@ export class BoardgamesFormComponent {
             this.imgSrc = [...this.imgUrl];
           }
         });
+        this.boardsSubscriptions.add(sub);
       });
     }
 
     if (cardCoverImg) {
-      this.dashboardService.getImgUrl(cardCoverImg, Section.BOARDGAMES).subscribe(resp => {
+      const sub = this.dashboardService.getImgUrl(cardCoverImg, Section.BOARDGAMES).subscribe(resp => {
         if (resp) {
           this.cardCoverImgUrl = resp.signedUrl;
           this.cardCoverImgSrc = [this.cardCoverImgUrl];
         }
       });
+      this.boardsSubscriptions.add(sub);
     }
   }
 
@@ -324,7 +332,7 @@ export class BoardgamesFormComponent {
     }
 
     hasFormChanged(){
-      this.myForm.valueChanges.subscribe((formValue) => {
+      const sub = this.myForm.valueChanges.subscribe((formValue) => {
         if(this.trackInputChanges()) { return};
 
         if(this.boardgameId){
@@ -347,6 +355,7 @@ export class BoardgamesFormComponent {
           (!hasObjectsDifferences)? this.myForm.markAsPristine() : this.myForm.markAsDirty();
         }
       });
+      this.boardsSubscriptions.add(sub);
     }
 
     trackInputChanges(): boolean {
@@ -510,7 +519,7 @@ export class BoardgamesFormComponent {
 
     const newBoardGame = this.newBoardGame;
 
-    this.boardgamesService.postNewBoardG(newBoardGame).pipe(
+    const sub = this.boardgamesService.postNewBoardG(newBoardGame).pipe(
       switchMap(resp => {
         if (!resp) {
           this.dashboardService.notificationPopup("error", "Error al crear el Board Game", 3000);
@@ -549,6 +558,7 @@ export class BoardgamesFormComponent {
         }
       },
     });
+    this.boardsSubscriptions.add(sub);
   }
 
 private updateBoardGame() {
@@ -559,7 +569,7 @@ private updateBoardGame() {
     section: Section.BOARDGAMES,
   };
 
-  this.boardgamesService.editBoard(this.boardgameId, actualizedBoard as BoardgameUpload).pipe(
+  const sub = this.boardgamesService.editBoard(this.boardgameId, actualizedBoard as BoardgameUpload).pipe(
     switchMap(resp => {
       this.loadingAnimation=true
       if (!resp) {
@@ -583,6 +593,7 @@ private updateBoardGame() {
     this.updateFormValues(boardGame);
     this.dashboardService.notificationPopup("success", "Board Game actualizado correctamente", 2000);
   });
+  this.boardsSubscriptions.add(sub);
   }
 
  loadImg(event: Event){
@@ -633,7 +644,7 @@ private resetForm() {
   }
 
   private deleteCardCoverImages(boardgameId: string, imgName: string, mobileImgName: string ) {
-    this.dashboardService.deleteItemImg(boardgameId, Section.BOARDGAMES, imgName, 'delete-cardcover-image')!.pipe(
+    const sub = this.dashboardService.deleteItemImg(boardgameId, Section.BOARDGAMES, imgName, 'delete-cardcover-image')!.pipe(
       switchMap((resp) => resp ? this.dashboardService.deleteItemImg(boardgameId, Section.BOARDGAMES, mobileImgName, 'delete-cardcover-image') ?? of(null) : of(null)),
       finalize(() => this.loadingAnimation = false)
     ).subscribe(resp => {
@@ -644,10 +655,11 @@ private resetForm() {
         this.dashboardService.notificationPopup('error', 'No se pudo eliminar la imagen', 2000);
       }
     });
+    this.boardsSubscriptions.add(sub);
   }
 
   private deleteRegularImage(boardgameId: string, imgName: string) {
-    this.dashboardService.deleteItemImg(boardgameId, Section.BOARDGAMES, imgName, 'delete-image')!.pipe(
+    const sub = this.dashboardService.deleteItemImg(boardgameId, Section.BOARDGAMES, imgName, 'delete-image')!.pipe(
       finalize(() => this.loadingAnimation = false)
     ).subscribe(resp => {
       if (resp) {
@@ -658,6 +670,7 @@ private resetForm() {
         this.dashboardService.notificationPopup('error', 'No se pudo eliminar la imagen', 2000);
       }
     });
+    this.boardsSubscriptions.add(sub);
   }
 
   cleanDeletedImages(imgName: string){

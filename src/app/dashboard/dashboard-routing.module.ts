@@ -4,7 +4,6 @@ import { LayoutComponent } from './pages/layout/layout.component';
 import { BoardgamesComponent } from './pages/boardgames/boardgames.component';
 import { BlogsComponent } from './pages/blogs/blogs.component';
 import { ManijometroComponent } from './pages/manijometro/manijometro.component';
-import { MessagesComponent } from './pages/messages/messages.component';
 import { MessageComponent } from './pages/message/message.component';
 import { EventsComponent } from './pages/events/events.component';
 import { CreateEditComponent } from './pages/create-edit/create-edit.component';
@@ -28,7 +27,6 @@ const routes: Routes = [
       {path:'manijometro/:id',canDeactivate: [unsavedChangesGuard], component:GameManijometroComponent},
       {path:'manijometro', component:ManijometroComponent},
       {path:'control-panel', component:ControlPanelComponent},
-      {path:'messages', component:MessagesComponent},
       {path:'message/:id', component:MessageComponent},
       {path:'events', component:EventsComponent},
       {path:'not-authorized', component:NotAuthorizedComponent},

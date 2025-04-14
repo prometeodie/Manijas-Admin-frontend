@@ -1,8 +1,8 @@
-import { Component, ElementRef, OnInit, ViewChild, inject, Renderer2 } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, inject, Renderer2, OnDestroy } from '@angular/core';
 import { AuthService } from '../../../auth/services/auth.service';
 import Swal from 'sweetalert2';
 import { DashboardService } from '../../services/dashboard.service';
-import { catchError, map, of } from 'rxjs';
+import { catchError, map, of, Subscription } from 'rxjs';
 import { Message } from '../../interfaces/messages interfaces/message.interface';
 import { MessagesService } from '../../services/messages.service';
 
@@ -11,11 +11,12 @@ import { MessagesService } from '../../services/messages.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent  implements OnInit {
+export class HeaderComponent  implements OnInit, OnDestroy{
 
   private authService = inject(AuthService);
   private dashboardService = inject(DashboardService);
   private messagesService = inject(MessagesService);
+  private messagesSubcriptions: Subscription = new Subscription();
   public messageRoute: string = '/lmdr/message/'
   public isMessagesWindowOpen: boolean = false;
   public unreadMessages: number = 0;
@@ -46,8 +47,13 @@ export class HeaderComponent  implements OnInit {
     this.getUnreadMessagesCount();
   }
 
+  ngOnDestroy(): void {
+    this.messagesSubcriptions.unsubscribe();
+  }
+
   getUnreadMessagesCount(){
-    this.messagesService.getUnreadMessageCount()?.pipe(
+
+    const sub = this.messagesService.getUnreadMessageCount()?.pipe(
       map(unreadMessages => unreadMessages?.unreadMessages),
       catchError(error => {
         return of(0);
@@ -57,6 +63,9 @@ export class HeaderComponent  implements OnInit {
         (unreadMessageCount! > 99)? this.unreadMessages = 99 : this.unreadMessages = unreadMessageCount!;
       }
     });
+
+    this.messagesSubcriptions.add(sub);
+
   }
 
 getAllMessagesAndSlideMenu(){
@@ -66,7 +75,7 @@ getAllMessagesAndSlideMenu(){
 
 getAllMessages(){
   this.isLoadingMessages = true;
-    this.messagesService.getMessages()?.pipe(
+    const sub = this.messagesService.getMessages()?.pipe(
       map(messages => {
         if (messages !== null) {
         return messages?.sort((a,b)=>{
@@ -89,6 +98,8 @@ getAllMessages(){
         this.messages = messages!;
       },
     );
+
+    this.messagesSubcriptions.add(sub);
 }
 
 openCloseMessages(){
@@ -96,7 +107,7 @@ openCloseMessages(){
 }
 
 changeMessageStatus(id: string){
-  this.messagesService.messageHasBeenReaded(id).subscribe(
+  const sub = this.messagesService.messageHasBeenReaded(id).subscribe(
     resp=>{
       if(resp){
         this.getUnreadMessagesCount();
@@ -104,6 +115,7 @@ changeMessageStatus(id: string){
       }
     }
   );
+  this.messagesSubcriptions.add(sub);
 }
 
 deleteMessage(id:string, event: Event){
@@ -118,7 +130,7 @@ deleteMessage(id:string, event: Event){
     confirmButtonText: 'Yes!',
   }).then((result) => {
     if(result.isConfirmed) {
-      this.messagesService.deleteMessage(id).subscribe(resp=>{
+      const sub = this.messagesService.deleteMessage(id).subscribe(resp=>{
         if(resp){
           this.dashboardService.notificationPopup('success','Mensaje eliminado',1500)
           this.getAllMessages();
@@ -126,6 +138,7 @@ deleteMessage(id:string, event: Event){
           this.dashboardService.notificationPopup("error", 'Algo salio mal :(',2000)
         }
       })
+      this.messagesSubcriptions.add(sub);
     };
   })
 }

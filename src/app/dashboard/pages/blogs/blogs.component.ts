@@ -1,7 +1,7 @@
-import { Component, HostListener, inject, OnInit } from '@angular/core';
+import { Component, HostListener, inject, OnDestroy, OnInit } from '@angular/core';
 import { BlogsService } from '../../services/blogs.service';
 import { Blog, CardTemplate } from '../../interfaces';
-import { map } from 'rxjs';
+import { map, Subscription } from 'rxjs';
 import { BlogsCategories } from '../../interfaces/blogs interfaces/blog-categories.enum';
 import { trigger, style, animate, transition, state } from '@angular/animations';
 
@@ -24,9 +24,10 @@ import { trigger, style, animate, transition, state } from '@angular/animations'
     ])
   ]
 })
-export class BlogsComponent implements OnInit{
+export class BlogsComponent implements OnInit, OnDestroy{
   readonly blogsPath = '/lmdr/create-edit/BLOGS';
   private blogsService = inject(BlogsService);
+  private blogsSub: Subscription = new Subscription();
   public blogs: CardTemplate[] = [];
   public page = 1;
   public currentCategory: BlogsCategories | null = BlogsCategories.ALL;
@@ -46,6 +47,10 @@ export class BlogsComponent implements OnInit{
 
   ngOnInit(): void {
     this.actualizeBlogs(BlogsCategories.ALL, this.page);
+  }
+
+  ngOnDestroy(): void {
+    this.blogsSub.unsubscribe();
   }
 
   @HostListener('window:scroll', [])
@@ -68,7 +73,7 @@ export class BlogsComponent implements OnInit{
 
   actualizeBlogs(category?: BlogsCategories | null, page: number = 1){
       this.isLoading = true;
-        this.blogsService.getAllBlogs(category , page ).pipe(
+       this.blogsSub = this.blogsService.getAllBlogs(category , page ).pipe(
           map(blog=> blog!.map(blog=>this.transformData(blog)))
       ).subscribe(
         newBlogs=>{
