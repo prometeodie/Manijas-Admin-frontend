@@ -11,7 +11,6 @@ import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/services/auth.service';
 import Swal from 'sweetalert2';
- // tu servicio de auth
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
