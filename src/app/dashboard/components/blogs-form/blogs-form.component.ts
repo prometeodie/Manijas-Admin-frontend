@@ -14,6 +14,7 @@ import { Blog, EditBlog, Section } from '../../interfaces';
 import { BlogsCategories } from '../../interfaces/blogs interfaces/blog-categories.enum';
 import { UnsaveComponent } from '../unsave/unsave.component';
 import { finalize, forkJoin, map, Observable, of, Subscription, switchMap, throwError } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'blogs-form',
@@ -30,6 +31,7 @@ export class BlogsFormComponent implements  OnInit, OnDestroy{
   private blogsService= inject(BlogsService);
   private authService= inject(AuthService);
   private fvService= inject(FormService);
+  private router = inject(Router);
   private selectedFile: FileList | null = null;
   private blogsSubscriptions: Subscription = new Subscription();
   public initialFormValues!: EditBlog;
@@ -54,7 +56,7 @@ export class BlogsFormComponent implements  OnInit, OnDestroy{
   public myForm = this.fb.group({
     title:       ['',[Validators.required]],
     subTitle:    ['',[]],
-    blogContent: ['',[]],
+    blogContent: ['',[Validators.required]],
     category:    [BlogsCategories.NONE,[Validators.required]],
     writedBy:    ['',[Validators.required]],
     publish:     [false ,[]],
@@ -126,19 +128,31 @@ export class BlogsFormComponent implements  OnInit, OnDestroy{
     }
 
     getImageUrlByScreenSize(blog: Blog){
+      if(blog.imgName){
+        const imgUrl = this.dashboardService.getLocalStorageImgUrl(blog._id!, Section.BLOGS);
+       if(imgUrl){
+         this.imgUrl = [imgUrl];
+         this.imgSrc = [...this.imgUrl];
+       }else{
       (this.dashboardService.screenWidth > 800)?
-        this.getImgUrlBlog(blog.imgName):
-        this.getImgUrlBlog(blog.imgMobileName);
+        this.getImgUrlBlog(blog.imgName, blog._id!):
+        this.getImgUrlBlog(blog.imgMobileName, blog._id!);
+       }
     }
+}
 
-getImgUrlBlog(image: string) {
+getImgUrlBlog(image: string, id:string) {
 this.imgUrl = [];
 if (image){
     const sub = this.dashboardService.getImgUrl(image, Section.BLOGS).subscribe(resp => {
       if (resp) {
+        this.dashboardService.deleteItemFromLocalStorage(id, Section.BLOGS);
         this.imgUrl.push(resp.signedUrl);
       }
         this.imgSrc = [...this.imgUrl];
+        (this.dashboardService.screenWidth > 800)?
+                                            this.dashboardService.saveImgUrlLocalStorage({_id: id, cardCoverImgUrl: resp.signedUrl, urlDate: new Date()}, Section.BLOGS):
+                                            this.dashboardService.saveImgUrlLocalStorage({_id: id, cardCoverImgUrlMovile: resp.signedUrl, urlDate: new Date()}, Section.BLOGS);
     });
     this.blogsSubscriptions.add(sub);
   }
@@ -210,11 +224,11 @@ if (image){
     }
 
     private resetForm() {
+      this.myForm.markAsPristine();
       this.myForm.reset();
       this.cleanImg();
       this.myForm.reset({ writedBy: "", category:BlogsCategories.NONE });
       this.myForm.get('imgName')?.reset();
-      this.myForm.markAsPristine();
       this.selectedFile = null;
       this.getTextAverageLength();
     }
@@ -250,12 +264,9 @@ if (image){
         })
       ).subscribe((blog) => {
         if (blog) {
-          this.uploadFile(blog._id!);
           this.dashboardService.notificationPopup('success','Blog agregado',2000)
-          this.resetForm();
-          this.getImageUrlByScreenSize(blog);
-          this.updateFormValues(blog);
-          this.downloadData(newBlog);
+          this.downloadData(blog);
+          this.router.navigate([`/lmdr/create-edit/BLOGS/${blog._id}`]);
         }else{
           this.dashboardService.notificationPopup('error','algo ocurrio al guardar el Blog',2000)
         }
@@ -276,7 +287,7 @@ if (image){
 
       const sub =this.blogsService.editBlog(this.blogId, actualizedBlog as EditBlog).pipe(
         switchMap(resp => {
-              this.loadingAnimation=true
+              this.loadingAnimation = true;
               if (!resp) {
                 this.dashboardService.notificationPopup("error", "Algo salió mal al actualizar el Blog :(", 3000);
                 return throwError(() => new Error("Error al actualizar el Blog"));
@@ -292,10 +303,11 @@ if (image){
             finalize(() => this.loadingAnimation = false)
       ).subscribe((blog) => {
         if (blog) {
+          (this.onlyImagesAreDirty() || this.myForm.pristine)? null : this.dashboardService.downloadObjectData(actualizedBlog);
+          this.resetForm()
+          this.currentBlog = blog;
           this.dashboardService.notificationPopup('success', 'Blog actualizado correctamente', 2000);
           this.getImageUrlByScreenSize(blog);
-          this.downloadData(actualizedBlog);
-          this.resetForm()
           this.updateFormValues(blog);
         } else {
           this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Blog :(', 3000);
@@ -306,7 +318,7 @@ if (image){
     }
 
     private uploadFile(eventId: string) :Observable<boolean>{
-      if (this.selectedFile == null) {
+      if (!eventId || !this.selectedFile) {
         console.log("No file selected, upload image canceled.");
         return of(false);
       }
@@ -333,6 +345,18 @@ if (image){
         }),
         finalize(() => {this.loadingAnimation = false})
       );
+    }
+
+    onlyImagesAreDirty(): boolean {
+      const controls = this.myForm.controls;
+
+      const dirtyKeys = Object.keys(controls).filter(key => {
+        const control = controls[key as keyof typeof controls];
+        return control.dirty;
+      });
+
+      return dirtyKeys.length > 0 &&
+             dirtyKeys.every(key => key === 'imgName');
     }
 
 
@@ -368,6 +392,7 @@ if (image){
          this.imgUrl = [];
          this.imgSrc = [];
          this.currentBlog.imgName = '';
+         this.dashboardService.deleteItemFromLocalStorage(this.currentBlog._id!, Section.BLOGS);
          this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
        } else {
          this.dashboardService.notificationPopup('error', 'No se pudo eliminar la imagen', 2000);

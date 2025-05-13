@@ -6,9 +6,8 @@ import { HttpClient } from '@angular/common/http';
 import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { catchError, of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import { BoardgameUpload, CharacterAverageLenght, EditBlog, SignedImgUrl } from '../interfaces';
+import { BoardgameUpload, CharacterAverageLenght, EditBlog, LocalStorageItems, LocalStorageSetItem, SignedImgUrl } from '../interfaces';
 import { Section } from '../interfaces/others/sections.enum';
-import { read } from 'fs';
 import { AuthService } from '../../auth/services/auth.service';
 
 @Injectable({
@@ -39,6 +38,7 @@ export class DashboardService {
 
     return  new HttpHeaders().set('Authorization',`Bearer ${token}`);
   }
+
 
   notificationPopup(icon:SweetAlertIcon, title:string, timer:number){
     Swal.fire({
@@ -215,10 +215,6 @@ areObjectsDifferent(obj1: any, obj2: any): boolean {
   return false;
 }
 
-testAuthStatus(){
-  console.log(this.AuthService.authStatus())
-}
-
   countingChar(event: any) {
     const editorContent = event.editor.getData();
     const textContent = this.stripHtml(editorContent);
@@ -280,8 +276,7 @@ testAuthStatus(){
     formData.append('file', imgFile);
 
     return formData;
-}
-
+  }
 
   loadImage(img:string | ArrayBuffer | null){
     this._imgSrc.set(img);
@@ -340,6 +335,107 @@ testAuthStatus(){
     )
   }
 
+  saveImgUrlLocalStorage(item: LocalStorageSetItem, section: string) {
+    const items: LocalStorageItems[] = JSON.parse(localStorage.getItem(section) || '[]');
+    const existingItemIndex = items.findIndex(i => i._id === item._id);
+    const now = new Date();
+    const isBoardGames = section === 'BOARDGAMES';
+    if (existingItemIndex !== -1) {
+      const existingItem = items[existingItemIndex];
+
+      // Siempre guardar cardCoverImgUrl
+      if (item.cardCoverImgUrl) {
+        if (!existingItem.cardCoverImgUrl) existingItem.cardCoverImgUrl = [];
+        existingItem.cardCoverImgUrl.push({ url: item.cardCoverImgUrl, urlDate: now });
+      }
+
+      // Siempre guardar cardCoverImgUrlMovile
+      if (item.cardCoverImgUrlMovile) {
+        if (!existingItem.cardCoverImgUrlMovile) existingItem.cardCoverImgUrlMovile = [];
+        existingItem.cardCoverImgUrlMovile.push({ url: item.cardCoverImgUrlMovile, urlDate: now });
+      }
+
+      // Guardar imágenes de boardgames si corresponde
+      if (item.imgUrl) {
+        if (!existingItem.imgUrl) existingItem.imgUrl = [];
+        existingItem.imgUrl.push({ url: item.imgUrl, urlDate: now });
+      }
+
+      // Guardar imgUrlMovile si viene
+      if (item.imgUrlMovile) {
+        if (!existingItem.imgUrlMovile) existingItem.imgUrlMovile = [];
+        existingItem.imgUrlMovile.push({ url: item.imgUrlMovile, urlDate: now });
+      }
+
+      items[existingItemIndex] = existingItem;
+
+    }
+    else {
+      const newItem: LocalStorageItems = {
+        _id: item._id,
+        cardCoverImgUrl: item.cardCoverImgUrl ? [{ url: item.cardCoverImgUrl, urlDate: now }] : [],
+        cardCoverImgUrlMovile: item.cardCoverImgUrlMovile ? [{ url: item.cardCoverImgUrlMovile, urlDate: now }] : [],
+        imgUrl: isBoardGames && item.imgUrl ? [{ url: item.imgUrl, urlDate: now }] : [],
+        imgUrlMovile: isBoardGames && item.imgUrlMovile ? [{ url: item.imgUrlMovile, urlDate: now }] : [],
+      };
+
+      items.push(newItem);
+    }
+
+    localStorage.setItem(section, JSON.stringify(items));
+  }
+
+  getLocalStorageImgUrl(id: string, section: string): string | undefined {
+    const localStorageData = localStorage.getItem(section);
+    if (!localStorageData) return;
+
+    const parsedData = JSON.parse(localStorageData);
+    const itemIndex = parsedData.findIndex((item: { _id: string }) => item._id === id);
+    if (itemIndex === -1) return;
+
+    const item = parsedData[itemIndex];
+    const isMobile = this.screenWidth <= 800;
+
+    const key = isMobile ? 'cardCoverImgUrlMovile' : 'cardCoverImgUrl';
+    const image = item[key]?.[0];
+    if (!image) return;
+
+    const urlDate = new Date(image.urlDate);
+
+    const isValid = this.isItemValidWithinHour(urlDate);
+    if (isValid) {
+      return image.url;
+    }
+
+    parsedData[itemIndex][key] = [];
+
+    localStorage.setItem(section, JSON.stringify(parsedData));
+
+    return;
+  }
+
+  getLocalStorageMultipleImgUrl(id: string, section: string) {
+    const localStorageData = localStorage.getItem(section);
+    if (!localStorageData) return [];
+
+    const parsedData = JSON.parse(localStorageData);
+    const item = parsedData.find((item: { _id: string }) => item._id === id);
+    if (!item) return [];
+
+    const isMobile = this.screenWidth <= 800;
+    const key = isMobile ? 'imgUrlMovile' : 'imgUrl';
+
+    if (!Array.isArray(item[key]) || item[key].length === 0) return [];
+
+    const isValid = item[key].every((img: { urlDate: string }) => {
+      return this.isItemValidWithinHour(new Date(img.urlDate));
+    });
+
+    if (!isValid) return [];
+
+    return item[key].map((img: { url: string }) => img.url);
+  }
+
   getTextAverage(seccion: Section){
     const headers = this.getHeaders();
 
@@ -350,6 +446,78 @@ testAuthStatus(){
       })
     )
   }
+
+  deleteItemFromLocalStorage(id: string, section: string): void {
+    const dataString = localStorage.getItem(section);
+
+    if (!dataString) {
+      console.warn(`No se encontró nada en localStorage bajo la sección: ${section}`);
+      return;
+    }
+
+    try {
+      const dataArray = JSON.parse(dataString);
+
+      if (!Array.isArray(dataArray)) {
+        console.error(`La sección ${section} no contiene un array válido.`);
+        return;
+      }
+
+      const updatedArray = dataArray.filter((item) => {return item._id !== id});
+
+      if (updatedArray.length === dataArray.length) {
+        console.warn(`No se encontró ningún elemento con id: ${id} en la sección: ${section}`);
+      }
+      localStorage.setItem(section, JSON.stringify(updatedArray));
+    } catch (error) {
+      console.error('Error parseando el localStorage:', error);
+    }
+  }
+
+   removeCoverImagesFromSection(section :string , id: string) {
+    // Obtener el array desde localStorage
+    const storedData = localStorage.getItem(section);
+    if (!storedData) {
+      console.warn(`No se encontró ninguna sección con el nombre: ${section}`);
+      return;
+    }
+
+    // Parsear el array
+    let dataArray;
+    try {
+      dataArray = JSON.parse(storedData);
+    } catch (error) {
+      console.error("Error al parsear los datos:", error);
+      return;
+    }
+
+    // Buscar el objeto por _id
+    const index = dataArray.findIndex((item: { _id: string }) => item._id === id);
+    if (index === -1) {
+      console.warn(`No se encontró ningún objeto con _id: ${id}`);
+      return;
+    }
+
+    // Eliminar las propiedades deseadas
+    delete dataArray[index].cardCoverImgUrl;
+    delete dataArray[index].cardCoverImgUrlMovile;
+
+    // Guardar los datos actualizados en localStorage
+    localStorage.setItem(section, JSON.stringify(dataArray));
+  }
+
+  isItemValidWithinHour(date: Date): boolean {
+  const now = new Date();
+
+  const sameDay =
+    now.getFullYear() === date.getFullYear() &&
+    now.getMonth() === date.getMonth() &&
+    now.getDate() === date.getDate();
+
+  const diffMinutes = (now.getTime() - date.getTime()) / (1000 * 60);
+
+  return sameDay && diffMinutes >= 0 && diffMinutes <= 59;
+}
 
   public getImagePaths(imgN: string, id: string) {
     return {

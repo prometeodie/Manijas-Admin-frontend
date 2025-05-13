@@ -29,6 +29,7 @@ private fb = inject(FormBuilder);
 private dashboardService = inject(DashboardService);
 private aboutService = inject(AboutService);
 private fvService = inject(FormService);
+private router = inject(Router);
 private selectedFile: FileList | null = null;
 private aboutItemsSubscriptions: Subscription = new Subscription();
 public currentAboutItem!:AboutItem;
@@ -109,19 +110,30 @@ public myForm = this.fb.group({
   }
 
      getImageUrlByScreenSize(aboutItem:AboutItem){
-              (this.dashboardService.screenWidth > 800)?
-                this.getImgUrlEvent(aboutItem.imgName):
-                this.getImgUrlEvent(aboutItem.imgMobileName);
-            }
+      if(aboutItem.imgName){
+        const imgUrl = this.dashboardService.getLocalStorageImgUrl(aboutItem._id!, Section.ABOUT);
+       if(imgUrl){
+         this.imgUrl = [imgUrl];
+         this.imgSrc = [...this.imgUrl];
+       }else{
+         (this.dashboardService.screenWidth > 800)?
+           this.getImgUrlAbouteItem(aboutItem.imgName):
+           this.getImgUrlAbouteItem(aboutItem.imgMobileName);
+       }
+      }}
 
-        getImgUrlEvent(image: string) {
+        getImgUrlAbouteItem(image: string) {
         this.imgUrl = [];
         if (image){
             const sub = this.dashboardService.getImgUrl(image, Section.ABOUT).subscribe(resp => {
               if (resp) {
+                this.dashboardService.deleteItemFromLocalStorage(this.currentAboutItem._id!, Section.ABOUT);
                 this.imgUrl.push(resp.signedUrl);
               }
                 this.imgSrc = [...this.imgUrl];
+                (this.dashboardService.screenWidth > 800)?
+                                            this.dashboardService.saveImgUrlLocalStorage({_id: this.currentAboutItem._id!, cardCoverImgUrl: resp.signedUrl, urlDate: new Date()}, Section.ABOUT):
+                                            this.dashboardService.saveImgUrlLocalStorage({_id: this.currentAboutItem._id!, cardCoverImgUrlMovile: resp.signedUrl, urlDate: new Date()}, Section.ABOUT);
             });
             this.aboutItemsSubscriptions.add(sub);
           }
@@ -190,7 +202,7 @@ public myForm = this.fb.group({
   private updateFormValues(aboutItem: AboutItem) {
     this.myForm.patchValue({
       text:        aboutItem.text,
-      publish:     true
+      publish:     aboutItem.publish
   });
 }
   private resetForm() {
@@ -227,9 +239,7 @@ public myForm = this.fb.group({
                 ).subscribe((aboutItem) => {
       if (aboutItem) {
         this.dashboardService.notificationPopup('success','Item agregado',2000)
-        this.resetForm();
-        this.updateFormValues(aboutItem);
-        this.getImageUrlByScreenSize(aboutItem);
+        this.router.navigate([`/lmdr/create-edit/ABOUT/${aboutItem._id}`]);
       }else{
         this.dashboardService.notificationPopup('error','algo ocurrio al guardar el fragmento de historia',2000)
       }
@@ -270,8 +280,8 @@ public myForm = this.fb.group({
         }
         this.dashboardService.notificationPopup('success', 'Item actualizado correctamente', 2000);
         this.resetForm();
+        this.currentAboutItem = aboutItem;
         this.getImageUrlByScreenSize(aboutItem)
-        this.resetForm();
         this.updateFormValues(aboutItem);
       } else {
         this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Item :(', 3000);
@@ -351,13 +361,14 @@ private confirmDelete() {
     }
 
      private deleteImage(boardgameId: string, imgName: string) {
-         const sub = this.dashboardService.deleteItemImg(boardgameId, Section.EVENTS, imgName, 'delete-image')!.pipe(
+         const sub = this.dashboardService.deleteItemImg(boardgameId, Section.ABOUT, imgName, 'delete-image')!.pipe(
            finalize(() => this.loadingAnimation = false)
          ).subscribe(resp => {
            if (resp) {
              this.imgUrl = [];
              this.imgSrc = [];
              this.currentAboutItem.imgName = '';
+             this.dashboardService.deleteItemFromLocalStorage(this.currentAboutItem._id!, Section.ABOUT);
              this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
            } else {
              this.dashboardService.notificationPopup('error', 'No se pudo eliminar la imagen', 2000);

@@ -20,6 +20,8 @@ export * from './about interface/about-Input.interface';
 export * from './about interface/aboutItem-organizing.interface';
 export * from './others/sections.enum';
 export * from './others/inputs.interface';
+export * from './others/local-storage-items.interface';
+export * from './others/local-storage-item.interface';
 export * from './manijometro interfaces/manijometro.interface';
 export * from './control-panel interface/change-password.interface';
 export * from './user interface/create-user.nterface';

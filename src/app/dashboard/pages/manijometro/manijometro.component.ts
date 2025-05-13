@@ -1,6 +1,6 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ManijometroService } from '../../services/manijometro.service';
-import { Manijometro, Section } from '../../interfaces';
+import { Manijometro, Section, SignedImgUrl } from '../../interfaces';
 import { AuthService } from 'src/app/auth/services/auth.service';
 import { Router } from '@angular/router';
 import { trigger, style, animate, transition, state } from '@angular/animations';
@@ -56,10 +56,17 @@ export class ManijometroComponent implements OnInit, OnDestroy{
       if(resp){
         this.allBoardGames = resp;
         this.allBoardGames.forEach(item => {
+
           if(item.cardCoverImgName){
-            this.dashboardService.getImgUrl(item.cardCoverImgName, Section.BOARDGAMES).subscribe(imgUrl => {
-              item.imgUrl = imgUrl;
-            });
+            const imgUrl = this.getImageUrlByScreenSize(item);
+
+            if(imgUrl){
+              item.imgUrl = imgUrl as unknown as SignedImgUrl;
+            }else{
+              this.dashboardService.getImgUrl(item.cardCoverImgName, Section.BOARDGAMES).subscribe(imgUrl => {
+                item.imgUrl = imgUrl;
+              });
+            }
           }
         })
         this.filterVotedAndUnVotedBg(resp)
@@ -70,6 +77,8 @@ export class ManijometroComponent implements OnInit, OnDestroy{
     });
     this.isLoading = false;
   }
+
+
 
   ngOnDestroy(): void {
     this.manijometrosSub.unsubscribe();
@@ -103,6 +112,10 @@ export class ManijometroComponent implements OnInit, OnDestroy{
     const loadClass = 'manijometro__section__cards__card__img--loaded';
     this.dashboardService.loadImg(event, loadClass)
   }
+
+  getImageUrlByScreenSize(item:Manijometro){
+        return this.dashboardService.getLocalStorageImgUrl(item._id!, Section.BOARDGAMES);
+    }
 
   onCategorySelected(category: string | null) {
     let boardgames = [];

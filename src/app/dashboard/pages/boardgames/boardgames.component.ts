@@ -63,6 +63,7 @@ export class BoardgamesComponent implements OnInit, OnDestroy{
     }
 
     onSearch(event: string){
+      if(event === '') return;
       this.boardgamesServices.findBoardgame(event).pipe(
         map(board=> board!.map(board=>this.transformData(board)))
       ).subscribe(

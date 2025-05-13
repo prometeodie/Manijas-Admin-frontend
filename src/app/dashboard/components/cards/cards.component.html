@@ -1,6 +1,6 @@
 <main class="card" [ngClass]="{'card--event': isEventCategory}">
   <div class="card__header">
-    <img class="card__header__img" [src]="imgUrl" [alt]="objectTemplate.title" (load)="loadImg($event)">
+    <img class="card__header__img" [src]="imgUrl | image" [ngClass]="{ 'fallback-img': !isFallbackImage(imgUrl) }" [alt]="objectTemplate.title" (load)="loadImg($event)">
     <span class="card__header__manijometro" *ngIf="objectTemplate.section === 'BOARDGAMES'">#{{objectTemplate.manijometroPosition}}</span>
     <span class="card__header__edition-label" *ngIf="!objectTemplate.publish">En edición</span>
   </div>

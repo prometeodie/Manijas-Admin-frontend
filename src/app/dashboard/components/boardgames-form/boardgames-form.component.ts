@@ -204,30 +204,50 @@ export class BoardgamesFormComponent implements OnDestroy {
   getImgUrlBoard(images: string[], cardCoverImg: string) {
     this.cardCoverImgUrl = '';
     this.imgUrl = [];
-    if (images.length !== 0 ){
-      let requestsCompleted = 0;
-      images.forEach(img => {
-        const sub = this.dashboardService.getImgUrl(img, Section.BOARDGAMES).subscribe(resp => {
-          if (resp) {
-            this.imgUrl.push(resp.signedUrl);
-          }
-          requestsCompleted++;
-          if (requestsCompleted === images.length) {
-            this.imgSrc = [...this.imgUrl];
-          }
+
+    if (images){
+      const imgsUrl = this.dashboardService.getLocalStorageMultipleImgUrl(this.currentBoardgame._id, Section.BOARDGAMES);
+      if(imgsUrl?.length! > 0 && images.length === imgsUrl!.length){
+        this.imgUrl = imgsUrl!;
+        this.imgSrc = imgsUrl!;
+      }else{
+        let requestsCompleted = 0;
+        this.dashboardService.deleteItemFromLocalStorage(this.currentBoardgame._id, Section.BOARDGAMES);
+        images.forEach(img => {
+          const sub = this.dashboardService.getImgUrl(img, Section.BOARDGAMES).subscribe(resp => {
+            if (resp) {
+              this.imgUrl.push(resp.signedUrl);
+              (this.dashboardService.screenWidth > 800)?
+              this.dashboardService.saveImgUrlLocalStorage({_id: this.currentBoardgame._id, imgUrl: resp.signedUrl, urlDate: new Date()}, Section.BOARDGAMES):
+              this.dashboardService.saveImgUrlLocalStorage({_id: this.currentBoardgame._id, imgUrlMovile: resp.signedUrl, urlDate: new Date()}, Section.BOARDGAMES);
+            }
+            requestsCompleted++;
+            if (requestsCompleted === images.length) {
+              this.imgSrc = [...this.imgUrl];
+            }
+          });
+          this.boardsSubscriptions.add(sub);
         });
-        this.boardsSubscriptions.add(sub);
-      });
+      }
     }
 
     if (cardCoverImg) {
-      const sub = this.dashboardService.getImgUrl(cardCoverImg, Section.BOARDGAMES).subscribe(resp => {
-        if (resp) {
-          this.cardCoverImgUrl = resp.signedUrl;
-          this.cardCoverImgSrc = [this.cardCoverImgUrl];
-        }
-      });
-      this.boardsSubscriptions.add(sub);
+      const cardcoverImgUrl = this.dashboardService.getLocalStorageImgUrl(this.currentBoardgame._id, Section.BOARDGAMES);
+      if(cardcoverImgUrl && cardCoverImg ){
+        this.cardCoverImgUrl = cardcoverImgUrl;
+          this.cardCoverImgSrc.push(this.cardCoverImgUrl);
+      }else{
+        const sub = this.dashboardService.getImgUrl(cardCoverImg, Section.BOARDGAMES).subscribe(resp => {
+          if (resp) {
+            this.cardCoverImgUrl = resp.signedUrl;
+            this.cardCoverImgSrc = [this.cardCoverImgUrl];
+            (this.dashboardService.screenWidth > 800)?
+            this.dashboardService.saveImgUrlLocalStorage({_id: this.currentBoardgame._id, cardCoverImgUrl: resp.signedUrl, urlDate: new Date()}, Section.BOARDGAMES):
+            this.dashboardService.saveImgUrlLocalStorage({_id: this.currentBoardgame._id, cardCoverImgUrlMovile: resp.signedUrl, urlDate: new Date()}, Section.BOARDGAMES);
+          }
+        });
+        this.boardsSubscriptions.add(sub);
+      }
     }
   }
 
@@ -427,6 +447,8 @@ export class BoardgamesFormComponent implements OnDestroy {
 
   cleanImg(){
     this.imgSrc = [];
+    this.imgUrl = [];
+    this.cardCoverImgUrl = '';
     this.cardCoverImgSrc = [];
   }
 
@@ -525,7 +547,6 @@ export class BoardgamesFormComponent implements OnDestroy {
           this.dashboardService.notificationPopup("error", "Error al crear el Board Game", 3000);
           return throwError(() => new Error("Error al crear el board game"));
         }
-
         return this.uploadFiles(resp._id).pipe(
           map(imagesUploaded => ({ boardGameId: resp._id, imagesUploaded }))
         );
@@ -542,13 +563,9 @@ export class BoardgamesFormComponent implements OnDestroy {
     ).subscribe({
       next: boardGame => {
         if (!boardGame) return;
-        this.currentBoardgame = { ...boardGame };
-        this.updateFormValues(boardGame);
-        this.getImgUrlBoard(boardGame.imgName, boardGame.cardCoverImgName);
-        this.resetForm();
-        this.router.navigateByUrl('lmdr/boardgames');
-        this.dashboardService.notificationPopup("success", "Board Game creado correctamente", 2000);
         this.dashboardService.downloadObjectData(newBoardGame);
+        this.router.navigateByUrl(`/lmdr/create-edit/BOARDGAMES/${boardGame._id}`);
+        this.dashboardService.notificationPopup("success", "Board Game creado correctamente", 2000);
       },
       error: err => {
         if (err.status === 409 && err.error?.type === 'RESOURCE_ALREADY_EXISTS') {
@@ -571,7 +588,7 @@ private updateBoardGame() {
 
   const sub = this.boardgamesService.editBoard(this.boardgameId, actualizedBoard as BoardgameUpload).pipe(
     switchMap(resp => {
-      this.loadingAnimation=true
+      this.loadingAnimation = true;
       if (!resp) {
         this.dashboardService.notificationPopup("error", "Algo salió mal al actualizar el Board :(", 3000);
         return throwError(() => new Error("Error al actualizar el board game"));
@@ -588,8 +605,9 @@ private updateBoardGame() {
   ).subscribe(boardGame => {
     if (!boardGame) return;
     this.currentBoardgame = { ...boardGame };
-    this.getImgUrlBoard(boardGame.imgName, boardGame.cardCoverImgName);
+    (this.onlyImagesAreDirty() || this.myForm.pristine)? null : this.dashboardService.downloadObjectData(actualizedBoard);
     this.resetForm();
+    this.getImgUrlBoard(boardGame.imgName, boardGame.cardCoverImgName);
     this.updateFormValues(boardGame);
     this.dashboardService.notificationPopup("success", "Board Game actualizado correctamente", 2000);
   });
@@ -616,19 +634,29 @@ private resetForm() {
   this.getTextAverageLength();
 }
 
+onlyImagesAreDirty(): boolean {
+  const controls = this.myForm.controls;
+
+  const dirtyKeys = Object.keys(controls).filter(key => {
+    const control = controls[key as keyof typeof controls];
+    return control.dirty;
+  });
+
+  return dirtyKeys.length > 0 &&
+         dirtyKeys.every(key => key === 'imgName' || key === 'cardCoverImgName');
+}
+
   //DELETE IMG SECTION
 
-  showDeleteBtn(imgName:  string | ArrayBuffer,imgSrc: string[]): boolean {
-
-    return (imgSrc.includes(imgName.toString()))?true : false;
-
+  showDeleteBtn(imgName:  string | ArrayBuffer,imgUrl: string[]): boolean {
+    return (imgUrl.includes(imgName.toString()))?true : false;
   }
 
   private confirmDelete() {
     return this.dashboardService.confirmDelete();
   }
 
-  deleteImg(imgName: string, isCardCover: boolean) {
+  deleteImg(imgName: string, imgUrl:string | ArrayBuffer, isCardCover: boolean) {
     this.confirmDelete().then((result) => {
       if (!result.isConfirmed) return;
 
@@ -638,7 +666,7 @@ private resetForm() {
       if (isCardCover) {
         this.deleteCardCoverImages(boardgameId, imgName, this.currentBoardgame.cardCoverImgNameMobile);
       } else {
-        this.deleteRegularImage(boardgameId, imgName);
+        this.deleteRegularImage(boardgameId, imgName, imgUrl);
       }
     });
   }
@@ -651,6 +679,7 @@ private resetForm() {
       if (resp) {
         this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
         this.cardCoverImgSrc = [];
+        this.dashboardService.removeCoverImagesFromSection(Section.BOARDGAMES,this.currentBoardgame._id);
       } else {
         this.dashboardService.notificationPopup('error', 'No se pudo eliminar la imagen', 2000);
       }
@@ -658,13 +687,12 @@ private resetForm() {
     this.boardsSubscriptions.add(sub);
   }
 
-  private deleteRegularImage(boardgameId: string, imgName: string) {
+  private deleteRegularImage(boardgameId: string, imgName: string, imgUrl: string | ArrayBuffer) {
     const sub = this.dashboardService.deleteItemImg(boardgameId, Section.BOARDGAMES, imgName, 'delete-image')!.pipe(
       finalize(() => this.loadingAnimation = false)
     ).subscribe(resp => {
       if (resp) {
-        this.cleanDeletedImages(imgName);
-        this.imgSrc = this.imgUrl;
+        this.cleanDeletedImages(imgUrl);
         this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
       } else {
         this.dashboardService.notificationPopup('error', 'No se pudo eliminar la imagen', 2000);
@@ -673,8 +701,10 @@ private resetForm() {
     this.boardsSubscriptions.add(sub);
   }
 
-  cleanDeletedImages(imgName: string){
-    this.imgUrl = this.imgUrl.filter((img) => !img.includes(imgName));
+  cleanDeletedImages(imgName: string | ArrayBuffer){
+    const filteredImages = this.imgUrl.filter((img) => img !== imgName.toString());
+    this.imgUrl = filteredImages;
+    this.imgSrc = filteredImages;
   }
 
   //Submit form
@@ -690,7 +720,6 @@ private resetForm() {
     const action = this.boardgameId ? 'update' : 'create';
     this.confirmAction(action).then((result) => {
       if (result.isConfirmed) {
-        this.myForm.markAsPristine();
         this.loadingAnimation = true;
         action === 'create' ? this.createBoardGame() : this.updateBoardGame();
       }

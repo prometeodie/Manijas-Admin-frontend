@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { CardTemplate } from '../interfaces/card interface/cards.interface';
-import { EventCardSample } from '../interfaces';
+import { EventCardSample, SignedImgUrl } from '../interfaces';
 
 @Pipe({
   name: 'image',
@@ -8,11 +8,11 @@ import { EventCardSample } from '../interfaces';
 })
 export class ImgPipePipe implements PipeTransform {
 
-  transform(card: CardTemplate):string {
+  transform(src: string | SignedImgUrl):string {
 
-    if(!card._id || !card.imgName || card.imgName.length === 0) {
+      if(!src) {
       return 'assets/no-img/meeple.svg';
     }
-      return card.imgName;
+      return src.toString();
   }
 }

@@ -85,15 +85,23 @@ export class GameManijometroComponent implements OnInit, OnDestroy {
   }
 
   getImgUrlBlog(image: string) {
-  this.imgUrl = '';
-  if (image){
-      this.dashboardService.getImgUrl(image, Section.BOARDGAMES).subscribe(resp => {
-        if (resp) {
-          this.imgUrl = resp.signedUrl;
+    this.imgUrl = '';
+    const localStorageImg = this.dashboardService.getLocalStorageImgUrl(this.id, Section.BOARDGAMES);
+    if(localStorageImg){
+      this.imgUrl = localStorageImg;
+    }else{
+      if (image){
+          this.dashboardService.getImgUrl(image, Section.BOARDGAMES).subscribe(resp => {
+            if (resp) {
+              this.imgUrl = resp.signedUrl;
+            }
+          });
         }
-      });
     }
   }
+
+  getImageUrlByScreenSize(item:Manijometro){
+}
 
   private confirmAction() {
     return Swal.fire({

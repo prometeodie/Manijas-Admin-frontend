@@ -1,17 +1,17 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardTemplate } from '../../interfaces/card interface/cards.interface';
-import { ImgPipePipe } from '../../pipes/img-pipe.pipe';
 import { DashboardService } from '../../services/dashboard.service';
 import Swal from 'sweetalert2';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { SlideToggleComponent } from '../slide-toggle/slide-toggle.component';
+import { ImgPipePipe } from '../../pipes/img-pipe.pipe';
 
 @Component({
   selector: 'app-cards',
   standalone: true,
-  imports: [CommonModule, RouterModule, SlideToggleComponent],
+  imports: [CommonModule, RouterModule, SlideToggleComponent, ImgPipePipe],
   templateUrl: './cards.component.html',
   styleUrls: ['./cards.component.scss']
 })
@@ -19,37 +19,44 @@ export class CardsComponent implements OnInit {
 
   @Input() objectTemplate!: CardTemplate;
   @Output() delete = new EventEmitter<void>();
- private dashboardService = inject(DashboardService);
- private authService = inject(AuthService);
- public isTheBoardVoted: boolean = false;
- public isEventCategory: boolean = false
- public hasVoted: boolean = false;
- public imgUrl: string = '';
- public routeToEditItem: string= '';
- public routeToVoteBoard: string= '';
+  private dashboardService = inject(DashboardService);
+  private authService = inject(AuthService);
+  public isTheBoardVoted: boolean = false;
+  public isEventCategory: boolean = false
+  public hasVoted: boolean = false;
+  public imgUrl: string = '';
+  public routeToEditItem: string= '';
+  public routeToVoteBoard: string= '';
 
 
- ngOnInit(){
-  this.routeToEditItem = `/lmdr/create-edit/${this.objectTemplate.section}/${this.objectTemplate._id}`;
-  this.routeToVoteBoard = `/lmdr/manijometro/${this.objectTemplate._id}`;
-  this.objectTemplate.text = this.dashboardService.stripHtml(this.objectTemplate.text!);
-  (this.objectTemplate.section === 'EVENTS')? this.isEventCategory = true : this.isEventCategory = false;
-  this.hasUserVoted();
-  if(this.objectTemplate.imgName){
-    (this.dashboardService.screenWidth > 800)?
-      this.dashboardService.getImgUrl(this.objectTemplate.imgName,this.objectTemplate.section).subscribe(
-        resp => {
-          this.imgUrl = resp.signedUrl;
-        }
+  ngOnInit(){
+    this.routeToEditItem = `/lmdr/create-edit/${this.objectTemplate.section}/${this.objectTemplate._id}`;
+    this.routeToVoteBoard = `/lmdr/manijometro/${this.objectTemplate._id}`;
+    this.objectTemplate.text = this.dashboardService.stripHtml(this.objectTemplate.text!);
+    (this.objectTemplate.section === 'EVENTS')? this.isEventCategory = true : this.isEventCategory = false;
+    this.hasUserVoted();
+    if(this.objectTemplate.imgName){
+       const imgUrl = this.dashboardService.getLocalStorageImgUrl(this.objectTemplate._id, this.objectTemplate.section);
+      if(imgUrl){
+        this.imgUrl = imgUrl;
+      }else{
+        (this.dashboardService.screenWidth > 800)?
+        this.dashboardService.getImgUrl(this.objectTemplate.imgName,this.objectTemplate.section).subscribe(
+          resp => {
+            this.imgUrl = resp.signedUrl;
+            this.dashboardService.saveImgUrlLocalStorage({_id: this.objectTemplate._id, cardCoverImgUrl: this.imgUrl, urlDate: new Date()}, this.objectTemplate.section);
+          }
         ):
-      this.dashboardService.getImgUrl(this.objectTemplate.imgMobileName,this.objectTemplate.section).subscribe(
-        resp => {
-          this.imgUrl = resp.signedUrl;
-        }
-      )
-
+        this.dashboardService.getImgUrl(this.objectTemplate.imgMobileName,this.objectTemplate.section).subscribe(
+          resp => {
+            this.imgUrl = resp.signedUrl;
+            this.dashboardService.saveImgUrlLocalStorage({_id: this.objectTemplate._id, cardCoverImgUrlMovile: this.imgUrl, urlDate: new Date()}, this.objectTemplate.section);
+          }
+        )
+      }
+      }
   }
- }
+
 
  truncateText(text:string, maxLength:number) {
   if (text.length <= maxLength) {
@@ -86,6 +93,10 @@ saveCurrentUrl(route: string){
   this.dashboardService.saveCurrentUrl(route);
 }
 
+isFallbackImage(url: string): boolean {
+  return (url)? true : false;
+}
+
 deleteItem(id:string){
   const section = this.objectTemplate.section.toLocaleLowerCase();
   Swal.fire({
@@ -102,6 +113,7 @@ deleteItem(id:string){
         resp =>{
           if(resp){
             const id = `${this.objectTemplate._id}`;
+            this.dashboardService.deleteItemFromLocalStorage(id, this.objectTemplate.section);
             this.dashboardService.notificationPopup('success','item eliminado', 1500)
             this.delete.emit();
           }else{

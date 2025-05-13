@@ -1,5 +1,5 @@
 import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { CommonModule, formatDate } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { EventManija } from '../../interfaces/event interfaces/event.interface';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormService } from 'src/app/services/form-validator.service';
@@ -18,7 +18,7 @@ import { finalize, forkJoin, map, Observable, of, Subscription, switchMap, throw
 @Component({
   selector: 'event-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, LoadingAnimationComponent, EventSampleCardComponent, UnsaveComponent],
+  imports: [CommonModule, ReactiveFormsModule, LoadingAnimationComponent,EventSampleCardComponent, UnsaveComponent],
   templateUrl: './event-form.component.html',
   styleUrls: ['./event-form.component.scss']
 })
@@ -74,7 +74,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
 
     ngOnInit(): void {
       const sub = this.route.paramMap.subscribe(params => {
-       (params.get('sectiion')) ? this.isInCreateEditRoute = true: this.isInCreateEditRoute = false;
+       (params.get('section')) ? this.isInCreateEditRoute = true: this.isInCreateEditRoute = false;
      });
       this.getEvent();
       this.initialFormValues = this.myForm.value as EditEventManija;
@@ -84,6 +84,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
 
     ngOnDestroy(): void {
       this.eventsService.resetAllProperties();
+      this.dashboardService.cleanImgSrc();
       this.eventsSubscriptions.unsubscribe();
     }
 
@@ -150,10 +151,10 @@ export class EventFormComponent implements OnInit, OnDestroy{
       }
       const input = event.target as HTMLInputElement;
       this.imgSrc = await this.dashboardService.onFileSelected(event);
-      this.dashboardService.loadImage(this.imgSrc[0]);
       this.selectedFile = this.dashboardService.returnImgs(event);
       if(input.files){
         const file = input.files[0];
+        this.dashboardService.loadImage(this.imgSrc[0]);
         const validSize = this.fvService.avoidImgExceedsMaxSize(file.size, 3145728);
         if(validSize){
           this.dashboardService.notificationPopup("error", 'El tamaño del archivo no debe superar los 3 MB.', 2000)
@@ -182,20 +183,35 @@ export class EventFormComponent implements OnInit, OnDestroy{
         this.eventsSubscriptions.add(sub);
       }
 
-       getImageUrlByScreenSize(event:EventManija){
-            (this.dashboardService.screenWidth > 800)?
-              this.getImgUrlEvent(event.imgName):
-              this.getImgUrlEvent(event.imgMobileName);
-          }
 
-      getImgUrlEvent(image: string) {
-      this.imgUrl = [];
-      if (image){
-          const sub = this.dashboardService.getImgUrl(image, Section.EVENTS).subscribe(resp => {
-            if (resp) {
+  getImageUrlByScreenSize(event:EventManija){
+                if(event.imgName){
+                  const imgUrl = this.dashboardService.getLocalStorageImgUrl(this.currentEvent._id!, Section.EVENTS);
+                  if(imgUrl){
+                    this.imgUrl = [imgUrl];
+                    this.imgSrc = [...this.imgUrl];
+                  }else{
+                    (this.dashboardService.screenWidth > 800)?
+                    this.getImgUrlEvent(event.imgName):
+                    this.getImgUrlEvent(event.imgMobileName);
+                  }
+                  this.dashboardService.loadImage(this.imgSrc[0]);
+                }
+              }
+
+              getImgUrlEvent(image: string) {
+                this.imgUrl = [];
+                if (image){
+                  const sub = this.dashboardService.getImgUrl(image, Section.EVENTS).subscribe(resp => {
+                    if (resp) {
+              this.dashboardService.deleteItemFromLocalStorage(this.currentEvent._id!, Section.EVENTS);
               this.imgUrl.push(resp.signedUrl);
-            }
               this.imgSrc = [...this.imgUrl];
+              this.dashboardService.loadImage(this.imgSrc[0]);
+               (this.dashboardService.screenWidth > 800)?
+                            this.dashboardService.saveImgUrlLocalStorage({_id: this.currentEvent._id!, cardCoverImgUrl: resp.signedUrl, urlDate: new Date()}, Section.EVENTS):
+                            this.dashboardService.saveImgUrlLocalStorage({_id: this.currentEvent._id!, cardCoverImgUrlMovile: resp.signedUrl, urlDate: new Date()}, Section.EVENTS);
+            }
           });
           this.eventsSubscriptions.add(sub);
         }
@@ -329,9 +345,8 @@ export class EventFormComponent implements OnInit, OnDestroy{
             ).subscribe((event) => {
         if (event) {
           this.dashboardService.notificationPopup('success','Evento agregado',2000)
-          this.resetForm();
-          (this.isInCreateEditRoute)? this.updateFormValues(event): this.router.navigateByUrl('/lmdr/events');
           this.newElementAdded.emit();
+          (this.isInCreateEditRoute)? this.router.navigateByUrl(`/lmdr/create-edit/EVENTS/${event._id}`): this.router.navigateByUrl('/lmdr/events');
         }else{
           this.dashboardService.notificationPopup('error','algo ocurrio al guardar el evento',2000)
         }
@@ -368,10 +383,11 @@ export class EventFormComponent implements OnInit, OnDestroy{
       .subscribe((event) => {
         if (event) {
           this.dashboardService.notificationPopup('success', 'Evento actualizado correctamente', 2000);
-          this.getImageUrlByScreenSize(event)
-          this.getEvent();
           this.resetForm();
+          this.getImageUrlByScreenSize(event)
+          this.currentEvent = event;
           this.updateFormValues(event);
+          this.fullfillSampleCard(event as EventCardSample);
         } else {
           this.dashboardService.notificationPopup("error", 'Algo salió mal al actualizar el Evento :(', 3000);
         }
@@ -448,6 +464,8 @@ export class EventFormComponent implements OnInit, OnDestroy{
              this.imgUrl = [];
              this.imgSrc = [];
              this.currentEvent.imgName = '';
+             this.dashboardService.deleteItemFromLocalStorage(this.currentEvent._id!, Section.EVENTS);
+             this.dashboardService.cleanImgSrc();
              this.dashboardService.notificationPopup('success', 'La imagen se ha eliminado correctamente', 2000);
            } else {
              this.dashboardService.notificationPopup('error', 'No se pudo eliminar la imagen', 2000);
