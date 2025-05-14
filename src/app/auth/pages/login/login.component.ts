@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FormService } from 'src/app/services/form-validator.service';
@@ -11,8 +11,9 @@ import { Subscription } from 'rxjs';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnDestroy{
+export class LoginComponent implements AfterViewInit , OnDestroy{
 
+  @ViewChild('rememberCheckbox') rememberCheckbox!: ElementRef<HTMLInputElement>;
   public typeOfInput = 'password';
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
@@ -25,9 +26,14 @@ export class LoginComponent implements OnDestroy{
   public chekingCredentials: boolean = false;
 
   public myForm = this.fb.group({
-    email:['franco.d.r1992@gmail.com',[Validators.required, Validators.pattern(this.emailPattern)]],
-    password:['ManijasDelRol$7',[Validators.required,Validators.minLength(8),Validators.maxLength(20), Validators.pattern(this.passwordPattern)]]
+    email:['',[Validators.required, Validators.pattern(this.emailPattern)]],
+    password:['',[Validators.required,Validators.minLength(8),Validators.maxLength(20), Validators.pattern(this.passwordPattern)]]
   })
+
+    ngAfterViewInit(): void {
+    this.getSavedUser();
+  }
+
 
   ngOnDestroy(): void {
    this.authSub.unsubscribe();
@@ -40,6 +46,27 @@ export class LoginComponent implements OnDestroy{
   showError(field: string):string | null{
     return `${this.fvService.showError(this.myForm,field)}`
   }
+
+rememberUser() {
+  const { email } = this.myForm.value;
+  const isChecked = this.rememberCheckbox.nativeElement.checked;
+
+  if (isChecked && email) {
+    const saveData = { email: email!, remember: true };
+    localStorage.setItem('rememberUser', JSON.stringify(saveData));
+  } else {
+    localStorage.removeItem('rememberUser');
+  }
+}
+
+getSavedUser() {
+  const savedUser = localStorage.getItem('rememberUser');
+  if (savedUser) {
+    const { email, remember } = JSON.parse(savedUser);
+    this.myForm.patchValue({ email});
+    this.rememberCheckbox.nativeElement.checked = remember;
+  }
+}
 
   login(){
     const { email, password } = this.myForm.value;

@@ -14,6 +14,7 @@
 
     &__li{
       padding: 0.5rem;
+      font-size: x-small;
       &:hover{
         background-color: rgba(240, 248, 255, 0.137);
       }
@@ -22,5 +23,13 @@
         background-color: rgba(240, 248, 255, 0.137);
       }
     }
+  }
+}
+
+// MEDIA QUERIES
+
+@media (min-width:800px) {
+  .categories-bar__ul__li{
+    font-size: medium;
   }
 }

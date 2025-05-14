@@ -28,7 +28,15 @@
             <span class="log-in__error-menssage"
                   *ngIf="isValidField('password')">{{ showError('password') }}</span>
           </div>
-
+          <div class="log-in__remember-user">
+            <input
+                 type="checkbox"
+                 name="Remember"
+                 class="log-in__remember-user__checkbox"
+                 (click)="rememberUser()"
+                 #rememberCheckbox>
+            <span class="log-in__remember-user__text">Remember me</span>
+          </div>
         <button mat-raised-button
                 type="submit"
                 class="log-in__btn"

@@ -3,7 +3,8 @@
 .log-in-card,
 .log-in,
 .log-in__file,
-.log-in__options{
+.log-in__options,
+.log-in__remember-user{
   display: flex;
 }
 
@@ -28,7 +29,8 @@
 }
 
 .log-in-card,
-.log-in__input__pass{
+.log-in__input__pass,
+.log-in__remember-user{
   width: 100%;
 }
 
@@ -110,6 +112,18 @@
           color:$form-error-color;
         }
 
+        &__remember-user{
+          margin-top: 0.8rem;
+          align-items: center;
+          justify-content: flex-start;
+
+          &__text{
+            font-size: 0.8rem;
+          }
+          &__checkbox{
+            margin-right: 0.5rem;
+          }
+        }
     }
   }
 
