@@ -9,7 +9,7 @@
 
 export const environment = {
   production: true,
-  baseUrl:'https://lmdr-backoffice.onrender.com'
+  baseUrl:'https://manijaserver.onrender.com'
   // baseUrl:'http://localhost:3000'
 };
 
