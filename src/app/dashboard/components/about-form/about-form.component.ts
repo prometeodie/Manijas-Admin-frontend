@@ -378,7 +378,7 @@ private confirmDelete() {
        }
 
        private confirmAction(action: string) {
-        return this.dashboardService.confirmAction(action, 'Evento')
+        return this.dashboardService.confirmAction(action, 'Fragmento de historia Manija');
       }
 
   onSubmit() {
