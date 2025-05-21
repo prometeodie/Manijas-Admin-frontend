@@ -41,6 +41,7 @@ h3{
 .events{
   &__section{
     justify-content: space-evenly;
+    background-color: $secondary-element-color;
 
     &__cards__container{
       align-items: center;
@@ -80,7 +81,6 @@ h3{
 
   .events__section{
     &__cards__container{
-      height: 30rem;
       overflow-y: scroll;
       padding: 1.5rem;
       background-color: $secondary-element-color;
