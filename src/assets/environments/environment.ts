@@ -9,8 +9,8 @@
 
 export const environment = {
   production: true,
-  // baseUrl:'https://lmdr-backoffice.onrender.com'
-  baseUrl:'http://localhost:3000'
+  baseUrl:'https://lmdr-backoffice.onrender.com'
+  // baseUrl:'http://localhost:3000'
 };
 
 /*
