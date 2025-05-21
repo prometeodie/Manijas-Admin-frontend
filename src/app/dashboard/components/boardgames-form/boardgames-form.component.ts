@@ -564,6 +564,7 @@ export class BoardgamesFormComponent implements OnDestroy {
       next: boardGame => {
         if (!boardGame) return;
         this.dashboardService.downloadObjectData(newBoardGame);
+        this.resetForm();
         this.router.navigateByUrl(`/lmdr/create-edit/BOARDGAMES/${boardGame._id}`);
         this.dashboardService.notificationPopup("success", "Board Game creado correctamente", 2000);
       },
