@@ -68,6 +68,7 @@
     &__img{
       opacity: 0;
       object-fit: cover;
+      height: 12.5rem;
       position: relative;
       z-index: 3;
       transition: opacity 0.5s ease-in;
@@ -161,6 +162,12 @@
 
   &--event{
     flex-direction: row-reverse;
+    .card{
+       &__img{
+        height: auto;
+       }
+    }
+
     .card__header{
       height: 7rem;
     }
