@@ -266,6 +266,7 @@ if (image){
         if (blog) {
           this.dashboardService.notificationPopup('success','Blog agregado',2000)
           this.downloadData(blog);
+          this.resetForm();
           this.router.navigate([`/lmdr/create-edit/BLOGS/${blog._id}`]);
         }else{
           this.dashboardService.notificationPopup('error','algo ocurrio al guardar el Blog',2000)

@@ -346,6 +346,7 @@ export class EventFormComponent implements OnInit, OnDestroy{
         if (event) {
           this.dashboardService.notificationPopup('success','Evento agregado',2000)
           this.newElementAdded.emit();
+          this.resetForm();
           (this.isInCreateEditRoute)? this.router.navigateByUrl(`/lmdr/create-edit/EVENTS/${event._id}`): this.router.navigateByUrl('/lmdr/events');
         }else{
           this.dashboardService.notificationPopup('error','algo ocurrio al guardar el evento',2000)

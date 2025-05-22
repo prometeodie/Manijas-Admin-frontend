@@ -239,6 +239,7 @@ public myForm = this.fb.group({
                 ).subscribe((aboutItem) => {
       if (aboutItem) {
         this.dashboardService.notificationPopup('success','Item agregado',2000)
+        this.resetForm();
         this.router.navigate([`/lmdr/create-edit/ABOUT/${aboutItem._id}`]);
       }else{
         this.dashboardService.notificationPopup('error','algo ocurrio al guardar el fragmento de historia',2000)
