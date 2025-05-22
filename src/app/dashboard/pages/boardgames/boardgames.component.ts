@@ -69,6 +69,7 @@ export class BoardgamesComponent implements OnInit, OnDestroy{
       ).subscribe(
         filteredBoardGames=>{
           this.boards = filteredBoardGames;
+          this.currentCategory = CategoryGame.ALL;
         }
       )
     }
