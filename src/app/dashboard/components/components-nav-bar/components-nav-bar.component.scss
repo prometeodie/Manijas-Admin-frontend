@@ -1,7 +1,11 @@
 
 @import '../../../scss/variables.scss';
 
-.categories-bar__ul {
+.categories-bar{
+  background-color: $secondary-element-color;
+  color: $main-text-color;
+
+  &__ul{
   display: flex;
   flex-wrap: wrap;
   list-style: none;
@@ -26,7 +30,7 @@
     }
   }
 }
-
+}
 
 // MEDIA QUERIES
 
